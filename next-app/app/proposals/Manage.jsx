@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Subscribe } from "./Subscribe";
@@ -11,7 +11,7 @@ import { useStore } from "@/store";
 import { Spinner } from "@/components/loaders";
 import { Hr } from "@/components/ui/page";
 
-export const Manage = ({ proposals }) => {
+const ManagePage = ({ proposals }) => {
   const { user, setUser, activeProposal } = useStore();
 
   const params = useSearchParams();
@@ -105,4 +105,10 @@ export const Manage = ({ proposals }) => {
       </React.Fragment>
     );
   }
+};
+
+export const Manage = () => {
+  <Suspense fallback={<div>Loading...</div>}>
+    <ManagePage />
+  </Suspense>
 };

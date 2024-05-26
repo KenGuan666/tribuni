@@ -2,7 +2,7 @@
 
 import { useStore } from "@/store";
 import { useSearchParams } from "next/navigation";
-import React, { useEffect } from "react";
+import React, { Suspense, useEffect } from "react";
 import { ANIMATE, MAX_WIDTH } from "../constants";
 import { clsx } from "clsx";
 import { NavBookmarks, NavHome, NavSettings, NavSocial } from "../ios";
@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
-export const UserConnector = () => {
+const UserConnectorPage = () => {
   const params = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
@@ -119,4 +119,12 @@ export const UserConnector = () => {
       )}
     </React.Fragment>
   );
+};
+
+export const UserConnector = () => {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <UserConnectorPage />
+    </Suspense>
+  )
 };

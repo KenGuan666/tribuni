@@ -6,7 +6,7 @@ import clsx from "clsx";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 
-export const Navigator = () => {
+const NavigatorPage = () => {
   const params = useSearchParams();
   const username = params.get("username");
   const chatid = params.get("chatid");
@@ -76,4 +76,10 @@ export const Navigator = () => {
       )}
     </div>
   );
+};
+
+export const Navigator = () => {
+  <Suspense fallback={<div>Loading...</div>}>
+    <NavigatorPage />
+  </Suspense>
 };
