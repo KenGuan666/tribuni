@@ -54,7 +54,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
           body: JSON.stringify(postData),
         };
 
-        await fetch(`${process.env.NGROK_URL}/api/v4/bot`, options);
+        await fetch(`${process.env.SERVER_URL}/api/v4/bot`, options);
 
         // await bot.sendMessage(
         //   chatid,
@@ -66,7 +66,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
         //           {
         //             text: "Browse Protocols",
         //             web_app: {
-        //               url: `${process.env.NGROK_URL}/protocols?username=${username}&chatid=${chatid}`,
+        //               url: `${process.env.SERVER_URL}/protocols?username=${username}&chatid=${chatid}`,
         //             },
         //           },
         //         ],
@@ -74,7 +74,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
         //           {
         //             text: "Edit Settings",
         //             web_app: {
-        //               url: `${process.env.NGROK_URL}/settings?username=${username}&chatid=${chatid}`,
+        //               url: `${process.env.SERVER_URL}/settings?username=${username}&chatid=${chatid}`,
         //             },
         //           },
         //         ],
@@ -82,7 +82,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
         //           {
         //             text: "Manage Subscriptions",
         //             web_app: {
-        //               url: `${process.env.NGROK_URL}/subscriptions?username=${username}&chatid=${chatid}`,
+        //               url: `${process.env.SERVER_URL}/subscriptions?username=${username}&chatid=${chatid}`,
         //             },
         //           },
         //         ],
@@ -90,7 +90,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
         //           {
         //             text: "View Bookmarks",
         //             web_app: {
-        //               url: `${process.env.NGROK_URL}/bookmarks?username=${username}&chatid=${chatid}`,
+        //               url: `${process.env.SERVER_URL}/bookmarks?username=${username}&chatid=${chatid}`,
         //             },
         //           },
         //         ],
@@ -98,7 +98,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
         //           {
         //             text: "Social Directory",
         //             web_app: {
-        //               url: `${process.env.NGROK_URL}/directory?username=${username}&chatid=${chatid}`,
+        //               url: `${process.env.SERVER_URL}/directory?username=${username}&chatid=${chatid}`,
         //             },
         //           },
         //         ],
@@ -129,7 +129,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
     // 						{
     // 							text: "Browse Protocols",
     // 							web_app: {
-    // 								url: `${process.env.NGROK_URL}/protocols?username=${username}&chatid=${chatid}`,
+    // 								url: `${process.env.SERVER_URL}/protocols?username=${username}&chatid=${chatid}`,
     // 							},
     // 						},
     // 					],
@@ -137,7 +137,7 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
     // 						{
     // 							text: "Manage Subscriptions",
     // 							web_app: {
-    // 								url: `${process.env.NGROK_URL}/manage?username=${username}&chatid=${chatid}`,
+    // 								url: `${process.env.SERVER_URL}/manage?username=${username}&chatid=${chatid}`,
     // 							},
     // 						},
     // 					],

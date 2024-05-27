@@ -3,6 +3,7 @@ import { DefaultReply } from "./DefaultReply";
 import { HandleCallback } from "./HandleCallback";
 
 export async function POST(req) {
+	console.log("POST api was called with req", req)
 	try {
 		const bot = getBot();
 		const body = await req.json();

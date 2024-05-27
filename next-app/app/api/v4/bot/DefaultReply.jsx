@@ -67,7 +67,7 @@ export const DefaultReply = async ({ bot, body }) => {
         {
           text: "Register",
           web_app: {
-            url: `${process.env.NGROK_URL}/register?username=${username}&chatid=${chatid}`,
+            url: `${process.env.SERVER_URL}/register?username=${username}&chatid=${chatid}`,
           },
         },
       ],
@@ -99,7 +99,7 @@ export const DefaultReply = async ({ bot, body }) => {
         {
           text: key.text,
           web_app: {
-            url: `${process.env.NGROK_URL}/${key.path}?username=${username}&chatid=${chatid}`,
+            url: `${process.env.SERVER_URL}/${key.path}?username=${username}&chatid=${chatid}`,
           },
         },
       ];

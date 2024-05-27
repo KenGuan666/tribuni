@@ -304,7 +304,7 @@ export const Settings = () => {
               onClick={async () => {
                 try {
                   await fetch(
-                    `${process.env.NEXT_PUBLIC_NGROK_URL}/api/v4/alerts/telegram`,
+                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/telegram`,
                     {
                       method: "POST",
                       headers: {
@@ -322,7 +322,7 @@ export const Settings = () => {
 
                   if (user.email !== null) {
                     await fetch(
-                      `${process.env.NEXT_PUBLIC_NGROK_URL}/api/v4/alerts/email`,
+                      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/email`,
                       {
                         method: "POST",
                         headers: {

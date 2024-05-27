@@ -25,7 +25,7 @@ export async function POST(req) {
 							{
 								text: "op bot app",
 								web_app: {
-									url: process.env.NGROK_URL,
+									url: process.env.SERVER_URL,
 								},
 							},
 						],
