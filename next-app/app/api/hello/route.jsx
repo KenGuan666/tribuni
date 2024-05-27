@@ -8,13 +8,6 @@ export async function POST(req) {
 
 		const body = await req.json();
 
-		console.log(body);
-
-		// await bot.sendMessage(
-		// 	body.message.chat.id,
-		// 	`Hi @${body.message.from.username} -- I am the OP bot.`
-		// );
-
 		await bot.sendMessage(
 			body.message.chat.id,
 			`Hi @${body.message.from.username} -- I am the OP bot.`,
