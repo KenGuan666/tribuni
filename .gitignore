@@ -1,2 +1,3 @@
 next-app/node_modules/
 next-app/.next/
+next-app/.env.local
