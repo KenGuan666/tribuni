@@ -51,7 +51,6 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
   };
 
   let totalVotes = 0;
-  let percents = 0;
 
   const isBookmarked = user.bookmarks.includes(activeProposal);
 
@@ -63,10 +62,6 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
       (acc, result) => acc + parseFloat(result.total),
       0
     );
-
-    percents = proposalMap[activeProposal].results.map((result, idx) => {
-      return (parseFloat(result.total) / totalVotes) * 100;
-    });
   }
 
   const colors = [
@@ -316,49 +311,55 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
               <div className="flex flex-col items-center w-full bg-isWhite p-4 rounded-xl">
                 <div className="w-full">
                   <div className="flex flex-col items-center w-full text-xs capitalize rounded-lg bg-isWhite text-isLabelLightSecondary font-400">
-                    {proposalMap[activeProposal].choices.map((choice, idx) => {
-                      const totalVotes = parseFloat(
-                        proposalMap[activeProposal].results[idx].total
-                      );
-                      const percent = percents[idx].toFixed(2);
-                      // Format total votes
-                      const formattedVotes = new Intl.NumberFormat("en", {
-                        notation: "compact",
-                        compactDisplay: "short",
-                        maximumFractionDigits: 1,
-                      }).format(totalVotes);
+                    {
+                      proposalMap[activeProposal].choices.map((choice, idx) => {
+                        const idxStr = idx.toString()
+                        let votesForThisChoice = 0, percent = 0
+                        proposalMap[activeProposal].results.forEach((entry) => {
+                          if (entry.choice == idxStr) {
+                            votesForThisChoice = entry.total
+                            percent = ((parseFloat(votesForThisChoice) / totalVotes) * 100).toFixed(2);
+                          }
+                        })
+                        // Format total votes
+                        const formattedVotes = new Intl.NumberFormat("en", {
+                          notation: "compact",
+                          compactDisplay: "short",
+                          maximumFractionDigits: 1,
+                        }).format(votesForThisChoice);
 
-                      const colorIndex = idx % colors.length;
-                      return (
-                        <React.Fragment key={idx}>
-                          {idx !== 0 && <div className="mb-3" />}
+                        const colorIndex = idx % colors.length;
+                        return (
+                          <React.Fragment key={idx}>
+                            {idx !== 0 && <div className="mb-3" />}
 
-                          <div className="w-full space-x-2">
-                            <div className="relative h-3 bg-isSystemLightSecondary rounded-2xl overflow-hidden">
-                              <div
-                                className="absolute top-0 h-3 rounded-2xl"
-                                style={{
-                                  width: `${percent}%`,
-                                  backgroundColor: colors[colorIndex],
-                                }}
-                              />
+                            <div className="w-full space-x-2">
+                              <div className="relative h-3 bg-isSystemLightSecondary rounded-2xl overflow-hidden">
+                                <div
+                                  className="absolute top-0 h-3 rounded-2xl"
+                                  style={{
+                                    width: `${percent}%`,
+                                    backgroundColor: colors[colorIndex],
+                                  }}
+                                />
+                              </div>
                             </div>
-                          </div>
 
-                          <div className="flex flex-row items-center justify-between w-full mt-1">
-                            <div className="flex flex-row items-center">
-                              <div className="truncate text-ellipsis max-w-[7rem]">
-                                {choice}
-                              </div>{" "}
-                              <div>, {percent}%</div>
+                            <div className="flex flex-row items-center justify-between w-full mt-1">
+                              <div className="flex flex-row items-center">
+                                <div className="truncate text-ellipsis max-w-[7rem]">
+                                  {choice}
+                                </div>{" "}
+                                <div>, {percent}%</div>
+                              </div>
+                              <div className="ml-auto">
+                                {formattedVotes} votes
+                              </div>
                             </div>
-                            <div className="ml-auto">
-                              {formattedVotes} votes
-                            </div>
-                          </div>
-                        </React.Fragment>
-                      );
-                    })}
+                          </React.Fragment>
+                        );
+                      })
+                    }
                   </div>
                 </div>
               </div>
