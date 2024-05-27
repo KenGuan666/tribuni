@@ -12,14 +12,18 @@ Install [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 Create an `.env.local` file under next-app folder. Copy content [here](https://www.notion.so/atlantropa/Tribuni-bot-env-local-file-content-223f1fd0ebf64f2caf5adf5fbdcb5862).
 
 #### Build
-`pnpm install`, `pnpm run build`
+```
+cd next-app
+pnpm install
+pnpm run build
+```
 
 #### Test Locally
 First, run `ngrok http 3000`. It creates an HTTPS proxy to your local 3000 port.
 
-Then, update env vars `SERVER_URL` and `NEXT_PUBLIC_SERVER_URL` with the ngrok link.
+Update env vars `SERVER_URL` and `NEXT_PUBLIC_SERVER_URL` with the ngrok link.
 
-Run `pnpm run dev`.
+Then, run `pnpm run dev`.
 
 Last, visit brower URL from your browser.
 Please manually substitute the test bot API key and ngrok URL. 
@@ -30,7 +34,3 @@ https://t.me/Tribuni_Bot_Test is now linked to your local deployment.
 
 #### Deploy
 `git push`
-
-Once GitHub reports deployment successful, visit below URL from your browser. Substitute the real bot API key this time.
-
-https://api.telegram.org/bot<REAL_BOT_API_KEY>/setWebhook?url=https://tribuni.vercel.app/api/v4/bot

@@ -312,8 +312,8 @@ const RegistrationFormPage = () => {
   );
 };
 
-export const RegistrationForm = () => {
+export const RegistrationForm = () => (
   <Suspense fallback={<div>Loading...</div>}>
     <RegistrationFormPage />
   </Suspense>
-};
+);

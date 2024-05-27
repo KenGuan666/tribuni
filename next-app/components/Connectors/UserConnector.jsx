@@ -121,10 +121,8 @@ const UserConnectorPage = () => {
   );
 };
 
-export const UserConnector = () => {
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <UserConnectorPage />
-    </Suspense>
-  )
-};
+export const UserConnector = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <UserConnectorPage />
+  </Suspense>
+);

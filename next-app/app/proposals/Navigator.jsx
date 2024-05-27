@@ -5,6 +5,7 @@ import { useStore } from "@/store";
 import clsx from "clsx";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
 const NavigatorPage = () => {
   const params = useSearchParams();
@@ -78,8 +79,8 @@ const NavigatorPage = () => {
   );
 };
 
-export const Navigator = () => {
+export const Navigator = () => (
   <Suspense fallback={<div>Loading...</div>}>
     <NavigatorPage />
   </Suspense>
-};
+);

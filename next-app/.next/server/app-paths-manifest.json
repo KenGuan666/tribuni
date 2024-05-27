@@ -1,5 +1,0 @@
-{
-  "/register/page": "app/register/page.js",
-  "/api/v4/bot/route": "app/api/v4/bot/route.js",
-  "/api/v4/data/user/route": "app/api/v4/data/user/route.js"
-}

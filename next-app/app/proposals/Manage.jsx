@@ -107,8 +107,8 @@ const ManagePage = ({ proposals }) => {
   }
 };
 
-export const Manage = () => {
+export const Manage = () => (
   <Suspense fallback={<div>Loading...</div>}>
     <ManagePage />
   </Suspense>
-};
+);
