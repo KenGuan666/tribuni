@@ -5,13 +5,6 @@ import { createClient } from '@supabase/supabase-js';
 
 export async function POST(req) {
 
-	if (req.headers.get('Authorization') !== `Bearer ${process.env.CRON_SECRET}`) {
-		return Response.json({
-			code: 403,
-			status: "error",
-		});
-	}
-
 	const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 	try {
@@ -66,14 +59,22 @@ export async function POST(req) {
 				newProposal["starttime"] = parseInt(rawProposal.startTimestamp);
 				newProposal["endtime"] = parseInt(rawProposal.endTimestamp);
 				newProposal["url"] = rawProposal.externalUrl;
-				newProposal["raw_summary"] = sanitizeText(rawProposal.content).trim().slice(0, 200) + sanitizeText(rawProposal.content).trim().length > 201 ? "..." : "";
 
-				try {
-					newProposal["summary"] = summarizeProposal(newProposal["raw_summary"]);
-					newProposal["was_summarized"] = true;
-				} catch (err) {
-					newProposal["summary"] = newProposal["raw_summary"];
+				let sanitizedContent = sanitizeText(rawProposal.content).trim();
+				if (sanitizedContent == {}) {
+					newProposal["raw_summary"] = "No content available.";
+					newProposal["summary"] = "No content available.";
 					newProposal["was_summarized"] = false;
+				} else {
+					newProposal["raw_summary"] = sanitizedContent.trim().slice(0, 200) + sanitizedContent.trim().length > 201 ? "..." : "";
+
+					try {
+						newProposal["summary"] = summarizeProposal(newProposal["raw_summary"]);
+						newProposal["was_summarized"] = true;
+					} catch (err) {
+						newProposal["summary"] = newProposal["raw_summary"];
+						newProposal["was_summarized"] = false;
+					}
 				}
 
 				newProposal["choices"] = rawProposal.choices.map((choice) => sanitizeText(choice).trim());
