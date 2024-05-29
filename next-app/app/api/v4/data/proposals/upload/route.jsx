@@ -33,7 +33,7 @@ export async function POST(req) {
 		if (error) console.log(error);
 		else existingProposals = data.map((p) => p.id);
 
-		let newProposals = [];
+		let proposalDbEntries = [];
 		const proposalPromises = protocols.map(async (protocol) => {
 
 			const proposalsURL = `https://api.boardroom.info/v1/protocols/${protocol}/proposals?status=active&key=${process.env.BOARDROOM_API_KEY}`;
@@ -52,43 +52,9 @@ export async function POST(req) {
 				// check that the proposal doesn't already exist
 				if (existingProposals.includes(sha1(rawProposal.id))) continue;
 
-				let newProposal = {};
-
-				newProposal["id"] = sha1(rawProposal.id);
-				newProposal["protocol"] = protocol;
-				newProposal["proposer"] = rawProposal.proposer;
-				newProposal["title"] = sanitizeText(rawProposal.title).trim();
-				newProposal["starttime"] = parseInt(rawProposal.startTimestamp);
-				newProposal["endtime"] = parseInt(rawProposal.endTimestamp);
-				newProposal["url"] = rawProposal.externalUrl;
-
-
-				if (rawProposal["content"] == "" || rawProposal["content"] == null || rawProposal["content"] == undefined) {
-
-					newProposal["raw_summary"] = "No content available.";
-					newProposal["summary"] = "No content available.";
-					newProposal["was_summarized"] = false;
-
-				} else {
-
-					let sanitizedContent = sanitizeText(rawProposal["content"]).trim();
-					if (sanitizedContent.length > 200) newProposal["raw_summary"] = sanitizedContent.slice(0, 200) + "...";
-					else newProposal["raw_summary"] = sanitizedContent;
-
-					try {
-						newProposal["summary"] = await summarizeProposal(newProposal["raw_summary"]);
-						newProposal["was_summarized"] = true;
-					} catch (err) {
-						newProposal["summary"] = newProposal["raw_summary"];
-						newProposal["was_summarized"] = false;
-					}
-				}
-
-				newProposal["choices"] = rawProposal.choices.map((choice) => sanitizeText(choice).trim());
-				newProposal["results"] = rawProposal.indexedResult;
-
-				if (newProposal.title !== undefined) {
-					newProposals.push(newProposal);
+				let proposalDbEntry = fromRawProposal(rawProposal, protocol);
+				if (proposalDbEntry.title !== undefined) {
+					proposalDbEntries.push(proposalDbEntry);
 				}
 			}
 		});
@@ -97,7 +63,7 @@ export async function POST(req) {
 
 		let newProposalIds = new Set();
 
-		newProposals = Array.from(newProposals).filter(({ id }) => {
+		proposalDbEntries = Array.from(proposalDbEntries).filter(({ id }) => {
 			if (newProposalIds.has(id)) {
 				return false;
 			} else {
@@ -109,7 +75,7 @@ export async function POST(req) {
 		var { data, error } = await supabase
 			.from('proposals')
 			.upsert(
-				newProposals.map(
+				proposalDbEntries.map(
 					({
 						id,
 						protocol,
@@ -164,4 +130,47 @@ export async function POST(req) {
 			status: "error",
 		});
 	}
+}
+
+async function fromRawProposal(rawProposal, protocol) {
+	let dbEntry = {}
+	dbEntry["id"] = sha1(rawProposal.id);
+	dbEntry["protocol"] = protocol;
+	dbEntry["proposer"] = rawProposal.proposer;
+	dbEntry["title"] = sanitizeText(rawProposal.title).trim();
+	dbEntry["starttime"] = parseInt(rawProposal.startTimestamp);
+	dbEntry["endtime"] = parseInt(rawProposal.endTimestamp);
+	dbEntry["url"] = rawProposal.externalUrl;
+
+	if (!dbEntry["url"]) {
+		// Boardroom does not know the voting URL for some protocols. Manually enter them here
+		if (protocol == "optimism") {
+			dbEntry["url"] = `https:///vote.optimism.io/proposals/${rawProposal.id}`
+		}
+	}
+
+	if (rawProposal["content"] == "" || rawProposal["content"] == null || rawProposal["content"] == undefined) {
+
+		dbEntry["raw_summary"] = "No content available.";
+		dbEntry["summary"] = "No content available.";
+		dbEntry["was_summarized"] = false;
+
+	} else {
+
+		let sanitizedContent = sanitizeText(rawProposal["content"]).trim();
+		if (sanitizedContent.length > 200) dbEntry["raw_summary"] = sanitizedContent.slice(0, 200) + "...";
+		else dbEntry["raw_summary"] = sanitizedContent;
+
+		try {
+			dbEntry["summary"] = await summarizeProposal(dbEntry["raw_summary"]);
+			dbEntry["was_summarized"] = true;
+		} catch (err) {
+			dbEntry["summary"] = dbEntry["raw_summary"];
+			dbEntry["was_summarized"] = false;
+		}
+	}
+
+	dbEntry["choices"] = rawProposal.choices.map((choice) => sanitizeText(choice).trim());
+	dbEntry["results"] = rawProposal.indexedResult;
+	return dbEntry
 }
