@@ -3,9 +3,7 @@ import sha1 from "sha1";
 import { summarizeProposal } from "@/components/ai/summary";
 import { createClient } from '@supabase/supabase-js';
 
-export const config = {
-	maxDuration: 60,
-};
+export const maxDuration = 60;
 
 export async function POST(req) {
 
