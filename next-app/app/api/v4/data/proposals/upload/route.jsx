@@ -60,16 +60,21 @@ export async function POST(req) {
 				newProposal["endtime"] = parseInt(rawProposal.endTimestamp);
 				newProposal["url"] = rawProposal.externalUrl;
 
-				let sanitizedContent = sanitizeText(rawProposal.content).trim();
-				if (sanitizedContent == {}) {
+
+				if (rawProposal["content"] == "" || rawProposal["content"] == null || rawProposal["content"] == undefined) {
+
 					newProposal["raw_summary"] = "No content available.";
 					newProposal["summary"] = "No content available.";
 					newProposal["was_summarized"] = false;
+
 				} else {
-					newProposal["raw_summary"] = sanitizedContent.trim().slice(0, 200) + sanitizedContent.trim().length > 201 ? "..." : "";
+
+					let sanitizedContent = sanitizeText(rawProposal["content"]).trim();
+					if (sanitizedContent.length > 200) newProposal["raw_summary"] = sanitizedContent.slice(0, 200) + "...";
+					else newProposal["raw_summary"] = sanitizedContent;
 
 					try {
-						newProposal["summary"] = summarizeProposal(newProposal["raw_summary"]);
+						newProposal["summary"] = await summarizeProposal(newProposal["raw_summary"]);
 						newProposal["was_summarized"] = true;
 					} catch (err) {
 						newProposal["summary"] = newProposal["raw_summary"];
@@ -83,7 +88,6 @@ export async function POST(req) {
 				if (newProposal.title !== undefined) {
 					newProposals.push(newProposal);
 				}
-
 			}
 		});
 
