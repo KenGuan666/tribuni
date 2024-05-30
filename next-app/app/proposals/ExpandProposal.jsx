@@ -8,6 +8,7 @@ import { BookmarkFill, CheckmarkBubbleFill } from "@/components/ios";
 import { Bookmark } from "./Bookmark";
 import { BASE_USER } from "@/components/constants";
 import { Hr } from "@/components/ui/page";
+import { GALogEvent } from "../../lib/GAMetrics"
 
 export const ExpandProposal = ({ proposalMap, protocol }) => {
   const { activeProposal, user, setUser } = useStore();
@@ -279,6 +280,13 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
                 rel="noopener noreferrer"
                 target="_blank"
                 className="w-7/12 flex flex-col items-center place-content-center bg-isBlueLight text-lg font-600 text-isWhite rounded-xl h-full"
+                onClick={() => GALogEvent({
+                  action: "CLICK BUTTON",
+                  label: "Vote Now",
+                  username: user.id,
+                  protocol_id: proposalMap[activeProposal].protocol,
+                  proposal_id: proposalMap[activeProposal].id,
+                })}
               >
                 Vote Now
               </a>

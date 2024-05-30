@@ -1,9 +1,10 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { BotConnector } from "@/components/bot";
+import { Script } from "next/script"
 // import { Providers } from "./Providers";
-// import { Toaster } from "sonner";
 import { UserConnector } from "@/components/Connectors";
+import { initGA } from "../lib/GAMetrics"
 import { Render } from "./Render";
 import clsx from "clsx";
 import { Toaster } from "react-hot-toast";
@@ -22,6 +23,21 @@ export default function RootLayout({ children }) {
         <script src="https://telegram.org/js/telegram-web-app.js"></script>
       </head>
       <body className={clsx(inter.className)}>
+        {/* Load GA script */}
+        <script
+          async
+          src={`https://www.googletagmanager.com/gtag/js?id=G-E01KYBXTBW`}
+        />
+        {/* Initialize GA after the script is loaded */}
+        <script id="google-analytics" strategy="afterInteractive" dangerouslySetInnerHTML={{
+          __html: `
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-E01KYBXTBW');
+          `,
+        }}>
+        </script>
         {/* <Providers> */}
         <BotConnector />
         <div className="flex flex-col items-center w-full h-screen">
@@ -37,6 +53,7 @@ export default function RootLayout({ children }) {
         {/* </Providers> */}
 
         <Toaster />
+        {/* {initGA()} */}
       </body>
     </html>
   );
