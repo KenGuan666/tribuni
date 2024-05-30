@@ -25,6 +25,8 @@ async function sendEmail(userEmail, message) {
 export async function generateMarkdownAndSendEmail({
   subscriptions,
   userEmail,
+  username,
+  chatid,
 }) {
   let markdown = "";
   let isFirstProtocol = true;
@@ -32,7 +34,7 @@ export async function generateMarkdownAndSendEmail({
   let protocolProposalCounts = {};
 
   for (const subscription of subscriptions) {
-    const { protocol, title, endtime, url } = subscription;
+    const { protocol_id, protocol, title, endtime, url } = subscription;
     const votingLink =
       url && url !== "undefined" ? `👉 <a href="${url}">Vote Now</a>` : "";
 
@@ -40,7 +42,7 @@ export async function generateMarkdownAndSendEmail({
       if (!isFirstProtocol) {
         markdown += "<br>";
       }
-      markdown += `<b>Protocol:</b> ${protocol}`;
+      markdown += `<b>Protocol:</b> <a href="${process.env.SERVER_URL}/proposals?protocol=${protocol_id}&username=${username}&chatid=${chatid}">${protocol}</a>`;
       isFirstProtocol = false;
       currentProtocol = protocol;
       protocolProposalCounts[currentProtocol] = 0;
@@ -68,12 +70,14 @@ export async function POST(req) {
       console.log("test email alert");
 
       const username = body.username;
+      const chatid = body.chatid;
       const userEmail = body.userEmail;
 
       // Add logic to check if the test user exists and email alerts are enabled
       if (true) {
         const testSubscriptionQuery = `
           SELECT p.id,
+                 pr.id as protocol_id,
                  pr.name AS protocol,
                  p.title,
                  p.endTime,
@@ -89,7 +93,9 @@ export async function POST(req) {
         if (testSubscriptions.length !== 0) {
           await generateMarkdownAndSendEmail({
             subscriptions: testSubscriptions,
-            userEmail: userEmail,
+            userEmail,
+            username,
+            chatid,
           });
 
           return Response.json({
@@ -128,6 +134,7 @@ export async function POST(req) {
       for (const user of users) {
         const subscriptionsQuery = `
           SELECT p.id,
+                 pr.id as protocol_id,
                  pr.name AS protocol,
                  p.title,
                  p.endTime,
@@ -146,6 +153,8 @@ export async function POST(req) {
             await generateMarkdownAndSendEmail({
               subscriptions,
               userEmail: user.email,
+              username,
+              chatid,
             });
 
             await sql.unsafe(`

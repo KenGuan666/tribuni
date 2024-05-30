@@ -2,14 +2,14 @@ import { sql } from "@/components/db";
 import { rawTimeFromNow } from "@/components/utilities";
 import { getBot } from "@/components/bot";
 
-export function generateMarkdown({ subscriptions }) {
+export function generateMarkdown({ subscriptions, username, chatid }) {
   let markdown = "";
   let isFirstProtocol = true;
   let currentProtocol = "";
   let protocolProposalCounts = {}; // Object to store proposal counts for each protocol
 
   for (const subscription of subscriptions) {
-    const { protocol, title, endtime, url } = subscription;
+    const { protocol_id, protocol, title, endtime, url } = subscription;
     const votingLink =
       url && url !== "undefined" ? `👉 [Vote Now](${url})` : "";
 
@@ -18,7 +18,7 @@ export function generateMarkdown({ subscriptions }) {
       if (!isFirstProtocol) {
         markdown += "\n";
       }
-      markdown += `*Protocol:* ${protocol}`;
+      markdown += `*Protocol:* [${protocol}](${process.env.SERVER_URL}/proposals?protocol=${protocol_id}&username=${username}&chatid=${chatid})`;
       isFirstProtocol = false;
       currentProtocol = protocol;
       protocolProposalCounts[currentProtocol] = 0;
@@ -58,6 +58,7 @@ export async function POST(req) {
       if (true) {
         const testSubscriptionQuery = `
           SELECT p.id,
+                 pr.id as protocol_id,
                  pr.name AS protocol,
                  p.title,
                  p.endTime,
@@ -72,6 +73,8 @@ export async function POST(req) {
         const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
         const testMarkdown = generateMarkdown({
           subscriptions: testSubscriptions,
+          username,
+          chatid,
         });
 
         if (testSubscriptions.length !== 0) {
@@ -114,7 +117,8 @@ export async function POST(req) {
     if (users.length !== 0) {
       users.map(async (user, idx) => {
         const subscriptionsQuery = `
-    				SELECT p.id,
+    			 SELECT p.id,
+           pr.id as protocol_id,
            pr.name AS protocol,
            p.title,
            p.endTime,
@@ -127,7 +131,11 @@ export async function POST(req) {
     			`;
 
         const subscriptions = await sql.unsafe(subscriptionsQuery);
-        const markdown = generateMarkdown({ subscriptions });
+        const markdown = generateMarkdown({
+          subscriptions,
+          username,
+          chatid,
+        });
 
         if (subscriptions.length !== 0) {
           try {
