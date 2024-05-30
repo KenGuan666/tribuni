@@ -303,7 +303,7 @@ export const Settings = () => {
             <button
               onClick={async () => {
                 try {
-                  await fetch(
+                  let res = await fetch(
                     `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/telegram`,
                     {
                       method: "POST",
@@ -318,7 +318,13 @@ export const Settings = () => {
                     }
                   );
 
-                  toast.success("Telegram Alert Sent");
+                  if (res.ok) {
+                    toast.success("Telegram Alert Sent")
+                  } else {
+                    toast.success("No Active Proposals")
+                    return
+                  }
+
 
                   if (user.email !== null) {
                     await fetch(

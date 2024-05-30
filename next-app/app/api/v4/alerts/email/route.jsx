@@ -86,7 +86,6 @@ export async function POST(req) {
         `;
 
         const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
-
         if (testSubscriptions.length !== 0) {
           await generateMarkdownAndSendEmail({
             subscriptions: testSubscriptions,
@@ -97,13 +96,13 @@ export async function POST(req) {
             code: 201,
             status: "success",
             message: "Test email alert sent successfully",
-          });
+          }, { status: 201 });
         } else {
           return Response.json({
             code: 404,
             status: "error",
             message: "No subscriptions found for the test user",
-          });
+          }, { status: 404 });
         }
       } else {
         return Response.json({
@@ -161,15 +160,15 @@ export async function POST(req) {
       }
     }
 
-    return Response.json({
+    return Response.status(201).json({
       code: 201,
       status: "success",
-    });
+    }, { status: 201 });
   } catch (err) {
     console.log(err);
     return Response.json({
-      code: 403,
+      code: 400,
       status: "error",
-    });
+    }, { status: 400 });
   }
 }
