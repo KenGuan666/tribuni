@@ -49,7 +49,7 @@ const ManagePage = ({}) => {
           )}
         >
           <div className="text-base text-isLabelLightPrimary font-400">
-            Subscribed
+            Subscribe
           </div>
           {isLoading === true ? (
             <Spinner classes={clsx("w-5 h-5 border-isBlueLight")} />
