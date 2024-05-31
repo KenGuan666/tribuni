@@ -67,8 +67,6 @@ export const RenderList = ({ proposalMap, protocol }) => {
   // if one of the proposals are active, the active one goes first
   // if both are active or both inactive, the one ended later goes first
   let timestamp_now = new Date() / 1000
-  console.log(timestamp_now)
-  console.log(proposals[0].endtime)
   proposals.sort((a, b) => {
     if (a.endtime > timestamp_now && b.endtime < timestamp_now) return -1;
     if (a.endtime < timestamp_now && b.endtime > timestamp_now) return 1;
