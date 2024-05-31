@@ -288,7 +288,7 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
                   proposal_id: proposalMap[activeProposal].id,
                 })}
               >
-                Vote Now
+                {proposalMap[activeProposal].endtime > new Date() / 1000 ? "Vote Now" : "See Results"}
               </a>
             )}
         </div>

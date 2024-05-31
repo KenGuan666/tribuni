@@ -11,7 +11,7 @@ import { useStore } from "@/store";
 import { Spinner } from "@/components/loaders";
 import { Hr } from "@/components/ui/page";
 
-const ManagePage = ({ proposals }) => {
+const ManagePage = ({}) => {
   const { user, setUser, activeProposal } = useStore();
 
   const params = useSearchParams();

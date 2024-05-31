@@ -63,7 +63,17 @@ export const RenderList = ({ proposalMap, protocol }) => {
     return proposalMap[key];
   });
 
-  proposals.sort((a, b) => b.endtime - a.endtime);
+  // sort rule:
+  // if one of the proposals are active, the active one goes first
+  // if both are active or both inactive, the one ended later goes first
+  let timestamp_now = new Date() / 1000
+  console.log(timestamp_now)
+  console.log(proposals[0].endtime)
+  proposals.sort((a, b) => {
+    if (a.endtime > timestamp_now && b.endtime < timestamp_now) return -1;
+    if (a.endtime < timestamp_now && b.endtime > timestamp_now) return 1;
+    return a.endtime - b.endtime;
+  });
 
   const filteredProposals = proposals.filter((proposal) => {
     const currentTime = Math.floor(Date.now() / 1000);
@@ -133,7 +143,7 @@ export const RenderList = ({ proposalMap, protocol }) => {
                   <div className="flex flex-col grow w-[calc(100%-3rem)]">
                     <div className="w-full flex flex-row items-center space-x-1 font-400 text-base">
                       <div className="tracking-tight rounded-md w-fit text-isLabelLightSecondary ">
-                        {timeFromNow(proposal.starttime)}
+                        {timeFromNow(proposal.endtime)}
                       </div>
 
                       {/* <div
