@@ -6,7 +6,7 @@ export async function POST(req) {
     const addresses = [];
     let nextCursor = "";
     const baseUrl =
-      "https://api.boardroom.info/v1/protocols/aave/voters?key=a9e2a08afc04b15bd17e20f05373b9e5";
+      `https://api.boardroom.info/v1/protocols/aave/voters?key=${process.env.BOARDROOM_API_KEY}`;
     let apiCalls = 0; // Counter for API calls
 
     do {
