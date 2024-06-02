@@ -25,7 +25,7 @@ Update env vars `SERVER_URL` and `NEXT_PUBLIC_SERVER_URL` with the ngrok link.
 
 Then, run `pnpm run dev`.
 
-Last, visit brower URL from your browser.
+Last, visit browser URL from your browser.
 Please manually substitute the test bot API key and ngrok URL. 
 
 https://api.telegram.org/bot<TEST_BOT_API_KEY>/setWebhook?url=<YOUR_NGROK_HTTPS_URL>/api/v4/bot

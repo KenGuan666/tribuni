@@ -124,8 +124,7 @@ export async function POST(req) {
 		FROM telegram_users
 		WHERE pause_alerts = FALSE
 			AND email_alerts = TRUE
-			AND last_email_alert + duration < ${Math.floor(Date.now() / 1000)}
-		LIMIT 10;
+			AND last_email_alert + duration < ${Math.floor(Date.now() / 1000)};
     `;
 
     const users = await sql.unsafe(usersQuery);
