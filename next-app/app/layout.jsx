@@ -3,7 +3,6 @@ import "./globals.css";
 import { BotConnector } from "@/components/bot";
 import { Script } from "next/script"
 // import { Providers } from "./Providers";
-import { UserConnector } from "@/components/Connectors";
 import { initGA } from "../lib/GAMetrics"
 import { Render } from "./Render";
 import clsx from "clsx";
@@ -43,7 +42,7 @@ export default function RootLayout({ children }) {
         <div className="flex flex-col items-center w-full h-screen">
           {children}
 
-          <UserConnector />
+          {/* <UserConnector /> */}
           {/* <Render children={children} /> */}
         </div>
 

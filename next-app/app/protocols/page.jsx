@@ -2,6 +2,7 @@ import React from "react";
 import { RenderList } from "./RenderList";
 import { sql } from "@/components/db";
 import clsx from "clsx";
+import { UserConnector } from "@/components/Connectors";
 import { MAX_WIDTH } from "@/components/constants";
 import { PageLoader } from "@/components/loaders";
 
@@ -66,6 +67,8 @@ export default async function Page() {
             total={total}
             lastUpdated={new Date().toUTCString()}
           />
+          
+          <UserConnector />
         </div>
       }
     />
