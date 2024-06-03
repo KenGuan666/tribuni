@@ -152,8 +152,8 @@ export async function POST(req) {
             await generateMarkdownAndSendEmail({
               subscriptions,
               userEmail: user.email,
-              username,
-              chatid,
+              username: user.username,
+              chatid: users.chatid,
             });
 
             await sql.unsafe(`

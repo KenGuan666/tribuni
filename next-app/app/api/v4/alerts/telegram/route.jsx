@@ -132,8 +132,8 @@ export async function POST(req) {
         const subscriptions = await sql.unsafe(subscriptionsQuery);
         const markdown = generateMarkdown({
           subscriptions,
-          username,
-          chatid,
+          username: user.username,
+          chatid: user.chatid,
         });
 
         if (subscriptions.length !== 0) {
