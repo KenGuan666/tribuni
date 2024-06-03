@@ -44,80 +44,18 @@ export function generateMarkdown({ subscriptions, username, chatid }) {
 }
 
 export async function POST(req) {
+  const bot = getBot();
+
   try {
-      const bot = getBot();
+    const body = await req.json().catch(() => null);
 
-      try {
-        const body = await req.json();
+    if (body && body.test && body.username && body.chatid) {
+      console.log("test alert");
 
-        if (body.test && body.username && body.chatid) {
-          console.log("test alert");
+      const { username, chatid } = body;
 
-          const username = body.username;
-          const chatid = body.chatid;
-
-          if (true) {
-            const testSubscriptionQuery = `
-              SELECT p.id,
-                    pr.id as protocol_id,
-                    pr.name AS protocol,
-                    p.title,
-                    p.endTime,
-                    p.url
-              FROM proposals p
-              JOIN protocols pr ON p.protocol = pr.id
-              WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${username}')
-                AND p.endTime > EXTRACT(epoch FROM NOW())::INT
-              ORDER BY pr.name ASC;
-            `;
-
-            const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
-            const testMarkdown = generateMarkdown({
-              subscriptions: testSubscriptions,
-              username,
-              chatid,
-            });
-
-            if (testSubscriptions.length !== 0) {
-              await bot.sendMessage(chatid, `${testMarkdown}`, {
-                parse_mode: "Markdown",
-              });
-
-              return Response.json({
-                code: 201,
-                status: "success",
-                message: "Test alert sent successfully",
-              }, { status: 201 });
-            } else {
-              return Response.json({
-                code: 404,
-                status: "error",
-                message: "No subscriptions found for the test user",
-              }, { status: 404 });
-            }
-          } else {
-            return Response.json({
-              code: 404,
-              status: "error",
-              message: "Test user not found or alerts are paused/disabled",
-            });
-          }
-        }        
-      } catch (error) {
-        const usersQuery = `
-        SELECT *
-        FROM telegram_users
-        WHERE pause_alerts = FALSE
-          AND telegram_alerts = TRUE
-          AND last_telegram_alert + duration < ${Math.floor(Date.now() / 1000)};
-    `;
-
-        const users = await sql.unsafe(usersQuery);
-
-        if (users.length !== 0) {
-          users.map(async (user, idx) => {
-            const subscriptionsQuery = `
-              SELECT p.id,
+      const testSubscriptionQuery = `
+        SELECT p.id,
               pr.id as protocol_id,
               pr.name AS protocol,
               p.title,
@@ -125,44 +63,97 @@ export async function POST(req) {
               p.url
         FROM proposals p
         JOIN protocols pr ON p.protocol = pr.id
-        WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${user.id}')
+        WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${username}')
           AND p.endTime > EXTRACT(epoch FROM NOW())::INT
         ORDER BY pr.name ASC;
-              `;
+      `;
 
-            const subscriptions = await sql.unsafe(subscriptionsQuery);
+      const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
+      const testMarkdown = generateMarkdown({
+        subscriptions: testSubscriptions,
+        username,
+        chatid,
+      });
 
-            if (!user.username || !user.chatid) return null;
-
-            const markdown = generateMarkdown({
-              subscriptions,
-              username: user.username,
-              chatid: user.chatid,
-            });
-
-            if (subscriptions.length !== 0) {
-              try {
-                await bot.sendMessage(user.chatid, `${markdown}`, {
-                  parse_mode: "Markdown",
-                });
-
-                await sql.unsafe(`
-                  UPDATE telegram_users
-                  SET last_telegram_alert = ${Math.floor(Date.now() / 1000)}
-                  WHERE id = '${user.id}';
-                `);
-              } catch (err) {
-                console.log('failed to send chat to user', user.username);
-              }
-            }
-          });
-        }
+      if (testSubscriptions.length !== 0) {
+        await bot.sendMessage(chatid, `${testMarkdown}`, {
+          parse_mode: "Markdown",
+        });
 
         return Response.json({
           code: 201,
           status: "success",
+          message: "Test alert sent successfully",
         }, { status: 201 });
+      } else {
+        return Response.json({
+          code: 404,
+          status: "error",
+          message: "No subscriptions found for the test user",
+        }, { status: 404 });
       }
+    }
+
+    const usersQuery = `
+      SELECT *
+      FROM telegram_users
+      WHERE pause_alerts = FALSE
+        AND telegram_alerts = TRUE
+        AND last_telegram_alert + duration < ${Math.floor(Date.now() / 1000)};
+    `;
+
+    const users = await sql.unsafe(usersQuery);
+
+    if (users.length !== 0) {
+      const promises = users.map(async (user) => {
+        const subscriptionsQuery = `
+          SELECT p.id,
+                 pr.id as protocol_id,
+                 pr.name AS protocol,
+                 p.title,
+                 p.endTime,
+                 p.url
+          FROM proposals p
+          JOIN protocols pr ON p.protocol = pr.id
+          WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${user.id}')
+            AND p.endTime > EXTRACT(epoch FROM NOW())::INT
+          ORDER BY pr.name ASC;
+        `;
+
+        const subscriptions = await sql.unsafe(subscriptionsQuery);
+
+        if (!user.username || !user.chatid) return null;
+
+        const markdown = generateMarkdown({
+          subscriptions,
+          username: user.username,
+          chatid: user.chatid,
+        });
+
+        if (subscriptions.length !== 0) {
+          try {
+            await bot.sendMessage(user.chatid, `${markdown}`, {
+              parse_mode: "Markdown",
+            });
+
+            await sql.unsafe(`
+              UPDATE telegram_users
+              SET last_telegram_alert = ${Math.floor(Date.now() / 1000)}
+              WHERE id = '${user.id}';
+            `);
+          } catch (err) {
+            console.log('failed to send chat to user', user.username);
+          }
+        }
+      });
+
+      await Promise.all(promises);
+    }
+
+    return Response.json({
+      code: 201,
+      status: "success",
+    }, { status: 201 });
 
   } catch (err) {
     console.log(err);
@@ -172,3 +163,4 @@ export async function POST(req) {
     }, { status: 400 });
   }
 }
+
