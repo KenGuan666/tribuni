@@ -61,76 +61,66 @@ export async function generateMarkdownAndSendEmail({
 }
 
 export async function POST(req) {
+  const bot = getBot();
+
   try {
-    const bot = getBot();
+    const body = await req.json().catch(() => null);
 
-    const body = await req.json();
-
-    if (body.test && body.username && body.userEmail) {
+    if (body && body.test && body.username && body.userEmail) {
       console.log("test email alert");
 
-      const username = body.username;
-      const chatid = body.chatid;
-      const userEmail = body.userEmail;
+      const { username, chatid, userEmail } = body;
 
-      // Add logic to check if the test user exists and email alerts are enabled
-      if (true) {
-        const testSubscriptionQuery = `
-          SELECT p.id,
-                 pr.id as protocol_id,
-                 pr.name AS protocol,
-                 p.title,
-                 p.endTime,
-                 p.url
-          FROM proposals p
-          JOIN protocols pr ON p.protocol = pr.id
-          WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${username}')
-            AND p.endTime > EXTRACT(epoch FROM NOW())::INT
-          ORDER BY pr.name ASC;
-        `;
+      const testSubscriptionQuery = `
+        SELECT p.id,
+              pr.id as protocol_id,
+              pr.name AS protocol,
+              p.title,
+              p.endTime,
+              p.url
+        FROM proposals p
+        JOIN protocols pr ON p.protocol = pr.id
+        WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${username}')
+          AND p.endTime > EXTRACT(epoch FROM NOW())::INT
+        ORDER BY pr.name ASC;
+      `;
 
-        const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
-        if (testSubscriptions.length !== 0) {
-          await generateMarkdownAndSendEmail({
-            subscriptions: testSubscriptions,
-            userEmail,
-            username,
-            chatid,
-          });
+      const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
 
-          return Response.json({
-            code: 201,
-            status: "success",
-            message: "Test email alert sent successfully",
-          }, { status: 201 });
-        } else {
-          return Response.json({
-            code: 404,
-            status: "error",
-            message: "No subscriptions found for the test user",
-          }, { status: 404 });
-        }
+      if (testSubscriptions.length !== 0) {
+        await generateMarkdownAndSendEmail({
+          subscriptions: testSubscriptions,
+          userEmail,
+          username,
+          chatid,
+        });
+
+        return Response.json({
+          code: 201,
+          status: "success",
+          message: "Test email alert sent successfully",
+        }, { status: 201 });
       } else {
         return Response.json({
           code: 404,
           status: "error",
-          message: "Test user not found or email alerts are paused/disabled",
-        });
+          message: "No subscriptions found for the test user",
+        }, { status: 404 });
       }
     }
-
+    
     const usersQuery = `
-		SELECT *
-		FROM telegram_users
-		WHERE pause_alerts = FALSE
-			AND email_alerts = TRUE
-			AND last_email_alert + duration < ${Math.floor(Date.now() / 1000)};
+      SELECT *
+      FROM telegram_users
+      WHERE pause_alerts = FALSE
+        AND email_alerts = TRUE
+        AND last_email_alert + duration < ${Math.floor(Date.now() / 1000)};
     `;
 
     const users = await sql.unsafe(usersQuery);
 
     if (users.length !== 0) {
-      for (const user of users) {
+      const promises = users.map(async (user) => {
         const subscriptionsQuery = `
           SELECT p.id,
                  pr.id as protocol_id,
@@ -152,8 +142,8 @@ export async function POST(req) {
             await generateMarkdownAndSendEmail({
               subscriptions,
               userEmail: user.email,
-              username,
-              chatid,
+              username: user.username,
+              chatid: user.chatid,
             });
 
             await sql.unsafe(`
@@ -162,16 +152,20 @@ export async function POST(req) {
               WHERE id = '${user.id}';
             `);
           } catch (err) {
-            console.log(err);
+            console.log('Failed to send email to user', user.username);
           }
         }
-      }
+      });
+
+      await Promise.all(promises);
     }
 
-    return Response.status(201).json({
+    return Response.json({
       code: 201,
       status: "success",
+      message: "Email alerts sent successfully",
     }, { status: 201 });
+
   } catch (err) {
     console.log(err);
     return Response.json({
@@ -180,3 +174,4 @@ export async function POST(req) {
     }, { status: 400 });
   }
 }
+
