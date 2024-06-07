@@ -23,7 +23,7 @@ First, run `ngrok http 3000`. It creates an HTTPS proxy to your local 3000 port.
 
 Update env vars `SERVER_URL` and `NEXT_PUBLIC_SERVER_URL` with the ngrok link.
 
-Then, run `pnpm run dev`.
+Then, run `pnpm run build`, `pnpm run dev`.
 
 Last, visit browser URL from your browser.
 Please manually substitute the test bot API key and ngrok URL. 
