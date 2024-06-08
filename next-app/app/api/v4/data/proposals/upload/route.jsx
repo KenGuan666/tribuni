@@ -10,6 +10,16 @@ export async function POST(req) {
 	const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
 
 	try {
+		let existingProtocols = null;
+		var { data, error } = await supabase.from('protocols').select('id');
+		if (error) {
+			console.log(error);
+			return Response.json({
+				code: 403,
+				status: "error",
+			});
+		}
+		else existingProtocols = new Set(data.map((p) => p.id));
 
 		const protocolsURL = `https://api.boardroom.info/v1/protocols?key=${process.env.BOARDROOM_API_KEY}`;
 		const protocolsOptions = {
@@ -28,6 +38,35 @@ export async function POST(req) {
 			}
 		}
 
+		// add newly discovered protocols to db
+		let newProtocolsData = protocolsData.filter(({ cname }) => !existingProtocols.has(cname))
+		if (newProtocolsData) {
+			console.log("Discovered new protocols: ", newProtocolsData.map((p) => p.cname))
+			var { data, error } = await supabase
+				.from('protocols')
+				.upsert(
+					newProtocolsData.map(
+						(d) => ({
+							id: d.cname,
+							name: d.name,
+							icon: d.icons ? d.icons[0].url : "",
+						})
+					),
+					{
+						onConflict: 'id',
+						ignoreDuplicates: false,
+					}
+			);
+
+			if (error) {
+				console.log(error);
+				return Response.json({
+					code: 403,
+					status: "error",
+				});
+			}
+		}
+
 		let existingProposals = [];
 		var { data, error } = await supabase.from('proposals').select('id');
 		if (error) console.log(error);
@@ -35,7 +74,6 @@ export async function POST(req) {
 
 		let proposalDbEntries = [];
 		const proposalPromises = protocols.map(async (protocol) => {
-
 			const proposalsURL = `https://api.boardroom.info/v1/protocols/${protocol}/proposals?status=active&key=${process.env.BOARDROOM_API_KEY}`;
 			const proposalsOptions = {
 				method: "GET",
@@ -52,7 +90,7 @@ export async function POST(req) {
 				// check that the proposal doesn't already exist
 				if (existingProposals.includes(sha1(rawProposal.id))) continue;
 
-				let proposalDbEntry = fromRawProposal(rawProposal, protocol);
+				let proposalDbEntry = await fromRawProposal(rawProposal, protocol);
 				if (proposalDbEntry.title !== undefined) {
 					proposalDbEntries.push(proposalDbEntry);
 				}
@@ -62,7 +100,6 @@ export async function POST(req) {
 		await Promise.allSettled(proposalPromises);
 
 		let newProposalIds = new Set();
-
 		proposalDbEntries = Array.from(proposalDbEntries).filter(({ id }) => {
 			if (newProposalIds.has(id)) {
 				return false;
@@ -71,6 +108,8 @@ export async function POST(req) {
 				return true;
 			}
 		});
+
+		console.log("Adding new proposals:", proposalDbEntries.length)
 
 		var { data, error } = await supabase
 			.from('proposals')
@@ -145,7 +184,9 @@ async function fromRawProposal(rawProposal, protocol) {
 	if (!dbEntry["url"]) {
 		// Boardroom does not know the voting URL for some protocols. Manually enter them here
 		if (protocol == "optimism") {
-			dbEntry["url"] = `https:///vote.optimism.io/proposals/${rawProposal.id}`
+			dbEntry["url"] = `https://vote.optimism.io/proposals/${rawProposal.id}`
+		} else if (protocol == "arbitrum") {
+			dbEntry["url"] = `https://www.tally.xyz/gov/arbitrum/proposal/${rawProposal.id}`
 		}
 	}
 
