@@ -15,9 +15,8 @@ export async function POST(req) {
 		if (error) {
 			console.log(error);
 			return Response.json({
-				code: 403,
 				status: "error",
-			});
+			}, { status: 403 });
 		}
 		else existingProtocols = new Set(data.map((p) => p.id));
 
@@ -61,9 +60,8 @@ export async function POST(req) {
 			if (error) {
 				console.log(error);
 				return Response.json({
-					code: 403,
 					status: "error",
-				});
+				}, { status: 403 });
 			}
 		}
 
@@ -152,22 +150,19 @@ export async function POST(req) {
 		if (error) {
 			console.log(error);
 			return Response.json({
-				code: 403,
 				status: "error",
-			});
+			}, { status: 403 });
 		}
 
 		return Response.json({
-			code: 201,
 			status: "success"
-		});
+		}, { status: 201 });
 
 	} catch (err) {
 		console.log(err);
 		return Response.json({
-			code: 403,
 			status: "error",
-		});
+		}, { status: 403 });
 	}
 }
 

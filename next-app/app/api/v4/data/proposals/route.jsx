@@ -16,18 +16,16 @@ export async function POST(req) {
 		protocolInfo = protocolInfo[0];
 
 		return Response.json({
-			code: 201,
 			status: "success",
 			protocolInfo: protocolInfo,
 			proposalMap: proposalMap,
-		});
+		}, { status: 201 });
 	} catch (err) {
 		console.log(err);
 		return Response.json({
-			code: 403,
 			status: "error",
 			protocolInfo: null,
 			proposalMap: null,
-		});
+		}, { status: 403 });
 	}
 }

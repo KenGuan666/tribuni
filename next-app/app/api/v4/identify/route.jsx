@@ -46,14 +46,12 @@ export async function POST(req) {
     console.log("Addresses saved to aave.json:", addresses);
 
     return Response.json({
-      code: 201,
       status: "success",
-    });
+    }, { status: 201 });
   } catch (err) {
     console.log(err);
     return Response.json({
-      code: 403,
       status: "error",
-    });
+    }, { status: 403 });
   }
 }

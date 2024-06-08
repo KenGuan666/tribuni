@@ -37,14 +37,12 @@ export async function POST(req) {
 		await sql.unsafe(insertQuery);
 
 		return Response.json({
-			code: 201,
 			status: "success",
-		});
+		}, { status: 201 });
 	} catch (err) {
 		console.log(err);
 		return Response.json({
-			code: 403,
 			status: "error",
-		});
+		}, { status: 403 });
 	}
 }

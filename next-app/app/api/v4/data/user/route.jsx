@@ -16,16 +16,14 @@ export async function POST(req) {
 		let data = await sql.unsafe(query);
 
 		return Response.json({
-			code: 201,
 			status: "success",
 			user: data[0] === undefined ? BASE_USER : data[0],
-		});
+		}, { status: 201 });
 	} catch (err) {
 		console.log(err);
 		return Response.json({
-			code: 403,
 			status: "error",
 			user: BASE_USER,
-		});
+		}, { status: 403 });
 	}
 }

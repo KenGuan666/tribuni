@@ -83,13 +83,11 @@ export async function POST(req) {
         });
 
         return Response.json({
-          code: 201,
           status: "success",
           message: "Test alert sent successfully",
         }, { status: 201 });
       } else {
         return Response.json({
-          code: 404,
           status: "error",
           message: "No subscriptions found for the test user",
         }, { status: 404 });
@@ -153,14 +151,12 @@ export async function POST(req) {
     }
 
     return Response.json({
-      code: 201,
       status: "success",
     }, { status: 201 });
 
   } catch (err) {
     console.log(err);
     return Response.json({
-      code: 400,
       status: "error",
     }, { status: 400 });
   }

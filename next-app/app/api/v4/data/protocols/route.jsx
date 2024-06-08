@@ -52,18 +52,16 @@ export async function POST(req) {
 		);
 
 		return Response.json({
-			code: 201,
 			status: "success",
 			protocols: protocols,
 			total: total,
-		});
+		}, { status: 201 });
 	} catch (err) {
 		console.log(err);
 		return Response.json({
-			code: 403,
 			status: "error",
 			protocols: null,
 			total: 0,
-		});
+		}, { status: 403 });
 	}
 }
