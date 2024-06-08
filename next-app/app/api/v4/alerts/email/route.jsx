@@ -56,6 +56,7 @@ export async function generateMarkdownAndSendEmail({
       parseInt(endtime)
     )}</i> | ${votingLink}<br>`;
   }
+  markdown += `\n\n<a href="${process.env.SERVER_URL}/settings?username=${username}&chatid=${chatid}">Manage Alert Settings</a>`
 
   await sendEmail(userEmail, markdown);
 }

@@ -40,6 +40,8 @@ export function generateMarkdown({ subscriptions, username, chatid }) {
     }
   }
 
+  markdown += `\n[Manage Alert Settings](${process.env.SERVER_URL}/settings?username=${username}&chatid=${chatid})`
+
   return markdown;
 }
 
