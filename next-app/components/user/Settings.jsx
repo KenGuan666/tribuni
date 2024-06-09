@@ -14,16 +14,30 @@ import {
   PauseFill,
   PencilTip,
   TrayFill,
+  AlarmClock
 } from "@/components/ios";
-import { ChangeAlerts, ChangeDuration } from "./Setter";
+import { ChangeAlerts, ChangeAlertFrequency, ChangeAlertTime } from "./Setter";
 import validator from "validator";
 import { ChangeEmail } from "./ChangeEmail";
 import toast from "react-hot-toast";
+import { TIMEZONES } from "@/constants/timezones";
 
 export const Settings = () => {
   const { user, setUser, refreshUser, setRefreshUser } = useStore();
 
   const [email, setEmail] = useState("");
+  const [alertHour, setAlertHour] = useState(23);
+  const [alertMinute, setAlertMinute] = useState(59);
+  const [alertTimezone, setAlertTimezone] = useState("Europe/London");
+  const [alertOffset, setAlertOffset] = useState(0);
+
+  const VALID_HOURS = Array.from({ length: 24 }, (_, i) => i);
+  // valid minutes in intervals of 15
+  const VALID_MINUTES = Array.from({ length: 60 }, (_, i) => i).filter(
+    (i) => i % 15 === 0
+  );
+  VALID_MINUTES[0] = "00";
+  VALID_MINUTES.push(59)
 
   const freqs = [
     {
@@ -63,6 +77,15 @@ export const Settings = () => {
     } else {
       toast.error("Invalid Email");
     }
+  };
+
+  const submitAlertTime = async () => {
+      const res = await ChangeAlertTime({
+        username: user.id,
+        hour: alertHour,
+        minute: alertMinute,
+        offset: alertOffset,
+      });
   };
 
   return (
@@ -280,7 +303,7 @@ export const Settings = () => {
 
                       setUser(newUser);
 
-                      await ChangeDuration({
+                      await ChangeAlertFrequency({
                         username: user.id,
                         duration: freq.duration,
                       });
@@ -359,6 +382,119 @@ export const Settings = () => {
             </button>
           </div>
 
+          <div
+            className={clsx(
+              "w-full bg-isWhite py-2 rounded-xl flex flex-col overflow-hidden",
+              MAX_WIDTH
+            )}
+          >
+            <div className="flex flex-row items-center px-3 space-x-2">
+              <div className="flex flex-col items-center w-6 h-6 rounded-md bg-transparent shrink-0">
+                <AlarmClock classes={clsx("w-6 h-6 fill-isWhite")} />
+              </div>
+
+              <div className="font-400 text-isLabelLightPrimary">
+                Alert Time
+              </div>
+            </div>
+
+            <hr className="w-full my-2 rounded-full bg-isSeparatorLight" />
+
+            <div className="w-full px-3">
+
+              <div className="flex items-center space-between w-full py-2 px-4">
+                <select
+                  value={alertHour}
+                  onChange={async (e) => {
+                    setAlertHour(e.target.value);
+                    
+                    let newUser = {
+                      ...user,
+                      alertHour: e.target.value,
+                    };
+
+                    setUser(newUser);
+
+                    await ChangeAlertTime({
+                      username: user.id,
+                      alertHour: e.target.value,
+                      alertMinute: alertMinute,
+                      alertOffset: alertOffset,
+                    });
+                  }}                  
+                  className="w-20 h-10 mr-2 text-base bg-transparent outline-none focus:outline-none text-isLabelLightPrimary"
+                >
+                  {VALID_HOURS.map((h) => (
+                    <option key={h} value={h}>
+                      {h}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={alertMinute}
+                  onChange={async (e) => {
+                    setAlertMinute(e.target.value);
+
+                    let newUser = {
+                      ...user,
+                      alertMinute: e.target.value,
+                    };
+
+                    setUser(newUser);
+
+                    await ChangeAlertTime({
+                      username: user.id,
+                      alertHour: alertHour,
+                      alertMinute: e.target.value,
+                      alertOffset: alertOffset,
+                    });
+                  }}
+                  className="w-20 h-10 mr-2 ml-2 text-base bg-transparent outline-none focus:outline-none text-isLabelLightPrimary"
+                >
+                  {VALID_MINUTES.map((min) => (
+                    <option key={min} value={min}>
+                      {min}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={alertTimezone}
+                  onChange={async (e) => { 
+                    setAlertTimezone(e.target.value);
+  
+                    const tz = TIMEZONES.find((tz) => tz.name === e.target.value);
+                    const offset = tz.rawOffsetInMinutes / 60; 
+                    
+                    setAlertOffset(offset);
+
+                    let newUser = {
+                      ...user,
+                      alertOffset: offset,
+                    };
+
+                    setUser(newUser);
+
+                    await ChangeAlertTime({
+                      username: user.id,
+                      alertHour: alertHour,
+                      alertMinute: alertMinute,
+                      alertOffset: offset,
+                    });
+                  }}
+                  className="w-40 h-10 text-base ml-2 bg-transparent outline-none focus:outline-none text-isLabelLightPrimary"
+                >
+                  {TIMEZONES.sort((a, b) => a.name < b.name ? -1 : 1).map((tz) => (
+                    <option key={tz} value={tz.name}>
+                      {tz.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
+          </div>
           <div
             className={clsx(
               "w-full bg-isWhite py-2 rounded-xl flex flex-col overflow-hidden",

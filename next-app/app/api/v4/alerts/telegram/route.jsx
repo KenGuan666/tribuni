@@ -104,8 +104,26 @@ export async function POST(req) {
 
     const users = await sql.unsafe(usersQuery);
 
-    if (users.length !== 0) {
-      const promises = users.map(async (user) => {
+    const usersToReceive = [];
+    for (const user of users) {
+      if (user.alert_time) {
+        const alertTime = user.alert_time;
+
+        const currentDate = new Date();
+        const currentTime = currentDate.getUTCHours() * 3600 + currentDate.getUTCMinutes() * 60 + currentDate.getUTCSeconds();
+
+        const timeDifference = Math.abs(currentTime - alertTime);
+
+        if (timeDifference < 30) {
+          usersToReceive.push(user);
+        }
+      } else {
+        usersToReceive.push(user);
+      }
+    }
+
+    if (usersToReceive.length !== 0) {
+      const promises = usersToReceive.map(async (user) => {
         const subscriptionsQuery = `
           SELECT p.id,
                  pr.id as protocol_id,
@@ -152,6 +170,8 @@ export async function POST(req) {
 
     return Response.json({
       status: "success",
+      message: "Telegram alerts sent successfully",
+      n_alerts: usersToReceive.length,
     }, { status: 201 });
 
   } catch (err) {

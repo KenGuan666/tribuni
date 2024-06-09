@@ -379,7 +379,7 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
           Proposal Summary
         </div>
 
-        <div className="!mt-2 rounded-xl p-4 text-sm text-isLabelLightPrimary bg-isWhite leading-tight relative font-400 break-words remove-all">
+        <div className="!mt-2 rounded-xl p-4 text-[15px] text-isLabelLightPrimary bg-isWhite leading-tight relative font-400 break-words remove-all">
           {/* <Markdown remarkPlugins={[remarkGfm]}> */}
           {/* {proposalMap[activeProposal].summary.slice(0, 600)}
           {proposalMap[activeProposal].summary.length >= 501 && "..."} */}
