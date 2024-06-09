@@ -43,17 +43,17 @@ export const Settings = () => {
     {
       key: "24h",
       name: "24 hrs",
-      duration: 24 * 60 * 60,
+      duration: 24 * 60 * 60 - 15,
     },
     {
       key: "72h",
       name: "72 hrs",
-      duration: 72 * 60 * 60,
+      duration: 72 * 60 * 60 - 15,
     },
     {
       key: "7d",
       name: "7 days",
-      duration: 7 * 24 * 60 * 60,
+      duration: 7 * 24 * 60 * 60 - 15,
     },
   ];
 
