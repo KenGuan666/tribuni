@@ -44,7 +44,7 @@ WHERE id = '${username}';
 
 export const ChangeAlertTime = async ({ username, alertHour, alertMinute, alertOffset }) => {
 	
-	const alertTime = (alertHour - parseInt(alertOffset)) * 3600 + alertMinute * 60 + 0;
+	const alertTime = ((alertHour - parseInt(alertOffset)) * 3600 + alertMinute * 60 + 0) % 86400;
 	
 	try {
 		const query = `
