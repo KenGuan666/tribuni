@@ -15,7 +15,7 @@ const UserConnectorPage = () => {
   const router = useRouter();
   const pathname = usePathname();
   const { user, setUser, refreshUser, setPageLoading } = useStore();
-
+  
   const getUser = async () => {
     const id = params.get("username");
     const chatid = params.get("chatid");
@@ -32,10 +32,11 @@ const UserConnectorPage = () => {
             chatid: chatid,
           }),
         });
-
+      
         const data = await res.json();
+      
+        setUser(data.user); 
 
-        setUser(data.user);
       } catch (err) {
         console.log(err);
       }

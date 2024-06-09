@@ -4,7 +4,7 @@ import { sql, sanitizeText } from "@/components/db";
 export async function POST(req) {
 	try {
 		const body = await req.json();
-
+		
 		const query = `
         SELECT *
         FROM telegram_users
@@ -14,7 +14,6 @@ export async function POST(req) {
 	`;
 
 		let data = await sql.unsafe(query);
-
 		return Response.json({
 			status: "success",
 			user: data[0] === undefined ? BASE_USER : data[0],

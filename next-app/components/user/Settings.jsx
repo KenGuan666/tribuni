@@ -26,10 +26,10 @@ export const Settings = () => {
   const { user, setUser, refreshUser, setRefreshUser } = useStore();
 
   const [email, setEmail] = useState("");
-  const [alertHour, setAlertHour] = useState(23);
-  const [alertMinute, setAlertMinute] = useState(59);
-  const [alertTimezone, setAlertTimezone] = useState("Europe/London");
-  const [alertOffset, setAlertOffset] = useState(0);
+  const [alertHour, setAlertHour] = useState(user.alertHour);
+  const [alertMinute, setAlertMinute] = useState(user.alertMinute);
+  const [alertTimezone, setAlertTimezone] = useState(user.alertTimezone);
+  const [alertOffset, setAlertOffset] = useState(user.alertOffset);
 
   const VALID_HOURS = Array.from({ length: 24 }, (_, i) => i);
   // valid minutes in intervals of 15
@@ -410,7 +410,7 @@ export const Settings = () => {
                     
                     let newUser = {
                       ...user,
-                      alertHour: e.target.value,
+                      alert_hour: e.target.value,
                     };
 
                     setUser(newUser);
@@ -420,6 +420,7 @@ export const Settings = () => {
                       alertHour: e.target.value,
                       alertMinute: alertMinute,
                       alertOffset: alertOffset,
+                      alertTimezone: alertTimezone,
                     });
                   }}                  
                   className="w-20 h-10 mr-2 text-base bg-transparent outline-none focus:outline-none text-isLabelLightPrimary"
@@ -438,7 +439,7 @@ export const Settings = () => {
 
                     let newUser = {
                       ...user,
-                      alertMinute: e.target.value,
+                      alert_minute: e.target.value,
                     };
 
                     setUser(newUser);
@@ -448,6 +449,7 @@ export const Settings = () => {
                       alertHour: alertHour,
                       alertMinute: e.target.value,
                       alertOffset: alertOffset,
+                      alertTimezone: alertTimezone,
                     });
                   }}
                   className="w-20 h-10 mr-2 ml-2 text-base bg-transparent outline-none focus:outline-none text-isLabelLightPrimary"
@@ -471,7 +473,8 @@ export const Settings = () => {
 
                     let newUser = {
                       ...user,
-                      alertOffset: offset,
+                      alert_offset: offset,
+                      alert_timezone: e.target.value,
                     };
 
                     setUser(newUser);
@@ -481,6 +484,7 @@ export const Settings = () => {
                       alertHour: alertHour,
                       alertMinute: alertMinute,
                       alertOffset: offset,
+                      alertTimezone: e.target.value,
                     });
                   }}
                   className="w-40 h-10 text-base ml-2 bg-transparent outline-none focus:outline-none text-isLabelLightPrimary"

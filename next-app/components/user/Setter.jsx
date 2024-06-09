@@ -42,14 +42,14 @@ WHERE id = '${username}';
 	}
 };
 
-export const ChangeAlertTime = async ({ username, alertHour, alertMinute, alertOffset }) => {
+export const ChangeAlertTime = async ({ username, alertHour, alertMinute, alertOffset, alertTimezone }) => {
 	
 	const alertTime = ((alertHour - parseInt(alertOffset)) * 3600 + alertMinute * 60 + 0) % 86400;
 	
 	try {
 		const query = `
 		UPDATE telegram_users
-		SET alert_time = '${alertTime}'
+		SET alert_time = '${alertTime}', alert_hour = ${alertHour}, alert_minute = ${alertMinute}, alert_offset = ${alertOffset}, alert_timezone = '${alertTimezone}'
 		WHERE id = '${username}';
 		`;
 
