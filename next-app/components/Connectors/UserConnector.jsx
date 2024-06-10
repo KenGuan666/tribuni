@@ -34,7 +34,7 @@ const UserConnectorPage = () => {
         });
       
         const data = await res.json();
-      
+
         setUser(data.user); 
 
       } catch (err) {

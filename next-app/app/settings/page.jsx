@@ -1,10 +1,13 @@
+"use client";
 import { PageLoader } from "@/components/loaders";
 import { UserConnector } from "@/components/Connectors";
-import { MAX_WIDTH } from "@/components/constants";
+import { BASE_USER, MAX_WIDTH } from "@/components/constants";
 import clsx from "clsx";
 import { Settings } from "@/components/user/Settings";
+import { useStore } from "@/store";
 
 export default function Page() {
+	const { user } = useStore()
 	return (
 		<PageLoader
 			children={
@@ -14,7 +17,7 @@ export default function Page() {
 						MAX_WIDTH
 					)}
 				>
-					<Settings />
+					{user !== BASE_USER && <Settings />}
 					<UserConnector />
 				</div>
 			}

@@ -26,10 +26,10 @@ export const Settings = () => {
   const { user, setUser, refreshUser, setRefreshUser } = useStore();
 
   const [email, setEmail] = useState("");
-  const [alertHour, setAlertHour] = useState(user.alertHour);
-  const [alertMinute, setAlertMinute] = useState(user.alertMinute);
-  const [alertTimezone, setAlertTimezone] = useState(user.alertTimezone);
-  const [alertOffset, setAlertOffset] = useState(user.alertOffset);
+  const [alertHour, setAlertHour] = useState(user.alert_hour);
+  const [alertMinute, setAlertMinute] = useState(user.alert_minute);
+  const [alertTimezone, setAlertTimezone] = useState(user.alert_timezone);
+  const [alertOffset, setAlertOffset] = useState(user.alert_offset);
 
   const VALID_HOURS = Array.from({ length: 24 }, (_, i) => i);
   // valid minutes in intervals of 15
@@ -77,15 +77,6 @@ export const Settings = () => {
     } else {
       toast.error("Invalid Email");
     }
-  };
-
-  const submitAlertTime = async () => {
-      const res = await ChangeAlertTime({
-        username: user.id,
-        hour: alertHour,
-        minute: alertMinute,
-        offset: alertOffset,
-      });
   };
 
   return (
@@ -490,7 +481,7 @@ export const Settings = () => {
                   className="w-40 h-10 text-base ml-2 bg-transparent outline-none focus:outline-none text-isLabelLightPrimary"
                 >
                   {TIMEZONES.sort((a, b) => a.name < b.name ? -1 : 1).map((tz) => (
-                    <option key={tz} value={tz.name}>
+                    <option key={tz.name} value={tz.name}>
                       {tz.name}
                     </option>
                   ))}
