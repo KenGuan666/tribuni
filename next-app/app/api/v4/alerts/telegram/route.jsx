@@ -106,6 +106,7 @@ export async function POST(req) {
 
     const usersToReceive = [];
     for (const user of users) {
+      if (!user.id || !user.chatid) continue;
       if (user.alert_time) {
         const alertTime = user.alert_time;
 
@@ -139,8 +140,6 @@ export async function POST(req) {
         `;
 
         const subscriptions = await sql.unsafe(subscriptionsQuery);
-
-        if (!user.username || !user.chatid) return null;
 
         const markdown = generateMarkdown({
           subscriptions,
