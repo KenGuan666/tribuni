@@ -60,7 +60,7 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
     proposalMap[activeProposal].results.length !== 0
   ) {
     totalVotes = proposalMap[activeProposal].results.reduce(
-      (acc, result) => acc + parseFloat(result.total),
+      (acc, result) => acc + parseFloat(result?.total ?? 0),
       0
     );
   }
@@ -186,80 +186,7 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
           {proposalMap[activeProposal].title.replace(/"/g, "")}
         </div>
 
-        {/* <div className="flex flex-row items-center w-full pb-2 mt-1 space-x-1 text-xs font-500">
-          <div
-            className={clsx(
-              "shrink-0 w-fit px-1 text-isWhite text-center flex flex-col items-center place-content-center rounded-md",
-              diff < 0 ? "bg-isRedLight" : "bg-isGreenLight"
-            )}
-          >
-            {diff < 0 ? "closed " : "active "}
-          </div>
-
-          {startDiff > 0 && startDiff < 48 * 60 * 60 && (
-            <div
-              className={clsx(
-                "shrink-0 w-fit px-1 text-isWhite text-center flex flex-col items-center place-content-center rounded-md bg-isBlueLight"
-              )}
-            >
-              new
-            </div>
-          )}
-
-          {diff > 0 && diff < 24 * 60 * 60 && (
-            <div
-              className={clsx(
-                "shrink-0 w-fit px-1 text-isWhite text-center flex flex-col items-center place-content-center rounded-md bg-isOrangeLight"
-              )}
-            >
-              closing soon
-            </div>
-          )}
-        </div> */}
-
         <hr className="mb-5 rounded-full bg-isSeparatorLight mt-2" />
-
-        {/* <div className="flex flex-row items-center space-x-1 text-base font-500 place-content-end">
-					<div className="flex flex-row items-center px-2 py-[0.1rem] leading-tight rounded-lg bg-isBlueLight text-isLabelDarkPrimary">
-						<div className="">Bookmark for later</div>
-						<BookmarkFill
-							classes={clsx("h-6 w-6 fill-isLabelDarkPrimary")}
-						/>
-					</div>
-				</div> */}
-
-        {/* <div className="w-full px-2 py-1 mt-2 -space-y-1 text-sm leading-tight rounded-xl bg-isSystemLightSecondary font-400 text-isLabelLightSecondary">
-          <div className="flex flex-row items-center w-full space-x-1">
-            <QuoteBubbleFill
-              classes={clsx("w-5 h-6 fill-isBlueLight shrink-0")}
-            />
-            <div className="w-full truncate grow text-ellipsis">
-              Proposed by&nbsp;
-              {proposalMap[activeProposal].proposer}
-            </div>
-          </div>
-
-          <div className="flex flex-row items-center space-x-1">
-            <ClockFill classes={clsx("w-5 h-6 fill-isOrangeLight")} />
-            <div className="">
-              Proposed&nbsp;
-              {timeFromNow(proposalMap[activeProposal].starttime)}
-            </div>
-            &nbsp;at {localTimes.start}
-          </div>
-
-          <div className="flex flex-row items-center space-x-1">
-            <HourglassTophalfFill classes={clsx("w-5 h-6 fill-isRedLight")} />
-            <div>
-              {timeFromNow(proposalMap[activeProposal].endtime).includes("ago")
-                ? "Ended"
-                : "Ends"}
-              &nbsp;
-              {timeFromNow(proposalMap[activeProposal].endtime)}
-              &nbsp;at {localTimes.end}
-            </div>
-          </div>
-        </div> */}
 
         <div className="w-full flex flex-row items-center space-x-4 h-12">
           <div className="w-5/12 flex justify-evenly flex-row items-center place-content-center bg-isWhite text-isLabelLightPrimary rounded-xl h-full">
@@ -290,26 +217,6 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
             )}
         </div>
 
-        {/* {proposalMap[activeProposal].url &&
-          proposalMap[activeProposal].url !== null &&
-          proposalMap[activeProposal].url !== "undefined" && (
-            <div className="w-full px-3 !mt-3 pb-3">
-              <a
-                href={proposalMap[activeProposal].url}
-                rel="noopener noreferrer"
-                target="_blank"
-                className={clsx(
-                  "flex flex-row items-center place-content-center space-x-1 w-full px-2 py-1 text-center rounded-lg bg-isBlueLight text-isWhite font-500 hover:bg-isBlueLightEmphasis text-base",
-                  ANIMATE
-                )}
-              >
-                <HandTapFill classes={clsx("w-6 h-6 fill-isWhite")} />
-
-                <div>Vote Now!</div>
-              </a>
-            </div>
-          )} */}
-
         {proposalMap[activeProposal].results &&
           proposalMap[activeProposal].results.length !== 0 && (
             <div className="w-full h-fit mt-5">
@@ -321,7 +228,7 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
                         const idxStr = idx.toString()
                         let votesForThisChoice = 0, percent = 0
                         proposalMap[activeProposal].results.forEach((entry) => {
-                          if (entry.choice == idxStr) {
+                          if (entry && entry.choice == idxStr) {
                             votesForThisChoice = entry.total
                             percent = ((parseFloat(votesForThisChoice) / totalVotes) * 100).toFixed(2);
                           }
