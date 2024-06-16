@@ -4,11 +4,11 @@ import clsx from "clsx";
 import { ANIMATE } from "@/components/constants";
 import { useStore } from "@/store";
 import { BookmarkFill, CheckmarkBubbleFill } from "@/components/ios";
+import { sendGAEvent } from '@next/third-parties/google'
 
 import { Bookmark } from "./Bookmark";
 import { BASE_USER } from "@/components/constants";
 import { Hr } from "@/components/ui/page";
-import { GALogEvent } from "../../lib/GAMetrics"
 
 export const ExpandProposal = ({ proposalMap, protocol }) => {
   const { activeProposal, user, setUser } = useStore();
@@ -280,12 +280,9 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
                 rel="noopener noreferrer"
                 target="_blank"
                 className="w-7/12 flex flex-col items-center place-content-center bg-isBlueLight text-lg font-600 text-isWhite rounded-xl h-full"
-                onClick={() => GALogEvent({
-                  action: "CLICK BUTTON",
-                  label: "Vote Now",
-                  username: user.id,
-                  protocol_id: proposalMap[activeProposal].protocol,
-                  proposal_id: proposalMap[activeProposal].id,
+                onClick={() => sendGAEvent({
+                  event: 'vote_now_button_click',
+                  value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposalMap[activeProposal].id}`,
                 })}
               >
                 {proposalMap[activeProposal].endtime > new Date() / 1000 ? "Vote Now" : "See Results"}

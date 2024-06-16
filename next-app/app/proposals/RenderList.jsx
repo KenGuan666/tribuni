@@ -4,11 +4,11 @@ import React from "react";
 import clsx from "clsx";
 import { useState } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { useParams } from "next/navigation";
 import { useStore } from "@/store";
 import { ChevronForward, ExclamationmarkSquareFill } from "@/components/ios";
 import { ExpandProposal } from "./ExpandProposal";
 import { Tabs } from "@/components/ui/page";
+import { sendGAEvent } from '@next/third-parties/google'
 
 function timeFromNow(timestamp) {
   const currentDate = new Date();
@@ -52,12 +52,11 @@ function timeFromNow(timestamp) {
 // console.log(timeFromNow(futureTimestamp));
 
 export const RenderList = ({ proposalMap, protocol }) => {
-  const params = useParams();
   // const [activeProposal, setActiveProposal] = useState(null);
 
   const [filter, setFilter] = useState("all");
 
-  const { activeProposal, setActiveProposal } = useStore();
+  const { activeProposal, setActiveProposal, user } = useStore();
 
   let proposals = Object.keys(proposalMap).map((key) => {
     return proposalMap[key];
@@ -124,6 +123,10 @@ export const RenderList = ({ proposalMap, protocol }) => {
                   key={proposal.id}
                   onClick={() => {
                     setActiveProposal(proposal.id);
+                    sendGAEvent({
+                      event: 'view_proposal_button_click',
+                      value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposal.id}`,
+                    })
 
                     const proposalDetail =
                       document.getElementById("proposal-detail");
