@@ -9,6 +9,7 @@ import { sendGAEvent } from '@next/third-parties/google'
 import { Bookmark } from "./Bookmark";
 import { BASE_USER } from "@/components/constants";
 import { Hr } from "@/components/ui/page";
+import { TimelineDisplay } from "@/components/page/TimelineDisplay"
 
 export const ExpandProposal = ({ proposalMap, protocol }) => {
   const { activeProposal, user, setUser } = useStore();
@@ -121,101 +122,13 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
   return (
     <React.Fragment>
       <div id="" className="w-full px-3 pt-1 pb-2 rounded-xl">
-        <div className="z-10 flex flex-row items-center justify-between w-full space-x-1 text-sm font-500 place-content-end">
-          <button
-            className={clsx(
-              "flex flex-row items-center font-500 px-3 py-1 leading-tight rounded-lg bg-isBlueLight text-isLabelDarkPrimary !-ml-1",
-              ANIMATE
-            )}
-          >
-            {protocol}
-          </button>
-          <div></div>
-
-          <button
-            onClick={async () => {
-              const existingBookmarks = user.bookmarks;
-              let newUser = BASE_USER;
-              if (existingBookmarks.includes(activeProposal)) {
-                // If proposal is already in bookmarks, remove it
-                newUser = {
-                  ...user,
-                  bookmarks: existingBookmarks.filter(
-                    (item) => item !== activeProposal
-                  ),
-                };
-              } else {
-                // If proposal is not in bookmarks, add it
-                newUser = {
-                  ...user,
-                  bookmarks: [...existingBookmarks, activeProposal],
-                };
-              }
-
-              setUser(newUser);
-
-              await Bookmark({
-                username: user.id,
-                proposal: activeProposal,
-              });
-            }}
-            className={clsx(
-              "flex flex-row items-center px-3  py-1 leading-tight rounded-lg text-isLabelDarkPrimary !-mr-1",
-              ANIMATE,
-              isBookmarked ? "bg-isGreenLight" : "bg-isOrangeLight"
-            )}
-          >
-            <div className="font-500">
-              {isBookmarked ? "Bookmarked" : "Bookmark"}
-            </div>
-            {isBookmarked ? (
-              <CheckmarkBubbleFill
-                classes={clsx(
-                  "h-5 w-5 ml-[0.2rem] -mr-1 fill-isLabelDarkPrimary"
-                )}
-              />
-            ) : (
-              <BookmarkFill
-                classes={clsx("h-5 w-5 -mr-1 fill-isLabelDarkPrimary")}
-              />
-            )}
-          </button>
-        </div>
-
         <div className="py-2 mt-2 text-xl tracking-tight leading-tight text-left text-isLabelLightPrimary font-600">
           {proposalMap[activeProposal].title.replace(/"/g, "")}
         </div>
 
+        <TimelineDisplay startTime={proposalMap[activeProposal].starttime} endTime={proposalMap[activeProposal].endtime} timeLeft={`${value} ${unit} ${tense}`}/>
+
         <hr className="mb-5 rounded-full bg-isSeparatorLight mt-2" />
-
-        <div className="w-full flex flex-row items-center space-x-4 h-12">
-          <div className="w-5/12 flex justify-evenly flex-row items-center place-content-center bg-isWhite text-isLabelLightPrimary rounded-xl h-full">
-            <div className="w-fit flex flex-col items-end place-content-center text-3xl shrink-0 font-700 text-isSystemDarkTertiary">
-              {value}
-            </div>
-            <div className="flex flex-col items-start w-fit text-isLabelLightSecondary leading-tight font-500">
-              <div>{unit}</div>
-              <div>{tense}</div>
-            </div>
-          </div>
-
-          {proposalMap[activeProposal].url &&
-            proposalMap[activeProposal].url !== null &&
-            proposalMap[activeProposal].url !== "undefined" && (
-              <a
-                href={proposalMap[activeProposal].url}
-                rel="noopener noreferrer"
-                target="_blank"
-                className="w-7/12 flex flex-col items-center place-content-center bg-isBlueLight text-lg font-600 text-isWhite rounded-xl h-full"
-                onClick={() => sendGAEvent({
-                  event: 'vote_now_button_click',
-                  value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposalMap[activeProposal].id}`,
-                })}
-              >
-                {proposalMap[activeProposal].endtime > new Date() / 1000 ? "Vote Now" : "See Results"}
-              </a>
-            )}
-        </div>
 
         {proposalMap[activeProposal].results &&
           proposalMap[activeProposal].results.length !== 0 && (
@@ -289,6 +202,85 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
           {proposalMap[activeProposal].summary.length >= 501 && "..."} */}
           {proposalMap[activeProposal].summary}
           {/* </Markdown> */}
+        </div>
+
+        <div className="fixed bottom-0 left-0 w-full z-10 bg-gray-200 shadow-md">
+          <div className="flex justify-between items-center p-4">
+            <div className="w-full flex flex-row items-center space-x-4 h-12">
+              {/* The "x days left" display, removed from most recent designs  */}
+              {/* <div className="w-5/12 flex justify-evenly flex-row items-center place-content-center bg-isWhite text-isLabelLightPrimary rounded-xl h-full">
+                <div className="w-fit flex flex-col items-end place-content-center text-3xl shrink-0 font-700 text-isSystemDarkTertiary">
+                  {value}
+                </div>
+                <div className="flex flex-col items-start w-fit text-isLabelLightSecondary leading-tight font-500">
+                  <div>{unit}</div>
+                  <div>{tense}</div>
+                </div>
+              </div> */}
+
+              <button
+                onClick={async () => {
+                  const existingBookmarks = user.bookmarks;
+                  let newUser = BASE_USER;
+                  if (existingBookmarks.includes(activeProposal)) {
+                    // If proposal is already in bookmarks, remove it
+                    newUser = {
+                      ...user,
+                      bookmarks: existingBookmarks.filter(
+                        (item) => item !== activeProposal
+                      ),
+                    };
+                  } else {
+                    // If proposal is not in bookmarks, add it
+                    newUser = {
+                      ...user,
+                      bookmarks: [...existingBookmarks, activeProposal],
+                    };
+                  }
+
+                  setUser(newUser);
+
+                  await Bookmark({
+                    username: user.id,
+                    proposal: activeProposal,
+                  });
+                }}
+                className={`w-12 h-full flex items-center justify-center rounded-xl ${isBookmarked ? 'bg-[#F29100]' : 'bg-gray-300'} `}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke={isBookmarked ? '#fff' : '#124de4'}
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="feather feather-bookmark"
+                >
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                </svg>
+              </button>
+
+              {proposalMap[activeProposal].url &&
+                proposalMap[activeProposal].url !== null &&
+                proposalMap[activeProposal].url !== "undefined" && (
+                  <a
+                    href={proposalMap[activeProposal].url}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                    className="w-10/12 flex flex-col items-center place-content-center bg-isBlueLight text-lg font-600 text-isWhite rounded-xl h-full"
+                    onClick={() => sendGAEvent({
+                      event: 'vote_now_button_click',
+                      value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposalMap[activeProposal].id}`,
+                    })}
+                  >
+                    {proposalMap[activeProposal].endtime > new Date() / 1000 ? "Vote Now" : "See Results"}
+                  </a>
+                )}
+            </div>
+          </div>
         </div>
 
         {/* <hr className="my-2 bg-isSeparatorLight" />

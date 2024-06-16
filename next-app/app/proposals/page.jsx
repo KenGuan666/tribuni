@@ -56,7 +56,7 @@ export default async function Page({ searchParams }) {
           )}
         >
           {/* <div className="flex flex-col items-center w-full h-screen p-2 place-content-start bg-isSystemLightSecondary"> */}
-          <Navigator />
+          <Navigator protocolName={protocolInfo.name}/>
           <Header protocolInfo={protocolInfo} />
           <Manage />
           <RenderList proposalMap={proposalMap} protocol={protocolInfo.name} />

@@ -5,9 +5,9 @@ import { useStore } from "@/store";
 import clsx from "clsx";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 
-const NavigatorPage = () => {
+const NavigatorPage = ({ proposalMap, protocolName }) => {
   const params = useSearchParams();
   const username = params.get("username");
   const chatid = params.get("chatid");
@@ -71,7 +71,7 @@ const NavigatorPage = () => {
           </svg>
 
           <div className={clsx("text-sm text-isBlueLight font-500", ANIMATE)}>
-            Back
+            {protocolName}
           </div>
         </button>
       )}
@@ -79,8 +79,8 @@ const NavigatorPage = () => {
   );
 };
 
-export const Navigator = () => (
+export const Navigator = ({ protocolName }) => (
   <Suspense fallback={<div>Loading...</div>}>
-    <NavigatorPage />
+    <NavigatorPage protocolName={protocolName} />
   </Suspense>
 );
