@@ -55,30 +55,20 @@ export default async function Page({ searchParams }) {
             MAX_WIDTH
           )}
         >
-          {/* <div className="flex flex-col items-center w-full h-screen p-2 place-content-start bg-isSystemLightSecondary"> */}
-          <Navigator protocolName={protocolInfo.name}/>
+          {/* Navigator: the Back button */}
+          <Navigator protocolName={protocolInfo.name} />
+
+          {/* Header: Protocol name, icon */}
           <Header protocolInfo={protocolInfo} />
-          <Manage />
+
+          {/* Manage: Subscription state */}
+          <Manage protocolId={protocol} />
+
+          {/* RenderList: display list of proposals, or the detail of the selected proposal */}
           <RenderList proposalMap={proposalMap} protocol={protocolInfo.name} />
-          {/* </div> */}
+
         </div>
       }
     />
   );
-
-  // return (
-  //   <div
-  //     className={clsx(
-  //       "flex flex-col w-full p-4 grow bg-isSystemLightSecondary overflow-hidden",
-  //       MAX_WIDTH
-  //     )}
-  //   >
-  //     {/* <div className="flex flex-col items-center w-full h-screen p-2 place-content-start bg-isSystemLightSecondary"> */}
-  //     <Navigator />
-  //     <Header protocolInfo={protocolInfo} />
-  //     <Manage proposals={Object.keys(proposalMap).length} />
-  //     <RenderList proposalMap={proposalMap} protocol={protocolInfo.name} />
-  //     {/* </div> */}
-  //   </div>
-  // );
 }

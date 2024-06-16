@@ -19,7 +19,6 @@ export const TimelineDisplay = ({ startTime, endTime }) => {
           position: 'relative',
           height: '2px',
           width: '100%',
-          // backgroundColor: '#ccc',
           borderRadius: '4px',
           marginBottom: '10px',
           marginTop: '10px',

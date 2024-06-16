@@ -62,9 +62,7 @@ export const RenderList = ({ proposalMap, protocol }) => {
     return proposalMap[key];
   });
 
-  // sort rule:
-  // if one of the proposals are active, the active one goes first
-  // if both are active or both inactive, the one ended later goes first
+  // Order proposals by: active before inactive, ending sooner before later
   let timestamp_now = new Date() / 1000
   proposals.sort((a, b) => {
     if (a.endtime > timestamp_now && b.endtime < timestamp_now) return -1;
@@ -107,20 +105,22 @@ export const RenderList = ({ proposalMap, protocol }) => {
           activeProposal !== null && "mt-3"
         )}
       >
+        {/* If an activeProposal is selected, render the proposal */}
+        {/* activeProposal is a global state */}
         {activeProposal !== null && (
           <ExpandProposal proposalMap={proposalMap} protocol={protocol} />
         )}
 
+        {/* If no activeProposal is selected, display a list of clickable proposal previews */}
         {activeProposal === null && (
           <React.Fragment>
             {filteredProposals.map((proposal) => {
-              const startDiff =
-                Math.floor(Date.now() / 1000) - proposal.starttime;
-              const diff = proposal.endtime - Math.floor(Date.now() / 1000);
 
               return (
                 <button
                   key={proposal.id}
+                  // When clicked, enter proposal detail page by setting `activeProposal` global state
+                  // Generate a proposal page view event
                   onClick={() => {
                     setActiveProposal(proposal.id);
                     sendGAEvent({
@@ -146,35 +146,6 @@ export const RenderList = ({ proposalMap, protocol }) => {
                       <div className="tracking-tight rounded-md w-fit text-isLabelLightSecondary ">
                         {timeFromNow(proposal.endtime)}
                       </div>
-
-                      {/* <div
-                      className={clsx(
-                        "shrink-0 w-fit px-1 text-isWhite text-center flex flex-col items-center place-content-center rounded-md",
-                        diff < 0 ? "bg-isRedLight" : "bg-isGreenLight"
-                      )}
-                    >
-                      {diff < 0 ? "closed " : "active "}
-                    </div>
-
-                    {startDiff > 0 && startDiff < 48 * 60 * 60 && (
-                      <div
-                        className={clsx(
-                          "shrink-0 w-fit px-1 text-isWhite text-center flex flex-col items-center place-content-center rounded-md bg-isBlueLight"
-                        )}
-                      >
-                        new
-                      </div>
-                    )}
-
-                    {diff > 0 && diff < 24 * 60 * 60 && (
-                      <div
-                        className={clsx(
-                          "shrink-0 w-fit px-1 text-isWhite text-center flex flex-col items-center place-content-center rounded-md bg-isOrangeLight"
-                        )}
-                      >
-                        closing soon
-                      </div>
-                    )} */}
                     </div>
 
                     <div
@@ -196,6 +167,7 @@ export const RenderList = ({ proposalMap, protocol }) => {
               );
             })}
 
+            {/* If there's no proposal under current filter */}
             {filteredProposals.length === 0 && (
               <React.Fragment>
                 <div className="flex flex-col items-center mt-8 place-content-center">

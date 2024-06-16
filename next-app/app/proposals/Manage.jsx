@@ -4,26 +4,22 @@ import React, { Suspense } from "react";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Subscribe } from "./Subscribe";
-import { useSearchParams } from "next/navigation";
 import clsx from "clsx";
 import { BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { useStore } from "@/store";
 import { Spinner } from "@/components/loaders";
 import { Hr } from "@/components/ui/page";
 
-const ManagePage = ({}) => {
+export const Manage = ({ protocolId }) => {
   const { user, setUser, activeProposal } = useStore();
-
-  const params = useSearchParams();
-  const protocol = params.get("protocol");
 
   const [subscriptionStatus, setSubscriptionStatus] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
 
   const getSubscription = () => {
-    if (user.id && user.chatid && protocol) {
-      if (user.subscriptions.includes(protocol)) {
+    if (user.id && user.chatid && protocolId) {
+      if (user.subscriptions.includes(protocolId)) {
         setSubscriptionStatus(true);
       } else {
         setSubscriptionStatus(false);
@@ -37,7 +33,7 @@ const ManagePage = ({}) => {
 
   useEffect(() => {
     getSubscription();
-  }, [user, protocol]);
+  }, [user, protocolId]);
 
   if (activeProposal === null) {
     return (
@@ -59,19 +55,19 @@ const ManagePage = ({}) => {
                 onChange={async () => {
                   const existingSubscriptions = user.subscriptions;
                   let newUser = BASE_USER;
-                  if (existingSubscriptions.includes(protocol)) {
+                  if (existingSubscriptions.includes(protocolId)) {
                     // If protocol is already in subscriptions, remove it
                     newUser = {
                       ...user,
                       subscriptions: existingSubscriptions.filter(
-                        (item) => item !== protocol
+                        (item) => item !== protocolId
                       ),
                     };
                   } else {
                     // If protocol is not in subscriptions, add it
                     newUser = {
                       ...user,
-                      subscriptions: [...existingSubscriptions, protocol],
+                      subscriptions: [...existingSubscriptions, protocolId],
                     };
                   }
 
@@ -81,7 +77,7 @@ const ManagePage = ({}) => {
 
                   const res = await Subscribe({
                     username: user.id,
-                    protocol: protocol,
+                    protocol: protocolId,
                   });
                 }}
                 type="checkbox"
@@ -106,9 +102,3 @@ const ManagePage = ({}) => {
     );
   }
 };
-
-export const Manage = () => (
-  <Suspense fallback={<div>Loading...</div>}>
-    <ManagePage />
-  </Suspense>
-);
