@@ -143,7 +143,7 @@ export async function POST(req) {
 
         const markdown = generateMarkdown({
           subscriptions,
-          username: user.username,
+          username: user.id,
           chatid: user.chatid,
         });
 
@@ -159,7 +159,7 @@ export async function POST(req) {
               WHERE id = '${user.id}';
             `);
           } catch (err) {
-            console.log('failed to send chat to user', user.username);
+            console.log('failed to send chat to user', user.id);
           }
         }
       });

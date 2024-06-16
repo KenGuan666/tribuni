@@ -159,7 +159,7 @@ export async function POST(req) {
             await generateMarkdownAndSendEmail({
               subscriptions,
               userEmail: user.email,
-              username: user.username,
+              username: user.id,
               chatid: user.chatid,
             });
 
@@ -169,7 +169,7 @@ export async function POST(req) {
               WHERE id = '${user.id}';
             `);
           } catch (err) {
-            console.log('Failed to send email to user', user.username);
+            console.log('Failed to send email to user', user.id);
           }
         }
       });
