@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
@@ -185,8 +187,7 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
                     rel="noopener noreferrer"
                     target="_blank"
                     className="w-10/12 flex flex-col items-center place-content-center bg-isBlueLight text-lg font-600 text-isWhite rounded-xl h-full"
-                    onClick={() => sendGAEvent({
-                      event: 'vote_now_button_click',
+                    onClick={() => window.gtag('event', 'view_proposal_button_click', {
                       value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposalMap[activeProposal].id}`,
                     })}
                   >

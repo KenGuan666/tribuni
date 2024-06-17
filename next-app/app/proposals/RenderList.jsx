@@ -123,8 +123,7 @@ export const RenderList = ({ proposalMap, protocol }) => {
                   // Generate a proposal page view event
                   onClick={() => {
                     setActiveProposal(proposal.id);
-                    sendGAEvent({
-                      event: 'view_proposal_button_click',
+                    window.gtag('event', 'view_proposal_button_click', {
                       value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposal.id}`,
                     })
 
