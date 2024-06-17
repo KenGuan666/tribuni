@@ -62,12 +62,13 @@ export const RenderList = ({ proposalMap, protocol }) => {
     return proposalMap[key];
   });
 
-  // Order proposals by: active before inactive, ending sooner before later
+  // Order proposals by: active before inactive, ending closer to today before farther
   let timestamp_now = new Date() / 1000
   proposals.sort((a, b) => {
     if (a.endtime > timestamp_now && b.endtime < timestamp_now) return -1;
+    if (a.endtime > timestamp_now && b.endtime > timestamp_now) return a.endtime - b.endtime;
     if (a.endtime < timestamp_now && b.endtime > timestamp_now) return 1;
-    return a.endtime - b.endtime;
+    if (a.endtime < timestamp_now && b.endtime < timestamp_now) return b.endtime - a.endtime;
   });
 
   const filteredProposals = proposals.filter((proposal) => {

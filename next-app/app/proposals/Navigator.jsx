@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
 
-const NavigatorPage = ({ proposalMap, protocolName }) => {
+const NavigatorPage = ({ protocolName }) => {
   const params = useSearchParams();
   const username = params.get("username");
   const chatid = params.get("chatid");
