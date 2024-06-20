@@ -4,75 +4,77 @@ import { getBot } from "@/components/bot";
 import nodemailer from "nodemailer";
 
 async function sendEmail(userEmail, message) {
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS,
-    },
-  });
+    const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+            user: process.env.GMAIL_USER,
+            pass: process.env.GMAIL_PASS,
+        },
+    });
 
-  const mailOptions = {
-    from: process.env.GMAIL_USER,
-    to: userEmail,
-    subject: "Proposal Alerts from Tribuni",
-    html: message,
-  };
+    const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: userEmail,
+        subject: "Proposal Alerts from Tribuni",
+        html: message,
+    };
 
-  await transporter.sendMail(mailOptions);
+    await transporter.sendMail(mailOptions);
 }
 
-export async function generateMarkdownAndSendEmail({
-  subscriptions,
-  userEmail,
-  username,
-  chatid,
+async function generateMarkdownAndSendEmail({
+    subscriptions,
+    userEmail,
+    username,
+    chatid,
 }) {
-  let markdown = "";
-  let isFirstProtocol = true;
-  let currentProtocol = "";
-  let protocolProposalCounts = {};
+    let markdown = "";
+    let isFirstProtocol = true;
+    let currentProtocol = "";
+    let protocolProposalCounts = {};
 
-  for (const subscription of subscriptions) {
-    const { protocol_id, protocol, title, endtime, url } = subscription;
-    const votingLink =
-      url && url !== "undefined" ? `👉 <a href="${url}">Vote Now</a>` : "";
+    for (const subscription of subscriptions) {
+        const { protocol_id, protocol, title, endtime, url } = subscription;
+        const votingLink =
+            url && url !== "undefined"
+                ? `👉 <a href="${url}">Vote Now</a>`
+                : "";
 
-    if (protocol !== currentProtocol) {
-      if (!isFirstProtocol) {
-        markdown += "<br>";
-      }
-      markdown += `<b>Protocol:</b> <a href="${process.env.SERVER_URL}/proposals?protocol=${protocol_id}&username=${username}&chatid=${chatid}">${protocol}</a>`;
-      isFirstProtocol = false;
-      currentProtocol = protocol;
-      protocolProposalCounts[currentProtocol] = 0;
+        if (protocol !== currentProtocol) {
+            if (!isFirstProtocol) {
+                markdown += "<br>";
+            }
+            markdown += `<b>Protocol:</b> <a href="${process.env.SERVER_URL}/proposals?protocol=${protocol_id}&username=${username}&chatid=${chatid}">${protocol}</a>`;
+            isFirstProtocol = false;
+            currentProtocol = protocol;
+            protocolProposalCounts[currentProtocol] = 0;
+        }
+
+        protocolProposalCounts[currentProtocol]++;
+
+        markdown += `<br>${
+            protocolProposalCounts[currentProtocol]
+        }. <i>${title}</i><br>🔴 <i>Ends in ${rawTimeFromNow(
+            parseInt(endtime),
+        )}</i> | ${votingLink}<br>`;
     }
+    markdown += `\n\n<a href="${process.env.SERVER_URL}/settings?username=${username}&chatid=${chatid}">Manage Alert Settings</a>`;
 
-    protocolProposalCounts[currentProtocol]++;
-
-    markdown += `<br>${
-      protocolProposalCounts[currentProtocol]
-    }. <i>${title}</i><br>🔴 <i>Ends in ${rawTimeFromNow(
-      parseInt(endtime)
-    )}</i> | ${votingLink}<br>`;
-  }
-  markdown += `\n\n<a href="${process.env.SERVER_URL}/settings?username=${username}&chatid=${chatid}">Manage Alert Settings</a>`
-
-  await sendEmail(userEmail, markdown);
+    await sendEmail(userEmail, markdown);
 }
 
 export async function POST(req) {
-  const bot = getBot();
+    const bot = getBot();
 
-  try {
-    const body = await req.json().catch(() => null);
+    try {
+        const body = await req.json().catch(() => null);
 
-    if (body && body.test && body.username && body.userEmail) {
-      console.log("test email alert");
+        if (body && body.test && body.username && body.userEmail) {
+            console.log("test email alert");
 
-      const { username, chatid, userEmail } = body;
+            const { username, chatid, userEmail } = body;
 
-      const testSubscriptionQuery = `
+            const testSubscriptionQuery = `
         SELECT p.id,
               pr.id as protocol_id,
               pr.name AS protocol,
@@ -86,29 +88,35 @@ export async function POST(req) {
         ORDER BY pr.name ASC;
       `;
 
-      const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
+            const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
 
-      if (testSubscriptions.length !== 0) {
-        await generateMarkdownAndSendEmail({
-          subscriptions: testSubscriptions,
-          userEmail,
-          username,
-          chatid,
-        });
+            if (testSubscriptions.length !== 0) {
+                await generateMarkdownAndSendEmail({
+                    subscriptions: testSubscriptions,
+                    userEmail,
+                    username,
+                    chatid,
+                });
 
-        return Response.json({
-          status: "success",
-          message: "Test email alert sent successfully",
-        }, { status: 201 });
-      } else {
-        return Response.json({
-          status: "error",
-          message: "No subscriptions found for the test user",
-        }, { status: 404 });
-      }
-    }
-    
-    const usersQuery = `
+                return Response.json(
+                    {
+                        status: "success",
+                        message: "Test email alert sent successfully",
+                    },
+                    { status: 201 },
+                );
+            } else {
+                return Response.json(
+                    {
+                        status: "error",
+                        message: "No subscriptions found for the test user",
+                    },
+                    { status: 404 },
+                );
+            }
+        }
+
+        const usersQuery = `
       SELECT *
       FROM telegram_users
       WHERE pause_alerts = FALSE
@@ -116,29 +124,32 @@ export async function POST(req) {
         AND last_telegram_alert + duration < ${Math.floor(Date.now() / 1000)};
     `;
 
-    const users = await sql.unsafe(usersQuery);
+        const users = await sql.unsafe(usersQuery);
 
-    const usersToReceive = [];
-    for (const user of users) {
-      if (user.alert_time) {
-        const alertTime = user.alert_time;
+        const usersToReceive = [];
+        for (const user of users) {
+            if (user.alert_time) {
+                const alertTime = user.alert_time;
 
-        const currentDate = new Date();
-        const currentTime = currentDate.getUTCHours() * 3600 + currentDate.getUTCMinutes() * 60 + currentDate.getUTCSeconds();
+                const currentDate = new Date();
+                const currentTime =
+                    currentDate.getUTCHours() * 3600 +
+                    currentDate.getUTCMinutes() * 60 +
+                    currentDate.getUTCSeconds();
 
-        const timeDifference = Math.abs(currentTime - alertTime);
+                const timeDifference = Math.abs(currentTime - alertTime);
 
-        if (timeDifference < 30) {
-          usersToReceive.push(user);
+                if (timeDifference < 30) {
+                    usersToReceive.push(user);
+                }
+            } else {
+                usersToReceive.push(user);
+            }
         }
-      } else {
-        usersToReceive.push(user);
-      }
-    }
 
-    if (usersToReceive.length !== 0) {
-      const promises = usersToReceive.map(async (user) => {
-        const subscriptionsQuery = `
+        if (usersToReceive.length !== 0) {
+            const promises = usersToReceive.map(async (user) => {
+                const subscriptionsQuery = `
           SELECT p.id,
                  pr.id as protocol_id,
                  pr.name AS protocol,
@@ -152,42 +163,49 @@ export async function POST(req) {
           ORDER BY pr.name ASC;
         `;
 
-        const subscriptions = await sql.unsafe(subscriptionsQuery);
+                const subscriptions = await sql.unsafe(subscriptionsQuery);
 
-        if (subscriptions.length !== 0) {
-          try {
-            await generateMarkdownAndSendEmail({
-              subscriptions,
-              userEmail: user.email,
-              username: user.username,
-              chatid: user.chatid,
-            });
+                if (subscriptions.length !== 0) {
+                    try {
+                        await generateMarkdownAndSendEmail({
+                            subscriptions,
+                            userEmail: user.email,
+                            username: user.username,
+                            chatid: user.chatid,
+                        });
 
-            await sql.unsafe(`
+                        await sql.unsafe(`
               UPDATE telegram_users
               SET last_email_alert = ${Math.floor(Date.now() / 1000)}
               WHERE id = '${user.id}';
             `);
-          } catch (err) {
-            console.log('Failed to send email to user', user.username);
-          }
+                    } catch (err) {
+                        console.log(
+                            "Failed to send email to user",
+                            user.username,
+                        );
+                    }
+                }
+            });
+
+            await Promise.all(promises);
         }
-      });
 
-      await Promise.all(promises);
+        return Response.json(
+            {
+                status: "success",
+                message: "Email alerts sent successfully",
+                n_alerts: usersToReceive.length,
+            },
+            { status: 201 },
+        );
+    } catch (err) {
+        console.log(err);
+        return Response.json(
+            {
+                status: "error",
+            },
+            { status: 400 },
+        );
     }
-
-    return Response.json({
-      status: "success",
-      message: "Email alerts sent successfully",
-      n_alerts: usersToReceive.length,
-    }, { status: 201 });
-
-  } catch (err) {
-    console.log(err);
-    return Response.json({
-      status: "error",
-    }, { status: 400 });
-  }
 }
-
