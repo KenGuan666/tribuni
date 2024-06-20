@@ -8,7 +8,7 @@ import { PageLoader } from "@/components/loaders";
 
 export const revalidate = 60 * 60;
 
-export const getData = async () => {
+const getData = async () => {
     const query = `
     SELECT
         p.id AS id,

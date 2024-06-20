@@ -11,7 +11,7 @@ import { PageLoader } from "@/components/loaders";
 
 export const revalidate = 0;
 
-export const getData = async ({ protocol }) => {
+const getData = async ({ protocol }) => {
     const proposalsQuery = `
 	SELECT *
 FROM proposals
