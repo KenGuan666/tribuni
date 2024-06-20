@@ -10,12 +10,12 @@ export const PROPOSAL_CLASSES = [
 ];
 
 export const PROPOSAL_COLORS = {
-    Tokenomics: "#FF5733", // Bright Red-Orange
-    Grants: "#33FF57", // Bright Green
-    Election: "#3357FF", // Bright Blue
-    "Protocol Upgrade": "#FF33A1", // Bright Pink
-    "Service Provider Selection": "#33FFA1", // Bright Aqua Green
-    "Chain Deployment": "#A133FF", // Bright Purple
-    Governance: "#FFA133", // Bright Orange
-    Other: "#33A1FF", // Bright Sky Blue
+    Tokenomics: "#AC2118",
+    Grants: "#D82243",
+    Election: "#EF7B0F",
+    "Protocol Upgrade": "#0A84FF",
+    "Service Provider Selection": "#532DEE",
+    "Chain Deployment": "#D822D1",
+    Governance: "#07BC03",
+    Other: "#626262",
 };

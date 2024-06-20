@@ -129,10 +129,10 @@ export const BookmarksList = ({ arr, showIndex, search, setPageLoading }) => {
                             style={{
                                 display: "flex",
                                 flexDirection: "row",
-                                alignItems: "center",
+                                alignItems: "flex-start",
                                 justifyContent: "space-between",
                                 width: "100%",
-                                padding: "10px 0",
+                                padding: "6px 0",
                                 textAlign: "left",
                             }}
                         >
@@ -140,11 +140,11 @@ export const BookmarksList = ({ arr, showIndex, search, setPageLoading }) => {
                                 <div
                                     style={{
                                         width: 32,
-                                        height: 32,
+                                        height: "100%",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        marginLeft: 8,
+                                        marginLeft: "12px",
                                     }}
                                 >
                                     <Image
@@ -162,11 +162,11 @@ export const BookmarksList = ({ arr, showIndex, search, setPageLoading }) => {
                                 <div
                                     style={{
                                         width: 32,
-                                        height: 32,
+                                        height: "100%",
                                         display: "flex",
                                         alignItems: "center",
                                         justifyContent: "center",
-                                        marginLeft: 8,
+                                        marginLeft: "24px",
                                     }}
                                 >
                                     <div
@@ -180,46 +180,66 @@ export const BookmarksList = ({ arr, showIndex, search, setPageLoading }) => {
                                 </div>
                             )}
                             <div
-                                className={clsx(
-                                    "grow py-3 leading-none px-3 text-base",
-                                )}
+                                style={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    width: "calc(100% - 56px)",
+                                    marginLeft: "12px",
+                                    padding: "8px 0",
+                                    marginRight: "12px",
+                                }}
                             >
                                 <div
                                     style={{
-                                        fontSize: "12px",
-                                        color: "darkgray",
-                                        marginBottom: "6px",
+                                        display: "flex",
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        justifyContent: "space-between",
                                     }}
                                 >
-                                    {formattedDate}
+                                    <div
+                                        style={{
+                                            fontSize: "12px",
+                                            color: "darkgray",
+                                        }}
+                                    >
+                                        {formattedDate}
+                                    </div>
+                                    <div
+                                        className={clsx(
+                                            "px-[0.6rem] mr-2 py-[0.125rem] font-400 tabular-nums",
+                                        )}
+                                        style={{
+                                            background: `${
+                                                PROPOSAL_COLORS[
+                                                    bookmark.proposal_class
+                                                ]
+                                            }1A`,
+                                            fontSize: "10px",
+                                            color: PROPOSAL_COLORS[
+                                                bookmark.proposal_class
+                                            ],
+                                            textAlign: "center",
+                                            borderRadius: "20px",
+                                        }}
+                                    >
+                                        {bookmark.proposal_class}
+                                    </div>
                                 </div>
                                 <div
                                     style={{
-                                        maxWidth: "200px",
+                                        maxWidth: "250px",
                                         fontSize: "14px",
+                                        lineHeight: "1.2",
                                     }}
                                 >
-                                    {title.length > 50
+                                    {title.length > 64
                                         ? capitalizeFirstLetter(
-                                              title.substring(0, 45),
+                                              title.substring(0, 64),
                                           ).trim() + "..."
                                         : capitalizeFirstLetter(title).trim()}
                                 </div>
-                            </div>
-                            <div
-                                className={clsx(
-                                    "px-[0.4rem] mr-2 py-[0.125rem] rounded-md text-isWhite font-400 tabular-nums",
-                                )}
-                                style={{
-                                    background:
-                                        PROPOSAL_COLORS[
-                                            bookmark.proposal_class
-                                        ],
-                                    fontSize: "10px",
-                                    textAlign: "center",
-                                }}
-                            >
-                                {bookmark.proposal_class}
                             </div>
                         </button>
 

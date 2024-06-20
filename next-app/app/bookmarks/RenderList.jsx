@@ -25,7 +25,7 @@ export const getData = async (id) => {
     }
 };
 
-const RenderListPage = () => {
+const RenderListPage = async () => {
     const { user, activeBookmark } = useStore();
 
     const searchParams = useSearchParams();
@@ -54,14 +54,19 @@ const RenderListPage = () => {
     }, [activeBookmark]);
 
     const filteredBookmarks = bookmarks.filter((bookmark) => {
-        const isMatch = bookmark.title
-            .toLowerCase()
-            .startsWith(search.toLowerCase());
+        const isMatch =
+            bookmark.title.toLowerCase().startsWith(search.toLowerCase()) ||
+            bookmark.proposal_class
+                .toLowerCase()
+                .startsWith(search.toLowerCase()) ||
+            bookmark.protocol.toLowerCase().startsWith(search.toLowerCase());
 
         return isMatch;
     });
 
-    return (
+    return pageLoading ? (
+        <Spinner classes={clsx("w-5 h-5 border-isBlueLight")} />
+    ) : (
         <React.Fragment>
             {activeBookmark === null && <Title text="Bookmarks" />}
 
@@ -123,22 +128,22 @@ const RenderListPage = () => {
                     </div>
                 </div>
             )}
-            {pageLoading ? (
-                <Spinner classes={clsx("w-5 h-5 border-isBlueLight")} />
-            ) : (
-                <BookmarksList
-                    arr={filteredBookmarks}
-                    showIndex={true}
-                    search={search}
-                    setPageLoading={setPageLoading}
-                />
-            )}
+            <BookmarksList
+                arr={filteredBookmarks}
+                showIndex={true}
+                search={search}
+                setPageLoading={setPageLoading}
+            />
         </React.Fragment>
     );
 };
 
 export const RenderList = () => {
-    <Suspense>
-        <RenderListPage />
-    </Suspense>;
+    return (
+        <Suspense
+            fallback={<Spinner classes={clsx("w-5 h-5 border-isBlueLight")} />}
+        >
+            <RenderListPage />
+        </Suspense>
+    );
 };
