@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import clsx from "clsx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { ANIMATE, delay, MAX_WIDTH } from "@/components/constants";
 import { MagnifyingGlass, SquareTextSquareFill } from "@/components/ios";
 import { Cancel } from "@/components/material-rounded/Cancel";
@@ -25,7 +25,7 @@ export const getData = async (id) => {
     }
 };
 
-export const RenderList = () => {
+const RenderListPage = () => {
     const { user, activeBookmark } = useStore();
 
     const searchParams = useSearchParams();
@@ -135,4 +135,10 @@ export const RenderList = () => {
             )}
         </React.Fragment>
     );
+};
+
+export const RenderList = () => {
+    <Suspense>
+        <RenderListPage />
+    </Suspense>;
 };
