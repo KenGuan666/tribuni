@@ -1,15 +1,21 @@
+"use client";
+
+import React from "react";
+import { RenderList } from "./RenderList";
+import clsx from "clsx";
 import { UserConnector } from "@/components/Connectors";
 import { MAX_WIDTH } from "@/components/constants";
-import clsx from "clsx";
 
-export default function Page() {
-  return (
-    <div className={clsx("w-full h-full pb-24", MAX_WIDTH)}>
-      <div className="w-full flex flex-row p-4 space-x-3 text-4xl font-700 h-full bg-isSystemLightSecondary rounded-2xl items-center place-content-center p-4">
-        <div className="text-isLabelLightSecondary">Coming</div>{" "}
-        <div className="text-isBlack">Soon</div>
-      </div>
-      <UserConnector />
-    </div>
-  );
+export default function Page(req) {
+    return (
+        <div
+            className={clsx(
+                "flex flex-col items-center w-full grow overflow-hidden pb-24",
+                MAX_WIDTH,
+            )}
+        >
+            <RenderList />
+            <UserConnector />
+        </div>
+    );
 }
