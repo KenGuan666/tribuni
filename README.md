@@ -33,4 +33,8 @@ https://api.telegram.org/bot<TEST_BOT_API_KEY>/setWebhook?url=<YOUR_NGROK_HTTPS_
 https://t.me/Tribuni_Bot_Test is now linked to your local deployment.
 
 #### Deploy
+Run code formatter before pushing code
+`pnpm prettier --write .`
+
+Directly push to main branch
 `git push`
