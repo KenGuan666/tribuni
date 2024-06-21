@@ -3,7 +3,7 @@ import { sql, sanitizeText } from "@/components/db";
 export async function POST(req) {
 	try {
 		const url =
-			"https://api.boardroom.info/v1/protocols?key=a9e2a08afc04b15bd17e20f05373b9e5";
+			`https://api.boardroom.info/v1/protocols?key=${process.env.BOARDROOM_API_KEY}`;
 		const options = {
 			method: "GET",
 			headers: { Accept: "application/json" },
