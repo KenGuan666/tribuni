@@ -9,7 +9,7 @@ import { PageLoader } from "@/components/loaders";
 export const revalidate = 60 * 60;
 
 export const getData = async () => {
-  const query = `
+    const query = `
     SELECT
         p.id AS id,
         p.name AS name,
@@ -25,52 +25,52 @@ export const getData = async () => {
         p.id, p.name, p.icon;
 `;
 
-  let protocols = await sql.unsafe(query);
+    let protocols = await sql.unsafe(query);
 
-  protocols = protocols.map(({ name, count, ...rest }) => {
+    protocols = protocols.map(({ name, count, ...rest }) => {
+        return {
+            name: name.trim(),
+            count: parseInt(count),
+            ...rest,
+        };
+    });
+
+    protocols.sort((a, b) => {
+        return a.name.localeCompare(b.name);
+    });
+
+    const total = protocols.reduce(
+        (acc, protocol) => acc + parseInt(protocol.total || 0, 10),
+        0,
+    );
+
     return {
-      name: name.trim(),
-      count: parseInt(count),
-      ...rest,
+        protocols,
+        total,
     };
-  });
-
-  protocols.sort((a, b) => {
-    return a.name.localeCompare(b.name);
-  });
-
-  const total = protocols.reduce(
-    (acc, protocol) => acc + parseInt(protocol.total || 0, 10),
-    0
-  );
-
-  return {
-    protocols,
-    total,
-  };
 };
 
 export default async function Page() {
-  const { protocols, total } = await getData();
+    const { protocols, total } = await getData();
 
-  return (
-    <PageLoader
-      children={
-        <div
-          className={clsx(
-            "flex flex-col items-center w-full grow overflow-hidden pb-24",
-            MAX_WIDTH
-          )}
-        >
-          <RenderList
-            protocols={protocols}
-            total={total}
-            lastUpdated={new Date().toUTCString()}
-          />
-          
-          <UserConnector />
-        </div>
-      }
-    />
-  );
+    return (
+        <PageLoader
+            children={
+                <div
+                    className={clsx(
+                        "flex flex-col items-center w-full grow overflow-hidden pb-24",
+                        MAX_WIDTH,
+                    )}
+                >
+                    <RenderList
+                        protocols={protocols}
+                        total={total}
+                        lastUpdated={new Date().toUTCString()}
+                    />
+
+                    <UserConnector />
+                </div>
+            }
+        />
+    );
 }

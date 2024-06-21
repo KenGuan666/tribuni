@@ -2,56 +2,63 @@ import fetch from "node-fetch";
 import { writeFile } from "fs/promises";
 
 export async function POST(req) {
-  try {
-    const addresses = [];
-    let nextCursor = "";
-    const baseUrl =
-      `https://api.boardroom.info/v1/protocols/aave/voters?key=${process.env.BOARDROOM_API_KEY}`;
-    let apiCalls = 0; // Counter for API calls
+    try {
+        const addresses = [];
+        let nextCursor = "";
+        const baseUrl = `https://api.boardroom.info/v1/protocols/aave/voters?key=${process.env.BOARDROOM_API_KEY}`;
+        let apiCalls = 0; // Counter for API calls
 
-    do {
-      const url = nextCursor ? `${baseUrl}&nextCursor=${nextCursor}` : baseUrl;
+        do {
+            const url = nextCursor
+                ? `${baseUrl}&nextCursor=${nextCursor}`
+                : baseUrl;
 
-      const options = {
-        method: "GET",
-        headers: { Accept: "application/json" },
-      };
+            const options = {
+                method: "GET",
+                headers: { Accept: "application/json" },
+            };
 
-      const res = await fetch(url, options);
-      const data = await res.json();
+            const res = await fetch(url, options);
+            const data = await res.json();
 
-      // Iterate through the fetched data and extract addresses
-      for (const item of data.data) {
-        addresses.push(item.address);
-      }
+            // Iterate through the fetched data and extract addresses
+            for (const item of data.data) {
+                addresses.push(item.address);
+            }
 
-      // Update nextCursor
-      nextCursor = data.nextCursor;
+            // Update nextCursor
+            nextCursor = data.nextCursor;
 
-      // Increment the API call counter
-      apiCalls++;
+            // Increment the API call counter
+            apiCalls++;
 
-      // Break the loop after 10 API calls
-      if (apiCalls >= 50) {
-        break;
-      }
-    } while (nextCursor); // Continue loop until nextCursor is falsy
+            // Break the loop after 10 API calls
+            if (apiCalls >= 50) {
+                break;
+            }
+        } while (nextCursor); // Continue loop until nextCursor is falsy
 
-    // Save addresses array to a JSON file
-    await writeFile(
-      "aggregated-data/aave.json",
-      JSON.stringify(addresses, null, 2)
-    );
+        // Save addresses array to a JSON file
+        await writeFile(
+            "aggregated-data/aave.json",
+            JSON.stringify(addresses, null, 2),
+        );
 
-    console.log("Addresses saved to aave.json:", addresses);
+        console.log("Addresses saved to aave.json:", addresses);
 
-    return Response.json({
-      status: "success",
-    }, { status: 201 });
-  } catch (err) {
-    console.log(err);
-    return Response.json({
-      status: "error",
-    }, { status: 403 });
-  }
+        return Response.json(
+            {
+                status: "success",
+            },
+            { status: 201 },
+        );
+    } catch (err) {
+        console.log(err);
+        return Response.json(
+            {
+                status: "error",
+            },
+            { status: 403 },
+        );
+    }
 }

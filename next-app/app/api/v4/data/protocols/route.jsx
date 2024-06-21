@@ -1,22 +1,22 @@
 import { sql, sanitizeText } from "@/components/db";
 
 export async function POST(req) {
-	try {
-		// 		const query = `
-		// SELECT
-		//     p.id AS id,
-		//     p.name AS name,
-		//     p.icon AS icon,
-		//     COUNT(pr.id) AS count
-		// FROM
-		//     protocols p
-		// LEFT JOIN
-		//     proposals pr ON p.id = pr.protocol
-		// GROUP BY
-		//     p.id, p.name, p.icon;
-		// `;
+    try {
+        // 		const query = `
+        // SELECT
+        //     p.id AS id,
+        //     p.name AS name,
+        //     p.icon AS icon,
+        //     COUNT(pr.id) AS count
+        // FROM
+        //     protocols p
+        // LEFT JOIN
+        //     proposals pr ON p.id = pr.protocol
+        // GROUP BY
+        //     p.id, p.name, p.icon;
+        // `;
 
-		const query = `
+        const query = `
     SELECT
         p.id AS id,
         p.name AS name,
@@ -32,36 +32,42 @@ export async function POST(req) {
         p.id, p.name, p.icon;
 `;
 
-		let protocols = await sql.unsafe(query);
+        let protocols = await sql.unsafe(query);
 
-		protocols = protocols.map(({ name, count, ...rest }) => {
-			return {
-				name: name.trim(),
-				count: parseInt(count),
-				...rest,
-			};
-		});
+        protocols = protocols.map(({ name, count, ...rest }) => {
+            return {
+                name: name.trim(),
+                count: parseInt(count),
+                ...rest,
+            };
+        });
 
-		protocols.sort((a, b) => {
-			return a.name.localeCompare(b.name);
-		});
+        protocols.sort((a, b) => {
+            return a.name.localeCompare(b.name);
+        });
 
-		const total = protocols.reduce(
-			(acc, protocol) => acc + parseInt(protocol.total || 0, 10),
-			0
-		);
+        const total = protocols.reduce(
+            (acc, protocol) => acc + parseInt(protocol.total || 0, 10),
+            0,
+        );
 
-		return Response.json({
-			status: "success",
-			protocols: protocols,
-			total: total,
-		}, { status: 201 });
-	} catch (err) {
-		console.log(err);
-		return Response.json({
-			status: "error",
-			protocols: null,
-			total: 0,
-		}, { status: 403 });
-	}
+        return Response.json(
+            {
+                status: "success",
+                protocols: protocols,
+                total: total,
+            },
+            { status: 201 },
+        );
+    } catch (err) {
+        console.log(err);
+        return Response.json(
+            {
+                status: "error",
+                protocols: null,
+                total: 0,
+            },
+            { status: 403 },
+        );
+    }
 }

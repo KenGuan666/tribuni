@@ -1,11 +1,11 @@
 import { sql, sanitizeText } from "@/components/db";
 
 export async function POST(req) {
-	try {
-		console.log("api called");
-		const body = await req.json();
+    try {
+        console.log("api called");
+        const body = await req.json();
 
-		const subscriptionQuery = `
+        const subscriptionQuery = `
 	SELECT EXISTS (
 		SELECT 1
 		FROM telegramUsers
@@ -13,19 +13,25 @@ export async function POST(req) {
 	) AS result;
 	`;
 
-		let isSubscribed = await sql.unsafe(subscriptionQuery);
+        let isSubscribed = await sql.unsafe(subscriptionQuery);
 
-		isSubscribed = isSubscribed[0].result;
+        isSubscribed = isSubscribed[0].result;
 
-		return Response.json({
-			isSubscribed: isSubscribed,
-			status: "success",
-		}, { status: 201 });
-	} catch (err) {
-		console.log(err);
-		return Response.json({
-			isSubscribed: false,
-			status: "error",
-		}, { status: 403 });
-	}
+        return Response.json(
+            {
+                isSubscribed: isSubscribed,
+                status: "success",
+            },
+            { status: 201 },
+        );
+    } catch (err) {
+        console.log(err);
+        return Response.json(
+            {
+                isSubscribed: false,
+                status: "error",
+            },
+            { status: 403 },
+        );
+    }
 }

@@ -1,9 +1,9 @@
 export default function Home() {
-	return (
-		<main>
-			{/* This is the next app
+    return (
+        <main>
+            {/* This is the next app
 			<hr /> */}
-			{/* <button
+            {/* <button
 				onClick={async () => {
 					try {
 						await fetch("/api/hello", {
@@ -22,7 +22,7 @@ export default function Home() {
 			>
 				Send Request
 			</button> */}
-			{/* <div className="w-full h-screen p-3">
+            {/* <div className="w-full h-screen p-3">
 				<iframe
 					className="w-full h-full rounded-2xl drop-shadow-sm"
 					src="https://vote.optimism.io/proposals/25353629475948605098820168047140307200589226219380649297323431722674892706917"
@@ -36,11 +36,11 @@ export default function Home() {
 				></iframe>
 			</div> */}
 
-			{/* <hr /> */}
+            {/* <hr /> */}
 
-			{/* <ConnectButton /> */}
+            {/* <ConnectButton /> */}
 
-			{/* <a
+            {/* <a
 				target="_blank"
 				rel="noopener noreferrer"
 				href="https://vote.optimism.io/proposals/25353629475948605098820168047140307200589226219380649297323431722674892706917"
@@ -48,7 +48,7 @@ export default function Home() {
 				External Link{" "}
 			</a> */}
 
-			{/* <CustomConnectWallet /> */}
-		</main>
-	);
+            {/* <CustomConnectWallet /> */}
+        </main>
+    );
 }

@@ -6,88 +6,96 @@ import clsx from "clsx";
 import { Hr, Tag } from ".";
 
 export function capitalizeFirstLetter(inputString) {
-  return inputString.charAt(0).toUpperCase() + inputString.slice(1);
+    return inputString.charAt(0).toUpperCase() + inputString.slice(1);
 }
 
 export function separateDAO(inputString) {
-  const matches = inputString.match(/\bDAO\b/g);
+    const matches = inputString.match(/\bDAO\b/g);
 
-  if (matches) {
-    const result = matches.join(" ");
-    const leftover = inputString.split(/\bDAO\b/);
-    return (leftover.length > 1 ? leftover[1].trim() + " " : "") + result;
-  } else {
-    return inputString;
-  }
+    if (matches) {
+        const result = matches.join(" ");
+        const leftover = inputString.split(/\bDAO\b/);
+        return (leftover.length > 1 ? leftover[1].trim() + " " : "") + result;
+    } else {
+        return inputString;
+    }
 }
 
 export const List = ({ arr, showIndex, search, setPageLoading }) => {
-  const { user } = useStore();
+    const { user } = useStore();
 
-  return (
-    <div
-      className={clsx(
-        "w-full overflow-y-scroll hide-scrollbar grow mt-2 !mb-0 flex flex-col",
-        ANIMATE,
-        MAX_WIDTH
-      )}
-    >
-      {arr.map((ele, idx) => {
-        const char =
-          idx === 0 ||
-          arr[idx - 1].name[0].toLowerCase() !== arr[idx].name[0].toLowerCase()
-            ? arr[idx].name[0]
-            : null;
-
-        const key = ele.id;
-        const name = ele.name;
-
-        return (
-          <div id={key} key={key} className="contents">
-            {showIndex === true && char !== null && (
-              <React.Fragment>
-                <div
-                  className={clsx(
-                    "px-3 pt-4 pb-1 text-base uppercase text-isLabelLightSecondary font-400",
-                    search !== "" ? "hidden" : ""
-                  )}
-                >
-                  {search?.length > 0 ? search[0] : char}
-                </div>
-
-                <Hr classes={clsx("!px-3")} />
-              </React.Fragment>
+    return (
+        <div
+            className={clsx(
+                "w-full overflow-y-scroll hide-scrollbar grow mt-2 !mb-0 flex flex-col",
+                ANIMATE,
+                MAX_WIDTH,
             )}
+        >
+            {arr.map((ele, idx) => {
+                const char =
+                    idx === 0 ||
+                    arr[idx - 1].name[0].toLowerCase() !==
+                        arr[idx].name[0].toLowerCase()
+                        ? arr[idx].name[0]
+                        : null;
 
-            <Link
-              onClick={() => {
-                setPageLoading(true);
-              }}
-              href={`/proposals?protocol=${key}&username=${user.id}&chatid=${user.chatid}`}
-              className="flex flex-row items-center justify-between w-full hover:bg-isSeparatorLight"
-            >
-              <div className={clsx("grow py-3 leading-none px-3 text-base")}>
-                {capitalizeFirstLetter(name).trim()}
-              </div>
+                const key = ele.id;
+                const name = ele.name;
 
-              {ele.active !== "0" && (
-                <Tag
-                  text={`${ele.active} active`}
-                  bg={clsx("bg-isBlueLight")}
-                />
-              )}
+                return (
+                    <div id={key} key={key} className="contents">
+                        {showIndex === true && char !== null && (
+                            <React.Fragment>
+                                <div
+                                    className={clsx(
+                                        "px-3 pt-4 pb-1 text-base uppercase text-isLabelLightSecondary font-400",
+                                        search !== "" ? "hidden" : "",
+                                    )}
+                                >
+                                    {search?.length > 0 ? search[0] : char}
+                                </div>
 
-              {ele.new !== "0" && (
-                <Tag text={`${ele.new} new`} bg={clsx("bg-isGreenLight")} />
-              )}
-            </Link>
+                                <Hr classes={clsx("!px-3")} />
+                            </React.Fragment>
+                        )}
 
-            <Hr classes={clsx("!px-3")} />
-          </div>
-        );
-      })}
+                        <Link
+                            onClick={() => {
+                                setPageLoading(true);
+                            }}
+                            href={`/proposals?protocol=${key}&username=${user.id}&chatid=${user.chatid}`}
+                            className="flex flex-row items-center justify-between w-full hover:bg-isSeparatorLight"
+                        >
+                            <div
+                                className={clsx(
+                                    "grow py-3 leading-none px-3 text-base",
+                                )}
+                            >
+                                {capitalizeFirstLetter(name).trim()}
+                            </div>
 
-      {/* {arr.length === 0 && (
+                            {ele.active !== "0" && (
+                                <Tag
+                                    text={`${ele.active} active`}
+                                    bg={clsx("bg-isBlueLight")}
+                                />
+                            )}
+
+                            {ele.new !== "0" && (
+                                <Tag
+                                    text={`${ele.new} new`}
+                                    bg={clsx("bg-isGreenLight")}
+                                />
+                            )}
+                        </Link>
+
+                        <Hr classes={clsx("!px-3")} />
+                    </div>
+                );
+            })}
+
+            {/* {arr.length === 0 && (
         <React.Fragment>
           <div className="flex flex-col items-center w-full h-full px-3 py-5 text-center grow place-content-start">
             <svg
@@ -116,6 +124,6 @@ export const List = ({ arr, showIndex, search, setPageLoading }) => {
           </div>
         </React.Fragment>
       )} */}
-    </div>
-  );
+        </div>
+    );
 };

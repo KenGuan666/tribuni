@@ -1,48 +1,53 @@
 import { sql, sanitizeText } from "@/components/db";
 
 export async function POST(req) {
-	try {
-		const url =
-			`https://api.boardroom.info/v1/protocols?key=${process.env.BOARDROOM_API_KEY}`;
-		const options = {
-			method: "GET",
-			headers: { Accept: "application/json" },
-		};
-		const res = await fetch(url, options);
-		let data = await res.json();
-		data = data.data;
+    try {
+        const url = `https://api.boardroom.info/v1/protocols?key=${process.env.BOARDROOM_API_KEY}`;
+        const options = {
+            method: "GET",
+            headers: { Accept: "application/json" },
+        };
+        const res = await fetch(url, options);
+        let data = await res.json();
+        data = data.data;
 
-		let protocols = [];
+        let protocols = [];
 
-		for (let i = 0; i < data.length; i++) {
-			if (data[i] && data[i].icons !== undefined) {
-				protocols.push({
-					id: sanitizeText(data[i].cname),
-					name: sanitizeText(data[i].name),
-					icon: sanitizeText(data[i].icons[0].url),
-				});
-			}
-		}
+        for (let i = 0; i < data.length; i++) {
+            if (data[i] && data[i].icons !== undefined) {
+                protocols.push({
+                    id: sanitizeText(data[i].cname),
+                    name: sanitizeText(data[i].name),
+                    icon: sanitizeText(data[i].icons[0].url),
+                });
+            }
+        }
 
-		const insertQuery = `
+        const insertQuery = `
 		  INSERT INTO protocols (id, name, icon)
 		  VALUES
 		    ${protocols
-				.map(({ id, name, icon }) => `('${id}', '${name}', '${icon}')`)
-				.join(",\n    ")}
+                .map(({ id, name, icon }) => `('${id}', '${name}', '${icon}')`)
+                .join(",\n    ")}
 		  ON CONFLICT (id) DO UPDATE
 		  SET name = EXCLUDED.name, icon = EXCLUDED.icon;
 		`;
 
-		await sql.unsafe(insertQuery);
+        await sql.unsafe(insertQuery);
 
-		return Response.json({
-			status: "success",
-		}, { status: 201 });
-	} catch (err) {
-		console.log(err);
-		return Response.json({
-			status: "error",
-		}, { status: 403 });
-	}
+        return Response.json(
+            {
+                status: "success",
+            },
+            { status: 201 },
+        );
+    } catch (err) {
+        console.log(err);
+        return Response.json(
+            {
+                status: "error",
+            },
+            { status: 403 },
+        );
+    }
 }
