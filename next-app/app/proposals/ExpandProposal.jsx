@@ -188,7 +188,9 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
                     target="_blank"
                     className="w-10/12 flex flex-col items-center place-content-center bg-isBlueLight text-lg font-600 text-isWhite rounded-xl h-full"
                     onClick={() => window.gtag('event', 'vote_now_button_click', {
-                      value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposalMap[activeProposal].id}`,
+                      user: user.id,
+                      protocol: protocol,
+                      proposal: proposalMap[activeProposal].id,
                     })}
                   >
                     {proposalMap[activeProposal].endtime > new Date() / 1000 ? "Vote Now" : "See Results"}

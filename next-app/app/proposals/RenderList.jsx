@@ -125,7 +125,9 @@ export const RenderList = ({ proposalMap, protocol }) => {
                   onClick={() => {
                     setActiveProposal(proposal.id);
                     window.gtag('event', 'view_proposal_button_click', {
-                      value: `{user: ${user.id}, protocol: ${protocol}, proposal: ${proposal.id}`,
+                      user: user.id,
+                      protocol: protocol,
+                      proposal: proposalMap[activeProposal].id,
                     })
 
                     const proposalDetail =

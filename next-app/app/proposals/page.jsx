@@ -56,7 +56,7 @@ export default async function Page({ searchParams }) {
           )}
         >
           {/* Navigator: the Back button */}
-          <Navigator protocolName={protocolInfo.name} />
+          <Navigator protocolName={protocol} />
 
           {/* Header: Protocol name, icon */}
           <Header protocolInfo={protocolInfo} />
@@ -65,7 +65,7 @@ export default async function Page({ searchParams }) {
           <Manage protocolId={protocol} />
 
           {/* RenderList: display list of proposals, or the detail of the selected proposal */}
-          <RenderList proposalMap={proposalMap} protocol={protocolInfo.name} />
+          <RenderList proposalMap={proposalMap} protocol={protocol} />
 
         </div>
       }
