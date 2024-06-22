@@ -177,7 +177,11 @@ export async function POST(req) {
 
 // update existingProposalDbEntry with information from rawProposal
 // if existingProposalDbEntry is null, the proposal is new
-async function fromRawProposal(rawProposal, existingProposalDbEntry, protocolName) {
+async function fromRawProposal(
+    rawProposal,
+    existingProposalDbEntry,
+    protocolName,
+) {
     let updatedDbEntry = existingProposalDbEntry || {};
     updatedDbEntry["id"] = calculateProposalId(rawProposal);
     updatedDbEntry["protocol"] = protocolName;
@@ -196,13 +200,14 @@ async function fromRawProposal(rawProposal, existingProposalDbEntry, protocolNam
             updatedDbEntry["url"] =
                 `https://www.tally.xyz/gov/arbitrum/proposal/${rawProposal.id}`;
         } else if (protocolName == "aave") {
-            const proposalRawId = parseInt(rawProposal.id, 10)
+            const proposalRawId = parseInt(rawProposal.id, 10);
             if (!isNaN(proposalRawId)) {
                 updatedDbEntry["url"] =
-                `https://app.aave.com/governance/v3/proposal/?proposalId=${proposalRawId}`
+                    `https://app.aave.com/governance/v3/proposal/?proposalId=${proposalRawId}`;
             }
         } else {
-            updatedDbEntry["url"] = `https://www.google.com/search?q=${protocolName} ${updatedDbEntry["title"]}`
+            updatedDbEntry["url"] =
+                `https://www.google.com/search?q=${protocolName} ${updatedDbEntry["title"]}`;
         }
     }
 
