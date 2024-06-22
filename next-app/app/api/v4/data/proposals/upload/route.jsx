@@ -177,10 +177,10 @@ export async function POST(req) {
 
 // update existingProposalDbEntry with information from rawProposal
 // if existingProposalDbEntry is null, the proposal is new
-async function fromRawProposal(rawProposal, existingProposalDbEntry, protocol) {
+async function fromRawProposal(rawProposal, existingProposalDbEntry, protocolName) {
     let updatedDbEntry = existingProposalDbEntry || {};
     updatedDbEntry["id"] = calculateProposalId(rawProposal);
-    updatedDbEntry["protocol"] = protocol;
+    updatedDbEntry["protocol"] = protocolName;
     updatedDbEntry["proposer"] = rawProposal.proposer;
     updatedDbEntry["title"] = sanitizeText(rawProposal.title).trim();
     updatedDbEntry["starttime"] = parseInt(rawProposal.startTimestamp);
@@ -189,12 +189,20 @@ async function fromRawProposal(rawProposal, existingProposalDbEntry, protocol) {
 
     if (!updatedDbEntry["url"]) {
         // Boardroom does not know the voting URL for some protocols. Manually enter them here
-        if (protocol == "optimism") {
+        if (protocolName == "optimism") {
             updatedDbEntry["url"] =
                 `https://vote.optimism.io/proposals/${rawProposal.id}`;
-        } else if (protocol == "arbitrum") {
+        } else if (protocolName == "arbitrum") {
             updatedDbEntry["url"] =
                 `https://www.tally.xyz/gov/arbitrum/proposal/${rawProposal.id}`;
+        } else if (protocolName == "aave") {
+            const proposalRawId = parseInt(rawProposal.id, 10)
+            if (!isNaN(proposalRawId)) {
+                updatedDbEntry["url"] =
+                `https://app.aave.com/governance/v3/proposal/?proposalId=${proposalRawId}`
+            }
+        } else {
+            updatedDbEntry["url"] = `https://www.google.com/search?q=${protocolName} ${updatedDbEntry["title"]}`
         }
     }
 
