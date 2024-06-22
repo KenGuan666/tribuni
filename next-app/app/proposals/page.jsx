@@ -56,7 +56,7 @@ export default async function Page({ searchParams }) {
                     )}
                 >
                     {/* Navigator: the Back button */}
-                    <Navigator protocolName={protocol} />
+                    <Navigator protocolName={protocolInfo.name} />
 
                     {/* Header: Protocol name, icon */}
                     <Header protocolInfo={protocolInfo} />
