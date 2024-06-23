@@ -11,7 +11,7 @@ import { sendGAEvent } from "@next/third-parties/google";
 import { Bookmark } from "./Bookmark";
 import { BASE_USER } from "@/components/constants";
 import { Hr } from "@/components/ui/page";
-import { TimelineDisplay } from "@/components/page/TimelineDisplay";
+import { Timeline } from "@/components/page/Timeline";
 
 export const ExpandProposal = ({ proposalMap, protocol }) => {
     const { activeProposal, user, setUser } = useStore();
@@ -48,7 +48,7 @@ export const ExpandProposal = ({ proposalMap, protocol }) => {
                 </div>
 
                 {/* Timeline visual */}
-                <TimelineDisplay
+                <Timeline
                     startTime={proposalMap[activeProposal].starttime}
                     endTime={proposalMap[activeProposal].endtime}
                 />

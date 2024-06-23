@@ -1,6 +1,6 @@
 import React from "react";
 
-export const TimelineDisplay = ({ startTime, endTime }) => {
+export const Timeline = ({ startTime, endTime }) => {
     startTime *= 1000;
     endTime *= 1000;
     const totalDuration = new Date(endTime) - new Date(startTime);
