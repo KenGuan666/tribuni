@@ -1,51 +1,60 @@
+"use client";
+import clsx from "clsx";
 import { notFound } from "next/navigation";
+import { useState, useEffect } from "react";
 import { Header } from "./Header";
 import { RenderList } from "./RenderList";
-import { sql } from "@/components/db";
-import { redirect } from "next/navigation";
 import { Navigator } from "./Navigator";
 import { Manage } from "./Manage";
-import clsx from "clsx";
-import { MAX_WIDTH } from "@/components/constants";
+import { fetchProposalByProtocolId } from "@/components/apiHelper/proposal";
+import { fetchProtocolById } from "@/components/apiHelper/protocol";
+import { fetchUser } from "@/components/apiHelper/user";
+import { BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { PageLoader } from "@/components/loaders";
+import { useStore } from "@/store";
 
-export const revalidate = 0;
-
-export const getData = async ({ protocol }) => {
-    const proposalsQuery = `
-	SELECT *
-FROM proposals
-WHERE protocol = '${protocol}';
-`;
-
-    let proposals = await sql.unsafe(proposalsQuery);
-
-    const infoQuery = `
-	SELECT *
-FROM protocols
-WHERE id = '${protocol}';
-`;
-
-    let protocolInfo = await sql.unsafe(infoQuery);
-    protocolInfo = protocolInfo[0];
-
-    let proposalMap = proposals.reduce((map, item) => {
-        map[item.id] = item;
-        return map;
-    }, {});
-
-    return {
-        protocolInfo,
-        proposalMap,
-    };
-};
-
-export default async function Page({ searchParams }) {
-    const protocol = searchParams.protocol;
-    const userId = searchParams.username;
+export default function Page({ searchParams }) {
+    const { username, chatid, protocol } = searchParams;
     if (!protocol) return notFound();
 
-    const { protocolInfo, proposalMap } = await getData({ protocol });
+    let [proposalMap, setProposalMap] = useState(null);
+    let [protocolInfo, setProtocolInfo] = useState(null);
+    let { user, setUser } = useStore();
+
+    const fetchData = async () => {
+        if (proposalMap == null) {
+            try {
+                const proposalsData = await fetchProposalByProtocolId(protocol);
+                proposalMap = proposalsData.reduce((map, proposalData) => {
+                    map[proposalData.id] = proposalData;
+                    return map
+                }, new Map())
+                setProposalMap(proposalMap);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (protocolInfo == null) {
+            try {
+                protocolInfo = await fetchProtocolById(protocol);
+                setProtocolInfo(protocolInfo);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        if (user == BASE_USER) {
+            try {
+                user = await fetchUser(username, chatid);
+                setUser(user);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    }
+
+    useEffect(() => {
+        fetchData();
+    })
 
     return (
         <PageLoader
@@ -57,13 +66,13 @@ export default async function Page({ searchParams }) {
                     )}
                 >
                     {/* Navigator: the Back button */}
-                    <Navigator protocolName={protocolInfo.name} />
+                    <Navigator protocolName={protocolInfo?.name} />
 
                     {/* Header: Protocol name, icon */}
                     <Header protocolInfo={protocolInfo} />
 
                     {/* Manage: Subscription state */}
-                    <Manage protocolId={protocol} userId={userId} />
+                    <Manage protocolId={protocol} />
 
                     {/* RenderList: display list of proposals, or the detail of the selected proposal */}
                     <RenderList proposalMap={proposalMap} protocol={protocol} />

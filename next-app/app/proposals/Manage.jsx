@@ -10,7 +10,7 @@ import { useStore } from "@/store";
 import { Spinner } from "@/components/loaders";
 import { Hr } from "@/components/ui/page";
 
-export const Manage = ({ userId, protocolId }) => {
+export const Manage = ({ protocolId }) => {
     const { user, setUser, activeProposal } = useStore();
 
     const [subscriptionStatus, setSubscriptionStatus] = useState(false);

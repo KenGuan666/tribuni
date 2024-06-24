@@ -8,6 +8,10 @@ import { useStore } from "@/store";
 export const Header = ({ protocolInfo }) => {
     const { activeProposal, setActiveProposal } = useStore();
 
+    if (!protocolInfo) {
+        return null
+    }
+
     return (
         <React.Fragment>
             {activeProposal === null && (

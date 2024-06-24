@@ -20,5 +20,5 @@ export async function fetchProposalById(proposalId) {
 }
 
 export async function fetchProposalByProtocolId(protocolId) {
-    return await fetchProposalWithParams(`protocolId=${protocolId}`)
+    return await fetchProposalWithParams(`protocol=${protocolId}`)
 }

@@ -1,4 +1,5 @@
 import { sql, sanitizeText } from "@/components/db";
+import { fetchProtocolById } from "@/components/db/protocol"
 
 export async function POST(req) {
     try {
@@ -70,4 +71,37 @@ export async function POST(req) {
             { status: 403 },
         );
     }
+}
+
+/*
+    Return protocols based on provided params
+    Supported params:
+        proposalId: id of proposal. If proposalId provided, all other filters are automatically ignored
+        protocol: id of protocol.
+*/
+export async function GET(req) {
+    const { searchParams } = new URL(req.url);
+    const protocolId = searchParams.get("protocol");
+
+    if (protocolId) {
+        try {
+            return Response.json(
+                { protocolData: await fetchProtocolById(protocolId) },
+                { status: 201 },
+            );
+        } catch (err) {
+            console.log(err);
+            return Response.json(
+                {
+                    protocolData: null,
+                    message: `could not fetch protocol data: ${err}`,
+                },
+                { status: 503 },
+            );
+        }
+    }
+    return Response.json(
+        { message: `please provide a filter` },
+        { status: 400 },
+    )
 }

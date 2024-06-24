@@ -11,9 +11,11 @@ import { useStore } from "@/store";
 
 export default function Page({ params, searchParams }) {
     const { proposalId } = params;
+    if (!proposalId) return notFound();
     const { username, chatid, routeSource } = searchParams;
     // proposalData is a single-page state
     let [proposalData, setProposalData] = useState(null);
+    // user is an app-wide state
     let { user, setUser } = useStore();
 
     const fetchData = async () => {

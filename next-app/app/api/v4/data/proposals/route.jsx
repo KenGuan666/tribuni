@@ -21,7 +21,7 @@ export async function GET(req) {
             console.log(err);
             return Response.json(
                 {
-                    proposalsData: null,
+                    proposalData: null,
                     message: `could not fetch proposal data: ${err}`,
                 },
                 { status: 503 },

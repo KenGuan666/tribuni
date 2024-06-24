@@ -53,6 +53,9 @@ function timeFromNow(timestamp) {
 
 export const RenderList = ({ proposalMap, protocol }) => {
     // const [activeProposal, setActiveProposal] = useState(null);
+    if (!proposalMap) {
+        return null
+    }
 
     const [filter, setFilter] = useState("all");
 
