@@ -1,5 +1,5 @@
 import { sql, sanitizeText } from "@/components/db";
-import { fetchProtocolById } from "@/components/db/protocol"
+import { fetchProtocolById } from "@/components/db/protocol";
 
 export async function POST(req) {
     try {
@@ -103,5 +103,5 @@ export async function GET(req) {
     return Response.json(
         { message: `please provide a filter` },
         { status: 400 },
-    )
+    );
 }

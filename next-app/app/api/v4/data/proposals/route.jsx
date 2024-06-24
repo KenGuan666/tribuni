@@ -1,4 +1,7 @@
-import { fetchProposalById, fetchProposalByProtocolId } from "@/components/db/proposal";
+import {
+    fetchProposalById,
+    fetchProposalByProtocolId,
+} from "@/components/db/proposal";
 
 /*
     Return proposals based on provided params
@@ -35,7 +38,7 @@ export async function GET(req) {
             return Response.json(
                 { proposalData: await fetchProposalByProtocolId(protocolId) },
                 { status: 201 },
-            )
+            );
         } catch (err) {
             console.log(err);
             return Response.json(
@@ -44,12 +47,12 @@ export async function GET(req) {
                     message: `could not fetch proposals for protocol ${protocolId}: ${err}`,
                 },
                 { status: 503 },
-            )
+            );
         }
     }
 
     return Response.json(
         { message: `please provide a filter` },
         { status: 400 },
-    )
+    );
 }

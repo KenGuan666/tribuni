@@ -20,6 +20,6 @@ export async function fetchProposalByProtocolId(protocolId) {
         SELECT *
         FROM proposals
         WHERE protocol = '${protocolId}';
-    `
+    `;
     return await sql.unsafe(query);
 }

@@ -1,14 +1,12 @@
 "use client";
 
 import clsx from "clsx";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { useStore } from "@/store";
 import { ChevronForward, ExclamationmarkSquareFill } from "@/components/ios";
-import { ExpandProposal } from "./ExpandProposal";
 import { Tabs } from "@/components/ui/page";
-import { sendGAEvent } from "@next/third-parties/google";
 
 function timeFromNow(timestamp) {
     const currentDate = new Date();
@@ -51,14 +49,13 @@ function timeFromNow(timestamp) {
 // const futureTimestamp = 1698954087 + 3600; // Adding 1 hour to the previous example
 // console.log(timeFromNow(futureTimestamp));
 
-export const RenderList = ({ proposalMap, protocol }) => {
-    // const [activeProposal, setActiveProposal] = useState(null);
+export const ProposalList = ({ proposalMap, protocol }) => {
     if (!proposalMap) {
-        return null
+        return null;
     }
 
     const [filter, setFilter] = useState("all");
-    const { activeProposal, setActiveProposal, user, setPageLoading } = useStore();
+    const { user, setPageLoading } = useStore();
     const router = useRouter();
 
     let proposals = Object.keys(proposalMap).map((key) => {
@@ -108,15 +105,12 @@ export const RenderList = ({ proposalMap, protocol }) => {
                     MAX_WIDTH,
                 )}
             >
-
-                {/* If no activeProposal is selected, display a list of clickable proposal previews */}
-
+                {/* Display a list of clickable proposal previews */}
                 <React.Fragment>
                     {filteredProposals.map((proposal) => {
                         return (
                             <button
                                 key={proposal.id}
-                                // When clicked, enter proposal detail page by setting `activeProposal` global state
                                 // Generate a proposal page view event
                                 onClick={() => {
                                     window.gtag(
@@ -129,7 +123,9 @@ export const RenderList = ({ proposalMap, protocol }) => {
                                         },
                                     );
                                     setPageLoading(true);
-                                    router.push(`${process.env.NEXT_PUBLIC_SERVER_URL}/proposals/${proposal.id}?username=${user.id}&chatid=${user.chatid}`)
+                                    router.push(
+                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals/${proposal.id}?username=${user.id}&chatid=${user.chatid}`,
+                                    );
                                 }}
                                 className="w-full hover:bg-isSystemLightTertiary bg-isWhite rounded-2xl !mt-0 p-4 flex flex-row"
                             >
@@ -180,7 +176,6 @@ export const RenderList = ({ proposalMap, protocol }) => {
                         </React.Fragment>
                     )}
                 </React.Fragment>
-
             </div>
         </React.Fragment>
     );

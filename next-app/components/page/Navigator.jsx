@@ -50,5 +50,5 @@ export const Navigator = ({ text, link }) => {
                 </div>
             </Link>
         </div>
-    )
-}
+    );
+};

@@ -5,3 +5,7 @@ export function sanitizeText(text) {
 
     return text.replace(/'/g, "''");
 }
+
+export function postgresArrayFromJsArray(array) {
+    return `{${array.map((item) => `"${item}"`).join(",")}}`;
+}

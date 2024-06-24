@@ -1,5 +1,6 @@
 "use server";
 import { sql } from "./sql";
+import { postgresArrayFromJsArray } from "./utilities";
 
 export async function fetchUserData(username, chatid) {
     const userQuery = `
@@ -16,10 +17,19 @@ export async function fetchUserData(username, chatid) {
 }
 
 export async function saveUserBookmarkUpdates(user) {
-    const bookmarksPostgres = `{${user.bookmarks.map((id) => `"${id}"`).join(",")}}`;
+    const bookmarksPostgres = postgresArrayFromJsArray(user.bookmarks);
     await sql`
     UPDATE telegram_users
     SET bookmarks = ${bookmarksPostgres}
+    WHERE id = ${user.id};
+    `;
+}
+
+export async function saveUserSubscriptionUpdates(user) {
+    const subscriptionsPostgres = postgresArrayFromJsArray(user.subscriptions);
+    await sql`
+    UPDATE telegram_users
+    SET subscriptions = ${subscriptionsPostgres}
     WHERE id = ${user.id};
     `;
 }

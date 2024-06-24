@@ -2,10 +2,10 @@
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import { notFound } from "next/navigation";
-import { Proposal } from "./Proposal";
-import { fetchProposalById } from "@/components/apiHelper/proposal";
-import { fetchProtocolById } from "@/components/apiHelper/protocol";
-import { fetchUser } from "@/components/apiHelper/user";
+import { ProposalContent } from "./ProposalContent";
+import { fetchProposalById } from "@/components/db/proposal";
+import { fetchProtocolById } from "@/components/db/protocol";
+import { fetchUserData } from "@/components/db/user";
 import { ANIMATE, BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { PageLoader } from "@/components/loaders";
 import { Navigator } from "@/components/page/Navigator";
@@ -20,38 +20,48 @@ export default function Page({ params, searchParams }) {
     let [protocolInfo, setProtocolInfo] = useState(null);
     // user is an app-wide state
     let { user, setUser, setPageLoading } = useStore();
-    let backLink = "", backText = "";
+    let backLink = "",
+        backText = "";
 
     const fetchData = async () => {
         let promises = [];
         if (proposalData == null) {
             setPageLoading(true);
             promises.push(
-                fetchProposalById(proposalId).then(proposalData => {
-                    setProposalData(proposalData);
-                    return proposalData;
-                }, err => {
-                    console.log(err);
-                })
-            )
+                fetchProposalById(proposalId).then(
+                    (proposalData) => {
+                        setProposalData(proposalData);
+                        return proposalData;
+                    },
+                    (err) => {
+                        console.log(err);
+                    },
+                ),
+            );
         }
+        // proposalPage is an entry point. It must be able to load user from params
         if (user == BASE_USER) {
             setPageLoading(true);
             promises.push(
-                fetchUser(username, chatid).then(user => {
-                    setUser(user);
-                    return user;
-                }, err => {
-                    console.log(err);
-                })
-            )
+                fetchUserData(username, chatid).then(
+                    (user) => {
+                        setUser(user);
+                        return user;
+                    },
+                    (err) => {
+                        console.log(err);
+                    },
+                ),
+            );
         }
-        const [resolvedProposalData, _] = await Promise.all(promises)
+        const [resolvedProposalData, _] = await Promise.all(promises);
 
         if (protocolInfo == null) {
             setPageLoading(true);
             try {
-                protocolInfo = await fetchProtocolById(resolvedProposalData.protocol);
+                protocolInfo = await fetchProtocolById(
+                    resolvedProposalData.protocol,
+                );
                 setProtocolInfo(protocolInfo);
             } catch (err) {
                 console.log(err);
@@ -66,8 +76,10 @@ export default function Page({ params, searchParams }) {
 
     // if linked from "proposals", back button links to protocol's proposal page
     // TODO: implement routing for Bookmarks and alert entry
-    backText = protocolInfo?.name;
-    backLink = `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals?protocol=${protocolInfo?.id}&username=${user?.id}&chatid=${user?.chatid}`;
+    if (from == "proposals" || true) {
+        backText = protocolInfo?.name;
+        backLink = `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals?protocol=${protocolInfo?.id}&username=${user?.id}&chatid=${user?.chatid}`;
+    }
 
     return (
         <PageLoader
@@ -90,7 +102,7 @@ export default function Page({ params, searchParams }) {
                             "mt-3",
                         )}
                     >
-                        <Proposal proposalData={proposalData} />
+                        <ProposalContent proposalData={proposalData} />
                     </div>
                 </div>
             }

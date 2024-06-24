@@ -1,3 +1,4 @@
+"use server";
 import { sql } from "./sql";
 
 export async function fetchProtocolById(protocolId) {
@@ -6,10 +7,10 @@ export async function fetchProtocolById(protocolId) {
         FROM protocols
         WHERE id = '${protocolId}'
         LIMIT 1;
-    `
+    `;
     const protocols = await sql.unsafe(query);
     if (protocols.length) {
-        return protocols[0]
+        return protocols[0];
     }
     return {};
 }

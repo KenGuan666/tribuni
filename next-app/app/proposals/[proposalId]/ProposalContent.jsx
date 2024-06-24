@@ -9,7 +9,7 @@ import { VoteNowButton } from "@/components/page/VoteNowButton";
 import { VoteResult } from "@/components/page/VoteResult";
 import { Hr } from "@/components/ui/page";
 
-export function Proposal({ proposalData }) {
+export function ProposalContent({ proposalData }) {
     if (!proposalData) {
         return null;
     }
