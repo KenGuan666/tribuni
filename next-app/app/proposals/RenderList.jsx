@@ -134,9 +134,7 @@ export const RenderList = ({ proposalMap, protocol }) => {
                                             {
                                                 user: user.id,
                                                 protocol: protocol,
-                                                proposal:
-                                                    proposalMap[activeProposal]
-                                                        .id,
+                                                proposal: proposal.id,
                                             },
                                         );
 

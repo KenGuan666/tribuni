@@ -12,6 +12,7 @@ export function delay(milliseconds) {
 export const BASE_USER = {
     id: null,
     chatid: null,
+    bookmarks: [],
     premium: 0,
     email: null,
     subscriptions: [],
