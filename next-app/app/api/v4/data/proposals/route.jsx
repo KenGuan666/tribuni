@@ -1,58 +1,55 @@
-import { sql, sanitizeText } from "@/components/db";
-import { fetchProposalData } from "@/components/db/proposal";
+import { fetchProposalById, fetchProposalByProtocolId } from "@/components/db/proposal";
 
-export async function POST(req) {
-    try {
-        const body = req.json();
-
-        const proposalsQuery = `SELECT * FROM proposals WHERE protocol = '${body.protocol}';`;
-        let proposals = await sql.unsafe(proposalsQuery);
-        let proposalMap = proposals.reduce((map, item) => {
-            map[item.id] = item;
-            return map;
-        }, {});
-
-        const infoQuery = `SELECT * FROM protocols WHERE id = '${body.protocol}';`;
-        let protocolInfo = await sql.unsafe(infoQuery);
-        protocolInfo = protocolInfo[0];
-
-        return Response.json(
-            {
-                status: "success",
-                protocolInfo: protocolInfo,
-                proposalMap: proposalMap,
-            },
-            { status: 201 },
-        );
-    } catch (err) {
-        console.log(err);
-        return Response.json(
-            {
-                status: "error",
-                protocolInfo: null,
-                proposalMap: null,
-            },
-            { status: 403 },
-        );
-    }
-}
-
+/*
+    Return proposals based on provided params
+    Supported params:
+        proposalId: id of proposal. If proposalId provided, all other filters are automatically ignored
+        protocol: id of protocol.
+*/
 export async function GET(req) {
     const { searchParams } = new URL(req.url);
     const proposalId = searchParams.get("proposalId");
-    try {
-        return Response.json(
-            { proposalData: await fetchProposalData(proposalId) },
-            { status: 201 },
-        );
-    } catch (err) {
-        console.log(err);
-        return Response.json(
-            {
-                proposalsData: null,
-                message: "could not fetch proposal data",
-            },
-            { status: 503 },
-        );
+
+    if (proposalId) {
+        // If proposalId is provided, ignore all other filters
+        try {
+            return Response.json(
+                { proposalData: await fetchProposalById(proposalId) },
+                { status: 201 },
+            );
+        } catch (err) {
+            console.log(err);
+            return Response.json(
+                {
+                    proposalsData: null,
+                    message: `could not fetch proposal data: ${err}`,
+                },
+                { status: 503 },
+            );
+        }
     }
+
+    const protocolId = searchParams.get("protocol");
+    if (protocolId) {
+        try {
+            return Response.json(
+                { proposalData: await fetchProposalByProtocolId(protocolId) },
+                { status: 201 },
+            )
+        } catch (err) {
+            console.log(err);
+            return Response.json(
+                {
+                    proposalData: null,
+                    message: `could not fetch proposals for protocol ${protocolId}: ${err}`,
+                },
+                { status: 503 },
+            )
+        }
+    }
+
+    return Response.json(
+        { message: `please provide a filter` },
+        { status: 400 },
+    )
 }

@@ -2,8 +2,10 @@
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import { notFound } from "next/navigation";
-import { ANIMATE, BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { Proposal } from "./Proposal";
+import { fetchProposalById } from "@/components/apiHelper/proposal";
+import { fetchUser } from "@/components/apiHelper/user";
+import { ANIMATE, BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { PageLoader } from "@/components/loaders";
 import { useStore } from "@/store";
 
@@ -14,53 +16,27 @@ export default function Page({ params, searchParams }) {
     let [proposalData, setProposalData] = useState(null);
     let { user, setUser } = useStore();
 
+    const fetchData = async () => {
+        if (proposalData == null) {
+            try {
+                proposalData = await fetchProposalById(proposalId);
+                setProposalData(proposalData);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+
+        if (user == BASE_USER) {
+            try {
+                user = await fetchUser(username, chatid);
+                setUser(user);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            if (proposalData == null) {
-                try {
-                    const res = await fetch(
-                        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/data/proposals?proposalId=${proposalId}`,
-                        {
-                            method: "GET",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                        },
-                    );
-                    const data = await res.json();
-                    proposalData = data.proposalData;
-                    console.log(proposalData);
-                    setProposalData(proposalData);
-                } catch (err) {
-                    console.log(err);
-                }
-            }
-
-            if (user == BASE_USER) {
-                try {
-                    const res = await fetch(
-                        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/data/user`,
-                        {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json",
-                            },
-                            body: JSON.stringify({
-                                id: username,
-                                chatid: chatid,
-                            }),
-                        },
-                    );
-                    const data = await res.json();
-                    user = data.user;
-                    setUser(user);
-                    console.log("Set user: ", user);
-                } catch (err) {
-                    console.log(err);
-                }
-            }
-        };
-
         fetchData();
     });
 
