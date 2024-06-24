@@ -22,8 +22,8 @@ export const BookmarkButton = ({ proposalId, userUpdateFn }) => {
                     // If proposal is not in bookmarks, add it
                     user.bookmarks.push(proposalId);
                 }
-                await userUpdateFn(user);
                 setUser(user);
+                await userUpdateFn(user);
             }}
         >
             {/* The bookmark icon from w3.org */}

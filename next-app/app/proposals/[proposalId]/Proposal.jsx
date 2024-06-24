@@ -5,9 +5,9 @@ import { MAX_WIDTH } from "@/components/constants";
 import { BookmarkButton } from "@/components/page/BookmarkButton";
 import { Timeline } from "@/components/page/Timeline";
 import { VoteResult } from "@/components/page/VoteResult";
-import { useStore } from "@/store";
 import { saveUserBookmarkUpdates } from "@/components/db/user";
 import { VoteNowButton } from "@/components/page/VoteNowButton";
+import { Hr } from "@/components/ui/page";
 
 export function Proposal({ proposalData }) {
     if (!proposalData) {
@@ -38,6 +38,9 @@ export function Proposal({ proposalData }) {
                     choices={proposalData.choices}
                     results={proposalData.results}
                 />
+
+                {/* Horizontal divider */}
+                <Hr classes={clsx("!mt-5")} />
 
                 {/* Proposal summary */}
                 <div className="uppercase text-isLabelLightSecondary !mt-2 text-base font-500">
