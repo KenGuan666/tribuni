@@ -19,42 +19,48 @@ export default function Page({ searchParams }) {
 
     let [proposalMap, setProposalMap] = useState(null);
     let [protocolInfo, setProtocolInfo] = useState(null);
-    let { user, setUser } = useStore();
+    let { user, setUser, setPageLoading } = useStore();
 
     const fetchData = async () => {
+        let promises = [];
         if (proposalMap == null) {
-            try {
-                const proposalsData = await fetchProposalByProtocolId(protocol);
-                proposalMap = proposalsData.reduce((map, proposalData) => {
-                    map[proposalData.id] = proposalData;
-                    return map
-                }, new Map())
-                setProposalMap(proposalMap);
-            } catch (err) {
-                console.log(err);
-            }
+            promises.push(
+                fetchProposalByProtocolId(protocol).then(proposalsData => {
+                    proposalMap = proposalsData.reduce((map, proposalData) => {
+                        map[proposalData.id] = proposalData;
+                        return map;
+                    }, new Map());
+                    setProposalMap(proposalMap);
+                }, err => {
+                    console.log(err)
+                })
+            );
         }
         if (protocolInfo == null) {
-            try {
-                protocolInfo = await fetchProtocolById(protocol);
-                setProtocolInfo(protocolInfo);
-            } catch (err) {
-                console.log(err);
-            }
+            promises.push(
+                fetchProtocolById(protocol).then(protocolInfoData => {
+                  setProtocolInfo(protocolInfoData);
+                }, err => {
+                    console.log(err)
+                })
+            );
         }
         if (user == BASE_USER) {
-            try {
-                user = await fetchUser(username, chatid);
-                setUser(user);
-            } catch (err) {
-                console.log(err);
-            }
+            promises.push(
+                fetchUser(username, chatid).then(userData => {
+                  setUser(userData);
+                }, err => {
+                    console.log(err)
+                })
+            );
         }
+        await Promise.all(promises);
+        setPageLoading(false);
     }
 
     useEffect(() => {
         fetchData();
-    })
+    }, [])
 
     return (
         <PageLoader

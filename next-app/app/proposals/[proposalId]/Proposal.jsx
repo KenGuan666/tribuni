@@ -2,11 +2,11 @@
 import clsx from "clsx";
 import React from "react";
 import { MAX_WIDTH } from "@/components/constants";
+import { saveUserBookmarkUpdates } from "@/components/db/user";
 import { BookmarkButton } from "@/components/page/BookmarkButton";
 import { Timeline } from "@/components/page/Timeline";
-import { VoteResult } from "@/components/page/VoteResult";
-import { saveUserBookmarkUpdates } from "@/components/db/user";
 import { VoteNowButton } from "@/components/page/VoteNowButton";
+import { VoteResult } from "@/components/page/VoteResult";
 import { Hr } from "@/components/ui/page";
 
 export function Proposal({ proposalData }) {
