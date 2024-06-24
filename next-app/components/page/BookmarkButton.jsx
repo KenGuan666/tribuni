@@ -1,11 +1,13 @@
 "use client";
 import React from "react";
+import { useStore } from "@/store";
 
 /*
 BookmarkButton: on click, bookmarks or unbookmarks current proposal for user
 */
-export const BookmarkButton = ({ user, proposalId, userUpdateFn }) => {
-    const isBookmarked = user.bookmarks.includes(proposalId);
+export const BookmarkButton = ({ proposalId, userUpdateFn }) => {
+    const { user, setUser } = useStore();
+    let isBookmarked = user.bookmarks.includes(proposalId);
 
     return (
         <button
@@ -21,6 +23,7 @@ export const BookmarkButton = ({ user, proposalId, userUpdateFn }) => {
                     user.bookmarks.push(proposalId);
                 }
                 await userUpdateFn(user);
+                setUser(user);
             }}
         >
             {/* The bookmark icon from w3.org */}

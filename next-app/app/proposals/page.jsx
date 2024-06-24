@@ -42,6 +42,7 @@ WHERE id = '${protocol}';
 
 export default async function Page({ searchParams }) {
     const protocol = searchParams.protocol;
+    const userId = searchParams.username;
     if (!protocol) return notFound();
 
     const { protocolInfo, proposalMap } = await getData({ protocol });
@@ -62,7 +63,7 @@ export default async function Page({ searchParams }) {
                     <Header protocolInfo={protocolInfo} />
 
                     {/* Manage: Subscription state */}
-                    <Manage protocolId={protocol} />
+                    <Manage protocolId={protocol} userId={userId} />
 
                     {/* RenderList: display list of proposals, or the detail of the selected proposal */}
                     <RenderList proposalMap={proposalMap} protocol={protocol} />

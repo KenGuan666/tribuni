@@ -1,4 +1,5 @@
 import { sql, sanitizeText } from "@/components/db";
+import { fetchProposalData } from "@/components/db/proposal";
 
 export async function POST(req) {
     try {
@@ -32,6 +33,26 @@ export async function POST(req) {
                 proposalMap: null,
             },
             { status: 403 },
+        );
+    }
+}
+
+export async function GET(req) {
+    const { searchParams } = new URL(req.url);
+    const proposalId = searchParams.get("proposalId");
+    try {
+        return Response.json(
+            { proposalData: await fetchProposalData(proposalId) },
+            { status: 201 },
+        );
+    } catch (err) {
+        console.log(err);
+        return Response.json(
+            {
+                proposalsData: null,
+                message: "could not fetch proposal data",
+            },
+            { status: 503 },
         );
     }
 }
