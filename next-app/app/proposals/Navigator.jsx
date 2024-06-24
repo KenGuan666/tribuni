@@ -4,14 +4,8 @@ import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { useStore } from "@/store";
 import clsx from "clsx";
 import Link from "next/link";
-import { useSearchParams } from "next/navigation";
-import { Suspense, useEffect } from "react";
 
-const NavigatorPage = ({ protocolName }) => {
-    const params = useSearchParams();
-    const username = params.get("username");
-    const chatid = params.get("chatid");
-
+export const Navigator = ({ protocolName, userId, chatid }) => {
     const { activeProposal, setActiveProposal } = useStore();
 
     return (
@@ -24,7 +18,7 @@ const NavigatorPage = ({ protocolName }) => {
         >
             {activeProposal === null ? (
                 <Link
-                    href={`/protocols?username=${username}&chatid=${chatid}`}
+                    href={`/protocols?username=${userId}&chatid=${chatid}`}
                     className={clsx(
                         "flex flex-row items-center space-x-0",
                         ANIMATE,
@@ -94,9 +88,3 @@ const NavigatorPage = ({ protocolName }) => {
         </div>
     );
 };
-
-export const Navigator = ({ protocolName }) => (
-    <Suspense fallback={<div>Loading...</div>}>
-        <NavigatorPage protocolName={protocolName} />
-    </Suspense>
-);

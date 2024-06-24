@@ -66,7 +66,7 @@ export default function Page({ searchParams }) {
                     )}
                 >
                     {/* Navigator: the Back button */}
-                    <Navigator protocolName={protocolInfo?.name} />
+                    <Navigator protocolName={protocolInfo?.name} userId={user?.id} chatid={user?.chatid} />
 
                     {/* Header: Protocol name, icon */}
                     <Header protocolInfo={protocolInfo} />

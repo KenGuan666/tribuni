@@ -2,7 +2,6 @@
 
 import React from "react";
 import Image from "next/image";
-import clsx from "clsx";
 import { useStore } from "@/store";
 
 export const Header = ({ protocolInfo }) => {

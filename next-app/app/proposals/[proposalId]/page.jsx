@@ -52,7 +52,7 @@ export default function Page({ params, searchParams }) {
                         MAX_WIDTH,
                     )}
                 >
-                    {/* Make the page scrollable */}
+                    {/* Make the proposal info page scrollable */}
                     <div
                         id="proposal-detail"
                         className={clsx(
