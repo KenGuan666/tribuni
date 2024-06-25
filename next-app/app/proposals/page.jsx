@@ -17,13 +17,25 @@ export default function Page({ searchParams }) {
     const { username, chatid, protocol } = searchParams;
     if (!protocol) return notFound();
 
-    let [proposalMap, setProposalMap] = useState(null);
-    let [protocolInfo, setProtocolInfo] = useState(null);
-    let { user, setUser, setPageLoading } = useStore();
+    let {
+        user,
+        setUser,
+        setPageLoading,
+        getCachedProtocol,
+        cacheProtocol,
+        getCachedProposalsByProtocol,
+        cacheProposalsByProtocol,
+    } = useStore();
+
+    const cachedProtocolInfo = getCachedProtocol(protocol);
+    let [protocolInfo, setProtocolInfo] = useState(cachedProtocolInfo);
+
+    const rcachedProposalsByProtocol = getCachedProposalsByProtocol(protocol);
+    let [proposalMap, setProposalMap] = useState(rcachedProposalsByProtocol);
 
     const fetchData = async () => {
         let promises = [];
-        if (proposalMap == null) {
+        if (!proposalMap) {
             promises.push(
                 fetchProposalByProtocolId(protocol).then(
                     (proposalsData) => {
@@ -35,6 +47,7 @@ export default function Page({ searchParams }) {
                             new Map(),
                         );
                         setProposalMap(proposalMap);
+                        cacheProposalsByProtocol(protocol, proposalsData);
                     },
                     (err) => {
                         console.log(err);
@@ -42,11 +55,12 @@ export default function Page({ searchParams }) {
                 ),
             );
         }
-        if (protocolInfo == null) {
+        if (!protocolInfo) {
             promises.push(
                 fetchProtocolById(protocol).then(
                     (protocolInfoData) => {
                         setProtocolInfo(protocolInfoData);
+                        cacheProtocol(protocolInfoData);
                     },
                     (err) => {
                         console.log(err);
@@ -59,6 +73,7 @@ export default function Page({ searchParams }) {
             promises.push(
                 fetchUserData(username, chatid).then(
                     (userData) => {
+                        user = userData;
                         setUser(userData);
                     },
                     (err) => {
@@ -74,6 +89,9 @@ export default function Page({ searchParams }) {
     useEffect(() => {
         fetchData();
     }, []);
+
+    const { cachedProposalsByProtocol } = useStore();
+    console.log("cached protocols:", cachedProposalsByProtocol);
 
     return (
         <PageLoader

@@ -35,7 +35,7 @@ export const SubscriptionSwitch = ({ protocolId }) => {
                                 user.subscriptions.push(protocolId);
                             }
 
-                            setUser(newUser);
+                            setUser(user);
                             saveUserSubscriptionUpdates(user);
                         }}
                         type="checkbox"

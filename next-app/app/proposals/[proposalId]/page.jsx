@@ -15,23 +15,35 @@ export default function Page({ params, searchParams }) {
     const { proposalId } = params;
     if (!proposalId) return notFound();
     const { username, chatid, from } = searchParams;
+
+    let {
+        user,
+        setUser,
+        setPageLoading,
+        getCachedProtocol,
+        cacheProtocol,
+        getCachedProposal,
+        cacheProposal,
+    } = useStore();
+
+    const cachedProposalInfo = getCachedProposal(proposalId);
     // proposalData, protocolInfo are single-page states
-    let [proposalData, setProposalData] = useState(null);
+    let [proposalData, setProposalData] = useState(cachedProposalInfo);
     let [protocolInfo, setProtocolInfo] = useState(null);
-    // user is an app-wide state
-    let { user, setUser, setPageLoading } = useStore();
+
     let backLink = "",
         backText = "";
 
     const fetchData = async () => {
         let promises = [];
-        if (proposalData == null) {
+        if (!proposalData) {
             setPageLoading(true);
             promises.push(
                 fetchProposalById(proposalId).then(
-                    (proposalData) => {
+                    (res) => {
+                        proposalData = res;
                         setProposalData(proposalData);
-                        return proposalData;
+                        cacheProposal(proposalData);
                     },
                     (err) => {
                         console.log(err);
@@ -44,9 +56,9 @@ export default function Page({ params, searchParams }) {
             setPageLoading(true);
             promises.push(
                 fetchUserData(username, chatid).then(
-                    (user) => {
+                    (res) => {
+                        user = res;
                         setUser(user);
-                        return user;
                     },
                     (err) => {
                         console.log(err);
@@ -54,17 +66,23 @@ export default function Page({ params, searchParams }) {
                 ),
             );
         }
-        const [resolvedProposalData, _] = await Promise.all(promises);
+        await Promise.all(promises);
 
-        if (protocolInfo == null) {
-            setPageLoading(true);
-            try {
-                protocolInfo = await fetchProtocolById(
-                    resolvedProposalData.protocol,
-                );
+        if (proposalData) {
+            protocolInfo = getCachedProtocol(proposalData.protocol);
+            if (protocolInfo) {
                 setProtocolInfo(protocolInfo);
-            } catch (err) {
-                console.log(err);
+            } else {
+                setPageLoading(true);
+                try {
+                    protocolInfo = await fetchProtocolById(
+                        proposalData.protocol,
+                    );
+                    setProtocolInfo(protocolInfo);
+                    cacheProtocol(protocolInfo);
+                } catch (err) {
+                    console.log(err);
+                }
             }
         }
         setPageLoading(false);
