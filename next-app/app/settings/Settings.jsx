@@ -4,6 +4,7 @@ import { MAX_WIDTH } from "@/components/constants";
 import { useStore } from "@/store";
 import clsx from "clsx";
 import React, { useState } from "react";
+import validator from "validator";
 import { ANIMATE } from "@/components/constants";
 import {
     AlarmFill,
@@ -16,9 +17,8 @@ import {
     TrayFill,
     AlarmClock,
 } from "@/components/ios";
-import { ChangeAlerts, ChangeAlertFrequency, ChangeAlertTime } from "./Setter";
-import validator from "validator";
-import { ChangeEmail } from "./ChangeEmail";
+import { ChangeAlerts, ChangeAlertFrequency, ChangeAlertTime } from "@/components/user/Setter";
+import { ChangeEmail } from "@/components/user/ChangeEmail";
 import toast from "react-hot-toast";
 import { TIMEZONES } from "@/constants/timezones";
 
@@ -82,51 +82,14 @@ export const Settings = () => {
     return (
         <React.Fragment>
             <div className={clsx("w-full flex flex-col px-4 pb-24")}>
-                {/* <div
-					className={clsx(
-						"flex flex-row items-center space-x-1 w-full",
-						ANIMATE,
-						MAX_WIDTH
-					)}
-				>
-					<GearshapeFill
-						classes={clsx("w-9 h-9 fill-isLabelLightPrimary")}
-					/>
-					<div className="text-2xl text-isLabelLightPrimary font-600">
-						Settings
-					</div>
-				</div> */}
-
                 <div className="w-full mt-5 space-y-5">
-                    {/* <div
-						className={clsx(
-							"w-full bg-isWhite px-3 py-2 rounded-xl flex flex-row items-center justify-between",
-							MAX_WIDTH
-						)}
-					>
-						<div className="flex flex-row items-center space-x-2">
-							<div className="flex flex-col items-center w-6 h-6 rounded-md bg-isBlueLight shrink-0">
-								<PersonFill
-									classes={clsx("w-6 h-6 fill-isWhite")}
-								/>
-							</div>
-
-							<div className="font-400 text-isLabelLightPrimary">
-								@{user.id}
-							</div>
-						</div>
-
-						<CheckCircle
-							classes={clsx("h-6 w-6 fill-isGreenLight")}
-						/>
-					</div> */}
-
                     <div
                         className={clsx(
                             "w-full bg-isWhite py-2 rounded-xl flex flex-col overflow-hidden",
                             MAX_WIDTH,
                         )}
                     >
+                        {/* Proposal Alerts section header */}
                         <div className="flex flex-row items-center px-3 space-x-2">
                             <div className="flex flex-col items-center w-6 h-6 rounded-md bg-isOrangeLight shrink-0">
                                 <BellBadgeFill
@@ -139,8 +102,10 @@ export const Settings = () => {
                             </div>
                         </div>
 
+                        {/* Horizontal line */}
                         <hr className="w-full my-2 rounded-full bg-isSeparatorLight" />
 
+                        {/* Email switch */}
                         <div className="flex flex-row items-center justify-between px-3">
                             <div className="flex flex-row items-center space-x-2">
                                 <div className="flex flex-col items-center w-6 h-6 rounded-md bg-isRedLight shrink-0">
@@ -157,12 +122,8 @@ export const Settings = () => {
                             <label className="relative inline-flex items-center cursor-pointer">
                                 <input
                                     onChange={async () => {
-                                        let newUser = {
-                                            ...user,
-                                            email_alerts: !user.email_alerts,
-                                        };
-
-                                        setUser(newUser);
+                                        user.email_alerts = !user.email_alerts;
+                                        setUser(user);
 
                                         await ChangeAlerts({
                                             type: "email_alerts",
