@@ -30,8 +30,8 @@ export default function Page({ searchParams }) {
     const cachedProtocolInfo = getCachedProtocol(protocol);
     let [protocolInfo, setProtocolInfo] = useState(cachedProtocolInfo);
 
-    const rcachedProposalsByProtocol = getCachedProposalsByProtocol(protocol);
-    let [proposalMap, setProposalMap] = useState(rcachedProposalsByProtocol);
+    const cachedProposalsByProtocol = getCachedProposalsByProtocol(protocol);
+    let [proposalMap, setProposalMap] = useState(cachedProposalsByProtocol);
 
     const fetchData = async () => {
         let promises = [];
@@ -89,9 +89,6 @@ export default function Page({ searchParams }) {
     useEffect(() => {
         fetchData();
     }, []);
-
-    const { cachedProposalsByProtocol } = useStore();
-    console.log("cached protocols:", cachedProposalsByProtocol);
 
     return (
         <PageLoader

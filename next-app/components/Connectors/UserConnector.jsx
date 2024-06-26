@@ -3,7 +3,7 @@
 import { useStore } from "@/store";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect } from "react";
-import { ANIMATE, MAX_WIDTH } from "../constants";
+import { ANIMATE, BASE_USER, MAX_WIDTH } from "../constants";
 import { clsx } from "clsx";
 import { NavBookmarks, NavHome, NavSettings, NavSocial } from "../ios";
 import Link from "next/link";
@@ -11,40 +11,13 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 
 const UserConnectorPage = () => {
-    const params = useSearchParams();
     const router = useRouter();
     const pathname = usePathname();
-    const { user, setUser, refreshUser, setPageLoading } = useStore();
+    const { user, setPageLoading } = useStore();
 
-    const getUser = async () => {
-        const id = params.get("username");
-        const chatid = params.get("chatid");
-
-        if (id && chatid && id !== user.id && chatid !== user.chatid) {
-            try {
-                const res = await fetch("/api/v4/data/user", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        id: id,
-                        chatid: chatid,
-                    }),
-                });
-
-                const data = await res.json();
-
-                setUser(data.user);
-            } catch (err) {
-                console.log(err);
-            }
-        }
-    };
-
-    useEffect(() => {
-        getUser();
-    }, [params, refreshUser]);
+    if (user == BASE_USER) {
+        return null
+    }
 
     return (
         <React.Fragment>
