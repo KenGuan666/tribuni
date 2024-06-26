@@ -16,7 +16,7 @@ export async function fetchProtocolById(protocolId) {
 }
 
 export async function fetchProtocolsWithActiveAndNewCols() {
-    const query=`
+    const query = `
     SELECT
         p.id AS id,
         p.name AS name,
@@ -29,14 +29,16 @@ export async function fetchProtocolsWithActiveAndNewCols() {
         proposals pr ON p.id = pr.protocol
     GROUP BY
         p.id, p.name, p.icon;
-    `
-    const expandedProtocols = await sql.unsafe(query)
-    return expandedProtocols.map(({ name, _new, active, ...rest }) => {
-                return {
-                    name: name.trim(),
-                    _new: parseInt(_new),
-                    active: parseInt(active),
-                    ...rest,
-                };
-            }).sort((a, b) => a.name.localeCompare(b.name));
+    `;
+    const expandedProtocols = await sql.unsafe(query);
+    return expandedProtocols
+        .map(({ name, _new, active, ...rest }) => {
+            return {
+                name: name.trim(),
+                _new: parseInt(_new),
+                active: parseInt(active),
+                ...rest,
+            };
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
 }

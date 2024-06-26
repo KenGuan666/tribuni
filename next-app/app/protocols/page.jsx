@@ -21,24 +21,24 @@ export default function Page({ searchParams }) {
             promises.push(
                 fetchProtocolsWithActiveAndNewCols().then(
                     (protocols) => {
-                        console.log(protocols)
-                        protocolsInfo = protocols
-                        setProtocolsInfo(protocols)
-                        cacheProtocols(protocols.map(
-                            ({ id, name, icon }) => {
+                        console.log(protocols);
+                        protocolsInfo = protocols;
+                        setProtocolsInfo(protocols);
+                        cacheProtocols(
+                            protocols.map(({ id, name, icon }) => {
                                 return {
                                     id,
                                     name,
                                     icon,
-                                }
-                            })
-                        )
+                                };
+                            }),
+                        );
                     },
                     (err) => {
                         console.log(err);
                     },
-                )
-            )
+                ),
+            );
         }
         // Protocol page is an entry point. It must be able to load user from params
         if (user == BASE_USER) {
@@ -56,7 +56,7 @@ export default function Page({ searchParams }) {
         }
         await Promise.all(promises);
         // setPageLoading(false);
-    }
+    };
 
     useEffect(() => {
         fetchData();

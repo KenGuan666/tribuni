@@ -17,7 +17,11 @@ import {
     TrayFill,
     AlarmClock,
 } from "@/components/ios";
-import { ChangeAlerts, ChangeAlertFrequency, ChangeAlertTime } from "@/components/user/Setter";
+import {
+    ChangeAlerts,
+    ChangeAlertFrequency,
+    ChangeAlertTime,
+} from "@/components/user/Setter";
 import { ChangeEmail } from "@/components/user/ChangeEmail";
 import toast from "react-hot-toast";
 import { TIMEZONES } from "@/constants/timezones";

@@ -16,7 +16,7 @@ const UserConnectorPage = () => {
     const { user, setPageLoading } = useStore();
 
     if (user == BASE_USER) {
-        return null
+        return null;
     }
 
     return (

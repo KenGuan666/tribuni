@@ -28,8 +28,8 @@ export const useStore = create((set, get) => ({
         set((state) => {
             const newMap = new Map(state.cachedProtocols);
             protocolsInfo.forEach((protocolInfo) => {
-                newMap.set(protocolInfo.id, protocolInfo)
-            })
+                newMap.set(protocolInfo.id, protocolInfo);
+            });
             return { cachedProtocols: newMap };
         }),
 

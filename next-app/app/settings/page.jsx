@@ -10,7 +10,7 @@ import { Settings } from "./Settings";
 
 export default function Page({ searchParams }) {
     let { user, setUser } = useStore();
-    const { username, chatid } = searchParams
+    const { username, chatid } = searchParams;
     const fetchData = async () => {
         // Setting page is an entry point. It must be able to load user from params
         if (user == BASE_USER) {
@@ -21,7 +21,7 @@ export default function Page({ searchParams }) {
                 console.log(err);
             }
         }
-    }
+    };
 
     useEffect(() => {
         fetchData();
@@ -37,7 +37,7 @@ export default function Page({ searchParams }) {
                     )}
                 >
                     <Settings />
-                    {/* <UserConnector /> */}
+                    <UserConnector />
                 </div>
             }
         />
