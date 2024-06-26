@@ -122,7 +122,7 @@ export const ProposalList = ({ proposalMap, protocol }) => {
                                             proposal: proposal.id,
                                         },
                                     );
-                                    setPageLoading(true);
+                                    // setPageLoading(true);
                                     router.push(
                                         `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals/${proposal.id}?username=${user.id}&chatid=${user.chatid}`,
                                     );
