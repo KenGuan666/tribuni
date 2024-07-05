@@ -83,12 +83,17 @@ export default function Page({ searchParams }) {
             );
         }
         await Promise.all(promises);
-        setPageLoading(false);
+        // setPageLoading(false);
     };
 
     useEffect(() => {
         fetchData();
     }, []);
+
+    // do not render anything until all elements are loaded
+    if (!proposalMap || !protocolInfo || user == BASE_USER) {
+        return null;
+    }
 
     return (
         <PageLoader

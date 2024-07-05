@@ -62,9 +62,9 @@ export const ProtocolList = ({ protocols, showIndex, search }) => {
                         )}
 
                         <Link
-                            onClick={() => {
-                                setPageLoading(true);
-                            }}
+                            // onClick={() => {
+                            //     setPageLoading(true);
+                            // }}
                             href={`/proposals?protocol=${key}&username=${user.id}&chatid=${user.chatid}`}
                             className="flex flex-row items-center justify-between w-full hover:bg-isSeparatorLight"
                         >
