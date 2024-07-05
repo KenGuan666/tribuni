@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { ProtocolContent } from "./ProtocolContent";
+import { ProtocolPage } from "./ProtocolPage";
 import clsx from "clsx";
 import { fetchProtocolsWithActiveAndNewCols } from "@/components/db/protocol";
 import { fetchUserData } from "@/components/db/user";
@@ -75,7 +75,7 @@ export default function Page({ searchParams }) {
                         MAX_WIDTH,
                     )}
                 >
-                    <ProtocolContent
+                    <ProtocolPage
                         protocols={protocolsInfo}
                         lastUpdated={new Date().toUTCString()}
                     />

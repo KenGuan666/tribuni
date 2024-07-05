@@ -7,6 +7,7 @@ import { BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { Spinner } from "@/components/loaders";
 import React, { useState, useEffect } from "react";
 import { useStore } from "@/store";
+import { BookmarkPage } from "./BookmarkPage";
 
 export default function Page({ searchParams }) {
     const { username, chatid } = searchParams;
@@ -49,10 +50,7 @@ export default function Page({ searchParams }) {
 
     return (
         <div className={clsx("w-full h-full pb-24", MAX_WIDTH)}>
-            <div className="w-full flex flex-row p-4 space-x-3 text-4xl font-700 h-full bg-isSystemLightSecondary rounded-2xl items-center place-content-center p-4">
-                <div className="text-isLabelLightSecondary">Coming</div>{" "}
-                <div className="text-isBlack">Soon</div>
-            </div>
+            <BookmarkPage proposals={proposalsData} />
             <UserConnector />
         </div>
     );
