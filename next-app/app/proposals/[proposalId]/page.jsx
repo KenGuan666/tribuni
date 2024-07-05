@@ -94,9 +94,12 @@ export default function Page({ params, searchParams }) {
 
     // if linked from "proposals", back button links to protocol's proposal page
     // TODO: implement routing for Bookmarks and alert entry
-    if (from == "proposals" || true) {
+    if (from == "proposals" || !from) {
         backText = protocolInfo?.name;
         backLink = `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals?protocol=${protocolInfo?.id}&username=${user?.id}&chatid=${user?.chatid}`;
+    } else if (from == "bookmarks") {
+        backText = "Bookmarks";
+        backLink = `${process.env.NEXT_PUBLIC_SERVER_URL}/bookmarks?username=${user?.id}&chatid=${user?.chatid}`;
     }
 
     if (!proposalData || !protocolInfo || user == BASE_USER) {

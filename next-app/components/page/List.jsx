@@ -4,10 +4,7 @@ import Link from "next/link";
 import { useStore } from "@/store";
 import clsx from "clsx";
 import { Hr, Tag } from ".";
-
-export function capitalizeFirstLetter(inputString) {
-    return inputString.charAt(0).toUpperCase() + inputString.slice(1);
-}
+import { capitalizeFirstLetter } from "@/utils/text";
 
 export function separateDAO(inputString) {
     const matches = inputString.match(/\bDAO\b/g);

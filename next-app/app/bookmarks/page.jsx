@@ -2,6 +2,7 @@
 import clsx from "clsx";
 import { fetchUserData } from "@/components/db/user";
 import { fetchProposalsByIds } from "@/components/db/proposal";
+import { fetchProtocolsByIds } from "@/components/db/protocol";
 import { UserConnector } from "@/components/Connectors";
 import { BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { Spinner } from "@/components/loaders";
@@ -11,32 +12,101 @@ import { BookmarkPage } from "./BookmarkPage";
 
 export default function Page({ searchParams }) {
     const { username, chatid } = searchParams;
-    let { user, setUser, setPageLoading } = useStore();
+    let {
+        user,
+        setUser,
+        cacheProposals,
+        getCachedProposal,
+        cacheProtocols,
+        getCachedProtocol,
+    } = useStore();
     let [proposalsData, setProposalsData] = useState(null);
+    let [protocolsInfo, setProtocolsInfo] = useState(null);
+
+    const _fetchUserData = async () => {
+        try {
+            const userData = await fetchUserData(username, chatid);
+            user = userData;
+            setUser(userData);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const fetchProposalsData = async () => {
+        try {
+            const proposalsDataDb = await fetchProposalsByIds(user.bookmarks);
+            proposalsData = proposalsDataDb;
+            setProposalsData(proposalsDataDb);
+            cacheProposals(proposalsData);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+    const fetchProtocolsData = async (protocolIds) => {
+        try {
+            const protocolsInfoDb = await fetchProtocolsByIds(protocolIds);
+            protocolsInfo = protocolsInfoDb;
+            setProtocolsInfo(protocolsInfoDb);
+            cacheProtocols(protocolsInfo);
+        } catch (err) {
+            console.log(err);
+        }
+    };
 
     const fetchData = async () => {
         // Bookmark page is an entry point. It must be able to load user from params
         if (user == BASE_USER) {
-            try {
-                const userData = await fetchUserData(username, chatid);
-                user = userData;
-                setUser(userData);
-            } catch (err) {
-                console.log(err);
-            }
+            await _fetchUserData();
         }
+
+        // load bookmarked proposals
         if (!proposalsData && user != BASE_USER) {
-            try {
-                const proposalsDataDb = await fetchProposalsByIds(
-                    user.bookmarks,
-                );
-                proposalsData = proposalsDataDb;
-                setProposalsData(proposalsDataDb);
-            } catch (err) {
-                console.log(err);
+            // first, try loading proposalsData from cache
+            let proposalsDataFromCache = [];
+            user.bookmarks.forEach((proposalId) => {
+                const proposalData = getCachedProposal(proposalId);
+                if (proposalData) {
+                    proposalsDataFromCache.push(proposalData);
+                }
+            });
+            if (proposalsDataFromCache.length == user.bookmarks.length) {
+                proposalsData = proposalsDataFromCache;
+                setProposalsData(proposalsDataFromCache);
+            } else {
+                // if proposals are not cached, load from db
+                await fetchProposalsData();
             }
         }
-        // setPageLoading(false);
+
+        // load protocol metadata for bookmarked proposals
+        if (!protocolsInfo && proposalsData) {
+            // first, try loading protocolsInfo from cache
+            const protocolIds = Array.from(
+                proposalsData
+                    .reduce(
+                        (map, proposalData) =>
+                            map.set(proposalData.protocol, true),
+                        new Map(),
+                    )
+                    .keys(),
+            );
+            let protocolsInfoFromCache = [];
+            protocolIds.forEach((protocolId) => {
+                const protocolInfo = getCachedProtocol(protocolId);
+                if (protocolInfo) {
+                    protocolsInfoFromCache.push(protocolInfo);
+                }
+            });
+            if (protocolsInfoFromCache.length == protocolIds.length) {
+                protocolsInfo = protocolsInfoFromCache;
+                setProtocolsInfo(protocolsInfoFromCache);
+            } else {
+                // if protocols are not cached, load from db
+                await fetchProtocolsData(protocolIds);
+            }
+        }
     };
 
     useEffect(() => {
@@ -44,7 +114,7 @@ export default function Page({ searchParams }) {
     }, []);
 
     // Render a spinner until all data loaded
-    if (!proposalsData || user == BASE_USER) {
+    if (!proposalsData || !protocolsInfo || user == BASE_USER) {
         return <Spinner />;
     }
 

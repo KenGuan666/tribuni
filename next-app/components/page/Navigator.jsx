@@ -5,9 +5,6 @@ import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { Spinner } from "@/components/loaders";
 
 export const Navigator = ({ text, link }) => {
-    if (!link) {
-        return <Spinner />;
-    }
     return (
         <div
             className={clsx(

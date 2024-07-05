@@ -5,10 +5,7 @@ import { useStore } from "@/store";
 import clsx from "clsx";
 import { Hr } from "@/components/ui/page/Hr";
 import { Tag } from "@/components/ui/page/Tag";
-
-export function capitalizeFirstLetter(inputString) {
-    return inputString.charAt(0).toUpperCase() + inputString.slice(1);
-}
+import { capitalizeFirstLetter } from "@/utils/text";
 
 export function separateDAO(inputString) {
     const matches = inputString.match(/\bDAO\b/g);
@@ -34,7 +31,9 @@ export const ProtocolList = ({ protocols, showIndex, search }) => {
             )}
         >
             {protocols.map((protocol, idx) => {
-                const char =
+                // If this is the first protocol, or this procotol's name starts with a different chat from previous
+                // render an additional row containing just the initial character, which acts like an index
+                const indexChar =
                     idx === 0 ||
                     protocols[idx - 1].name[0].toLowerCase() !==
                         protocols[idx].name[0].toLowerCase()
@@ -46,25 +45,26 @@ export const ProtocolList = ({ protocols, showIndex, search }) => {
 
                 return (
                     <div id={key} key={key} className="contents">
-                        {showIndex === true && char !== null && (
-                            <React.Fragment>
-                                <div
-                                    className={clsx(
-                                        "px-3 pt-4 pb-1 text-base uppercase text-isLabelLightSecondary font-400",
-                                        search !== "" ? "hidden" : "",
-                                    )}
-                                >
-                                    {search?.length > 0 ? search[0] : char}
-                                </div>
+                        {/* The index row, hidden if search bar is populated */}
+                        {showIndex === true &&
+                            indexChar !== null &&
+                            !search && (
+                                <React.Fragment>
+                                    <div
+                                        className={clsx(
+                                            "px-3 pt-4 pb-1 text-base uppercase text-isLabelLightSecondary font-400",
+                                        )}
+                                    >
+                                        {search?.length > 0
+                                            ? search[0]
+                                            : indexChar}
+                                    </div>
 
-                                <Hr classes={clsx("!px-3")} />
-                            </React.Fragment>
-                        )}
+                                    <Hr classes={clsx("!px-3")} />
+                                </React.Fragment>
+                            )}
 
                         <Link
-                            // onClick={() => {
-                            //     setPageLoading(true);
-                            // }}
                             href={`/proposals?protocol=${key}&username=${user.id}&chatid=${user.chatid}`}
                             className="flex flex-row items-center justify-between w-full hover:bg-isSeparatorLight"
                         >
@@ -76,6 +76,7 @@ export const ProtocolList = ({ protocols, showIndex, search }) => {
                                 {capitalizeFirstLetter(name).trim()}
                             </div>
 
+                            {/* "active" tag, if applicable */}
                             {protocol.active > 0 && (
                                 <Tag
                                     text={`${protocol.active} active`}
@@ -83,6 +84,7 @@ export const ProtocolList = ({ protocols, showIndex, search }) => {
                                 />
                             )}
 
+                            {/* "new" tag, if applicable */}
                             {protocol._new > 0 && (
                                 <Tag
                                     text={`${protocol._new} new`}

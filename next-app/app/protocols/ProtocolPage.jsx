@@ -34,7 +34,7 @@ export const ProtocolPage = ({ protocols }) => {
             <SearchBar
                 searchTerm={search}
                 setSearch={setSearch}
-                placeholder="search by protocol name"
+                placeholder="Search by protocol name"
             />
 
             <Tabs

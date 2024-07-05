@@ -125,7 +125,7 @@ export const ProposalList = ({ proposalMap, protocol }) => {
                                     );
                                     // setPageLoading(true);
                                     router.push(
-                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals/${proposal.id}?username=${user.id}&chatid=${user.chatid}`,
+                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals/${proposal.id}?username=${user.id}&chatid=${user.chatid}&from=proposals`,
                                     );
                                 }}
                                 className="w-full hover:bg-isSystemLightTertiary bg-isWhite rounded-2xl !mt-0 p-4 flex flex-row"

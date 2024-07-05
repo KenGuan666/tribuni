@@ -23,7 +23,6 @@ export async function fetchProposalsByIds(proposalIds) {
         FROM proposals
         WHERE id IN ${proposalIdsPostgres};
     `;
-    console.log(query);
     return await sql.unsafe(query);
 }
 
