@@ -9,6 +9,7 @@ import { fetchUserData } from "@/components/db/user";
 import { ANIMATE, BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { PageLoader, Spinner } from "@/components/loaders";
 import { Navigator } from "@/components/page/Navigator";
+import { ProtocolIcon } from "@/components/page/ProtocolIcon";
 import { useStore } from "@/store";
 
 export default function Page({ params, searchParams }) {
@@ -117,7 +118,6 @@ export default function Page({ params, searchParams }) {
                     )}
                 >
                     <Navigator text={backText} link={backLink} />
-                    {/* Make the proposal info page scrollable */}
                     <div
                         id="proposal-detail"
                         className={clsx(
@@ -127,6 +127,9 @@ export default function Page({ params, searchParams }) {
                             "mt-3",
                         )}
                     >
+                        <div className="relative w-[3rem] h-[3rem] overflow-hidden rounded-full mx-auto">
+                            <ProtocolIcon protocol={protocolInfo} fill={true} />
+                        </div>
                         <ProposalContent proposalData={proposalData} />
                     </div>
                 </div>

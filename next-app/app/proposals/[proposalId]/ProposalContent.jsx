@@ -16,10 +16,7 @@ export function ProposalContent({ proposalData }) {
     }
     return (
         <React.Fragment>
-            <div
-                id="proposalPageRoot"
-                className="w-full px-3 pt-1 pb-2 rounded-xl"
-            >
+            <div id="proposalPageRoot" className="w-full px-3 pb-2 rounded-xl">
                 {/* Title */}
                 <div className="py-2 mt-2 text-xl tracking-tight leading-tight text-left text-isLabelLightPrimary font-600">
                     {proposalData.title.replace(/"/g, "")}
