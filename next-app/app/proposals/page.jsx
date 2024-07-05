@@ -3,7 +3,7 @@ import clsx from "clsx";
 import { notFound } from "next/navigation";
 import { useState, useEffect } from "react";
 import { Header } from "./Header";
-import { ProposalList } from "./ProposalList";
+import { ProposalPreviewList } from "./ProposalPreviewList";
 import { SubscriptionSwitch } from "./SubscriptionSwitch";
 import { fetchProposalByProtocolId } from "@/components/db/proposal";
 import { fetchProtocolById } from "@/components/db/protocol";
@@ -116,7 +116,7 @@ export default function Page({ searchParams }) {
                     <SubscriptionSwitch protocolId={protocol} />
 
                     {/* ProposalList: display list of proposals, or the detail of the selected proposal */}
-                    <ProposalList
+                    <ProposalPreviewList
                         proposalMap={proposalMap}
                         protocol={protocol}
                     />

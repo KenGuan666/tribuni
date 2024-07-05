@@ -3,9 +3,9 @@ import clsx from "clsx";
 import { fetchUserData } from "@/components/db/user";
 import { fetchProposalsByIds } from "@/components/db/proposal";
 import { fetchProtocolsByIds } from "@/components/db/protocol";
-import { UserConnector } from "@/components/Connectors";
 import { BASE_USER, MAX_WIDTH } from "@/components/constants";
-import { Spinner } from "@/components/loaders";
+import { PageLoader, Spinner } from "@/components/loaders";
+import { UserConnector } from "@/components/Connectors";
 import React, { useState, useEffect } from "react";
 import { useStore } from "@/store";
 import { BookmarkPage } from "./BookmarkPage";
@@ -119,9 +119,20 @@ export default function Page({ searchParams }) {
     }
 
     return (
-        <div className={clsx("w-full h-full pb-24", MAX_WIDTH)}>
-            <BookmarkPage proposals={proposalsData} />
-            <UserConnector />
-        </div>
+        <PageLoader
+            children={
+                <div
+                    className={clsx(
+                        "flex flex-col w-full h-screen overflow-hidden",
+                        MAX_WIDTH,
+                    )}
+                >
+                    <div className="flex flex-col grow overflow-y-scroll hide-scrollbar">
+                        <BookmarkPage proposals={proposalsData} />
+                    </div>
+                    <UserConnector />
+                </div>
+            }
+        />
     );
 }
