@@ -3,10 +3,14 @@
 import React from "react";
 import Image from "next/image";
 import { useStore } from "@/store";
+import { Spinner } from "@/components/loaders";
 
 export const Header = ({ protocolInfo }) => {
     if (!protocolInfo) {
-        return null;
+        // Render a spinner until all data loaded
+        if (!proposalsData || user == BASE_USER) {
+            return <Spinner />;
+        }
     }
 
     return (

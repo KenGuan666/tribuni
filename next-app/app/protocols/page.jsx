@@ -6,7 +6,7 @@ import { fetchProtocolsWithActiveAndNewCols } from "@/components/db/protocol";
 import { fetchUserData } from "@/components/db/user";
 import { UserConnector } from "@/components/Connectors";
 import { BASE_USER, MAX_WIDTH } from "@/components/constants";
-import { PageLoader } from "@/components/loaders";
+import { PageLoader, Spinner } from "@/components/loaders";
 import { useStore } from "@/store";
 
 export default function Page({ searchParams }) {
@@ -61,6 +61,10 @@ export default function Page({ searchParams }) {
     useEffect(() => {
         fetchData();
     }, []);
+
+    if (!protocolsInfo || user == BASE_USER) {
+        return <Spinner />;
+    }
 
     return (
         <PageLoader

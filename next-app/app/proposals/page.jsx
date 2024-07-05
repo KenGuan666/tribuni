@@ -9,7 +9,7 @@ import { fetchProposalByProtocolId } from "@/components/db/proposal";
 import { fetchProtocolById } from "@/components/db/protocol";
 import { fetchUserData } from "@/components/db/user";
 import { BASE_USER, MAX_WIDTH } from "@/components/constants";
-import { PageLoader } from "@/components/loaders";
+import { PageLoader, Spinner } from "@/components/loaders";
 import { Navigator } from "@/components/page/Navigator";
 import { useStore } from "@/store";
 
@@ -20,7 +20,6 @@ export default function Page({ searchParams }) {
     let {
         user,
         setUser,
-        setPageLoading,
         getCachedProtocol,
         cacheProtocol,
         getCachedProposalsByProtocol,
@@ -92,7 +91,7 @@ export default function Page({ searchParams }) {
 
     // do not render anything until all elements are loaded
     if (!proposalMap || !protocolInfo || user == BASE_USER) {
-        return null;
+        return <Spinner />;
     }
 
     return (

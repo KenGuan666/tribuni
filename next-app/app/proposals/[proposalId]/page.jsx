@@ -7,7 +7,7 @@ import { fetchProposalById } from "@/components/db/proposal";
 import { fetchProtocolById } from "@/components/db/protocol";
 import { fetchUserData } from "@/components/db/user";
 import { ANIMATE, BASE_USER, MAX_WIDTH } from "@/components/constants";
-import { PageLoader } from "@/components/loaders";
+import { PageLoader, Spinner } from "@/components/loaders";
 import { Navigator } from "@/components/page/Navigator";
 import { useStore } from "@/store";
 
@@ -85,7 +85,7 @@ export default function Page({ params, searchParams }) {
                 }
             }
         }
-        setPageLoading(false);
+        // setPageLoading(false);
     };
 
     useEffect(() => {
@@ -97,6 +97,10 @@ export default function Page({ params, searchParams }) {
     if (from == "proposals" || true) {
         backText = protocolInfo?.name;
         backLink = `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals?protocol=${protocolInfo?.id}&username=${user?.id}&chatid=${user?.chatid}`;
+    }
+
+    if (!proposalData || !protocolInfo || user == BASE_USER) {
+        return <Spinner />;
     }
 
     return (

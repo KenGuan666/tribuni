@@ -4,16 +4,13 @@ import React from "react";
 import clsx from "clsx";
 import { useState } from "react";
 import { ANIMATE, delay, MAX_WIDTH } from "@/components/constants";
-import { MagnifyingGlass, SquareTextSquareFill } from "@/components/ios";
+import { MagnifyingGlass } from "@/components/ios";
 import { Cancel } from "@/components/material-rounded/Cancel";
-import { useStore } from "@/store";
 import { Hr, Tabs, Title } from "@/components/ui/page";
+import { useStore } from "@/store";
 import { ProtocolList } from "./ProtocolList";
 
 export const ProtocolContent = ({ protocols }) => {
-    if (!protocols) {
-        return null;
-    }
     const { user, protocolFilter, setProtocolFilter } = useStore();
     const [search, setSearch] = useState("");
 

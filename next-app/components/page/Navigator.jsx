@@ -2,13 +2,12 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { useStore } from "@/store";
+import { Spinner } from "@/components/loaders";
 
 export const Navigator = ({ text, link }) => {
     if (!link) {
-        return null;
+        return <Spinner />;
     }
-    let { setPageLoading } = useStore();
     return (
         <div
             className={clsx(

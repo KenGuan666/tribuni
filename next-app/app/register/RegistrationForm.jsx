@@ -305,9 +305,7 @@ const RegistrationFormPage = () => {
                         !inputValid && "cursor-not-allowed",
                     )}
                 >
-                    {status === "REGISTERING" && (
-                        <Spinner classes={clsx("w-5 h-5 border-isWhite")} />
-                    )}
+                    {status === "REGISTERING" && <Spinner />}
 
                     {status === "NONE" && "Register"}
                     {status === "NONE" && (

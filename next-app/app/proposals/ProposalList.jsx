@@ -4,9 +4,10 @@ import clsx from "clsx";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { useStore } from "@/store";
+import { Spinner } from "@/components/loaders";
 import { ChevronForward, ExclamationmarkSquareFill } from "@/components/ios";
 import { Tabs } from "@/components/ui/page";
+import { useStore } from "@/store";
 
 function timeFromNow(timestamp) {
     const currentDate = new Date();
@@ -51,7 +52,7 @@ function timeFromNow(timestamp) {
 
 export const ProposalList = ({ proposalMap, protocol }) => {
     if (!proposalMap) {
-        return null;
+        return <Spinner />;
     }
 
     const [filter, setFilter] = useState("all");

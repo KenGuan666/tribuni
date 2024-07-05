@@ -3,6 +3,7 @@ import clsx from "clsx";
 import React from "react";
 import { MAX_WIDTH } from "@/components/constants";
 import { saveUserBookmarkUpdates } from "@/components/db/user";
+import { Spinner } from "@/components/loaders";
 import { BookmarkButton } from "@/components/page/BookmarkButton";
 import { Timeline } from "@/components/page/Timeline";
 import { VoteNowButton } from "@/components/page/VoteNowButton";
@@ -11,7 +12,7 @@ import { Hr } from "@/components/ui/page";
 
 export function ProposalContent({ proposalData }) {
     if (!proposalData) {
-        return null;
+        return <Spinner />;
     }
     return (
         <React.Fragment>

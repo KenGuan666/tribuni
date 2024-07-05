@@ -1,6 +1,6 @@
 "use server";
 import { sql } from "./sql";
-import { postgresArrayFromJsArray } from "./utilities";
+import { postgresInsertArrayFromJsArray } from "./utilities";
 
 export async function fetchUserData(username, chatid) {
     const userQuery = `
@@ -17,7 +17,7 @@ export async function fetchUserData(username, chatid) {
 }
 
 export async function saveUserBookmarkUpdates(user) {
-    const bookmarksPostgres = postgresArrayFromJsArray(user.bookmarks);
+    const bookmarksPostgres = postgresInsertArrayFromJsArray(user.bookmarks);
     await sql`
     UPDATE telegram_users
     SET bookmarks = ${bookmarksPostgres}
@@ -26,7 +26,9 @@ export async function saveUserBookmarkUpdates(user) {
 }
 
 export async function saveUserSubscriptionUpdates(user) {
-    const subscriptionsPostgres = postgresArrayFromJsArray(user.subscriptions);
+    const subscriptionsPostgres = postgresInsertArrayFromJsArray(
+        user.subscriptions,
+    );
     await sql`
     UPDATE telegram_users
     SET subscriptions = ${subscriptionsPostgres}

@@ -1,12 +1,12 @@
 "use client";
 
-import { useStore } from "@/store";
 import React from "react";
-import { ANIMATE, BASE_USER, MAX_WIDTH } from "../constants";
 import { clsx } from "clsx";
-import { NavBookmarks, NavHome, NavSettings, NavSocial } from "../ios";
 import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
+import { useStore } from "@/store";
+import { BASE_USER, MAX_WIDTH } from "../constants";
+import { NavBookmarks, NavHome, NavSettings, NavSocial } from "../ios";
 
 export const UserConnector = () => {
     const router = useRouter();

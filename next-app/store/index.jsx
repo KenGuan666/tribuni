@@ -41,6 +41,14 @@ export const useStore = create((set, get) => ({
             newMap.set(proposalData.id, proposalData);
             return { cachedProposals: newMap };
         }),
+    cacheProposals: (proposalsData) =>
+        set((state) => {
+            const newMap = new Map(state.cachedProposals);
+            proposalsData.forEach((proposalData) => {
+                newMap.set(proposalData.id, proposalData);
+            });
+            return { cachedProposals: newMap };
+        }),
 
     cachedProposalsByProtocol: new Map(),
     getCachedProposalsByProtocol: (protocolId) =>
