@@ -11,7 +11,8 @@ import { useStore } from "@/store";
 
 export default function Page({ searchParams }) {
     const { username, chatid } = searchParams;
-    let { user, setUser, setPageLoading, cacheProtocols } = useStore();
+    let { user, setUser, setPageLoading, cacheProtocols, setProtocolFilter } =
+        useStore();
 
     let [protocolsInfo, setProtocolsInfo] = useState(null);
 
@@ -47,6 +48,9 @@ export default function Page({ searchParams }) {
                     (userData) => {
                         user = userData;
                         setUser(userData);
+                        if (user.subscriptions.length) {
+                            setProtocolFilter("subscribed");
+                        }
                     },
                     (err) => {
                         console.log(err);

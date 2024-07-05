@@ -3,7 +3,6 @@
 import React from "react";
 import clsx from "clsx";
 import { useState } from "react";
-import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { Tabs, Title } from "@/components/ui/page";
 import { SearchBar } from "@/components/page";
 import { useStore } from "@/store";
