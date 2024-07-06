@@ -20,6 +20,7 @@ The /data/proposals/upload endpoint does the following:
    If `protocol` parameter is provided, only fetch proposals for the specified protocol
 2. Update db record for each proposal already known to Tribuni
    Create a new db record for each proposal not known to Tribuni
+3. For each new proposal, bookmark it for users who subscribed to its protocol
 
 Request Body: {
     protocol: string
@@ -177,7 +178,7 @@ export async function POST(req) {
     const proposalEntriesToUpsert = proposalEntriesToCreate.concat(
         proposalEntriesToUpdate,
     );
-    var { data, err } = await upsertProposalData(proposalEntriesToUpsert);
+    var err = await upsertProposalData(proposalEntriesToUpsert);
     if (err) {
         const message = `could not upload proposal updates to database: ${err}`;
         console.log(message);
@@ -365,9 +366,21 @@ async function upsertProtocolsData(protocolsData) {
     );
 }
 
-async function upsertProposalData(proposalData) {
+async function upsertProposalData(proposalsData) {
+    const batchSize = 20;
+    for (let i = 0; i < proposalsData.length; i += batchSize) {
+        let { err } = upsertProposalDataDb(
+            proposalsData.slice(i, i + batchSize),
+        );
+        if (err) {
+            return err;
+        }
+    }
+}
+
+async function upsertProposalDataDb(proposalsData) {
     return await supabase.from("proposals").upsert(
-        proposalData.map(
+        proposalsData.map(
             ({
                 id,
                 protocol,
