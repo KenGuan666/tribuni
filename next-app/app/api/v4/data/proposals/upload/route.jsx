@@ -7,6 +7,7 @@ import {
     PROPOSAL_CLASSES,
     PROPOSAL_CLASS_OTHER,
 } from "@/constants/proposalClasses";
+import { bookmarkForSubscribers } from "./bookmarkUpdate";
 
 export const maxDuration = 300;
 const NO_SUMMARY_FILLER_TEXT = "No content available.";
@@ -32,6 +33,7 @@ export async function POST(req) {
     } catch (err) {
         const message = `failed to parse request body: ${err}`;
         console.log(message);
+        console.log(err);
         return Response.json({ message }, { status: 400 });
     }
 
@@ -42,6 +44,7 @@ export async function POST(req) {
         } catch (err) {
             const message = `could not initialize database: ${err}`;
             console.log(message);
+            console.log(err);
             return Response.json({ message }, { status: 503 });
         }
     }
@@ -53,6 +56,7 @@ export async function POST(req) {
     } catch (err) {
         const message = `could not get protocols from database: ${err}`;
         console.log(message);
+        console.log(err);
         return Response.json({ message }, { status: 503 });
     }
     // protocols without an icon image URL are ignored
@@ -68,6 +72,7 @@ export async function POST(req) {
         if (!protocolsData) {
             const message = `${requestBody.protocol} is not a supported protocol`;
             console.log(message);
+            console.log(err);
             return Response.json({ message }, { status: 400 });
         }
     }
@@ -79,6 +84,7 @@ export async function POST(req) {
     if (err) {
         const message = `could not get protocols from database: ${err}`;
         console.log(message);
+        console.log(err);
         return Response.json({ message }, { status: 503 });
     }
     const existingProtocolIds = new Set(data.map((p) => p.id));
@@ -97,6 +103,7 @@ export async function POST(req) {
         if (err) {
             const message = `could not upload new protocols to database: ${error}`;
             console.log(message);
+            console.log(err);
             return Response.json({ message }, { status: 503 });
         }
     }
@@ -108,6 +115,7 @@ export async function POST(req) {
     if (err) {
         const message = `could not fetch proposals from database: ${err}`;
         console.log(message);
+        console.log(err);
         return Response.json({ message }, { status: 503 });
     }
     const existingProposalsMap = new Map();
@@ -173,9 +181,18 @@ export async function POST(req) {
     if (err) {
         const message = `could not upload proposal updates to database: ${err}`;
         console.log(message);
+        console.log(err);
         return Response.json({ message }, { status: 503 });
     }
 
+    // for each new proposal, bookmark them for subscribed users
+    err = await bookmarkForSubscribers(supabase, proposalEntriesToCreate);
+    if (err) {
+        const message = `could not bookmark new proposals for subscribed users: ${err}`;
+        console.log(message);
+        console.log(err);
+        return Response.json({ message }, { status: 503 });
+    }
     return Response.json({ message: "success" }, { status: 201 });
 }
 
