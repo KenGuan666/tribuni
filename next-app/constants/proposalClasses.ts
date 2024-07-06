@@ -1,21 +1,31 @@
+export const PROPOSAL_CLASS_TOKENOMICS = "Tokenomics";
+export const PROPOSAL_CLASS_GRANTS = "Grants";
+export const PROPOSAL_CLASS_ELECTION = "Election";
+export const PROPOSAL_CLASS_PROTOCOL_UPGRADE = "Protocol Upgrade";
+export const PROPOSAL_CLASS_SERVICE_PROVIDER_SELECTION =
+    "Service Provider Selection";
+export const PROPOSAL_CLASS_CHAIN_DEPLYMENT = "Chain Deployment";
+export const PROPOSAL_CLASS_GOVERNANCE = "Governance";
+export const PROPOSAL_CLASS_OTHER = "Other";
+
 export const PROPOSAL_CLASSES = [
-    "Tokenomics",
-    "Grants",
-    "Election",
-    "Protocol Upgrade",
-    "Service Provider Selection",
-    "Chain Deployment",
-    "Governance",
-    "Other",
+    PROPOSAL_CLASS_TOKENOMICS,
+    PROPOSAL_CLASS_GRANTS,
+    PROPOSAL_CLASS_ELECTION,
+    PROPOSAL_CLASS_PROTOCOL_UPGRADE,
+    PROPOSAL_CLASS_SERVICE_PROVIDER_SELECTION,
+    PROPOSAL_CLASS_CHAIN_DEPLYMENT,
+    PROPOSAL_CLASS_GOVERNANCE,
+    PROPOSAL_CLASS_OTHER,
 ];
 
 export const PROPOSAL_COLORS = {
-    Tokenomics: "#AC2118",
-    Grants: "#D82243",
-    Election: "#EF7B0F",
-    "Protocol Upgrade": "#0A84FF",
-    "Service Provider Selection": "#532DEE",
-    "Chain Deployment": "#D822D1",
-    Governance: "#07BC03",
-    Other: "#626262",
+    [PROPOSAL_CLASS_TOKENOMICS]: "#AC2118",
+    [PROPOSAL_CLASS_GRANTS]: "#D82243",
+    [PROPOSAL_CLASS_ELECTION]: "#EF7B0F",
+    [PROPOSAL_CLASS_PROTOCOL_UPGRADE]: "#0A84FF",
+    [PROPOSAL_CLASS_SERVICE_PROVIDER_SELECTION]: "#532DEE",
+    [PROPOSAL_CLASS_CHAIN_DEPLYMENT]: "#D822D1",
+    [PROPOSAL_CLASS_GOVERNANCE]: "#07BC03",
+    [PROPOSAL_CLASS_OTHER]: "#626262",
 };

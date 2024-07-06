@@ -1,9 +1,15 @@
-import { sql, sanitizeText } from "@/components/db";
+import { sanitizeText } from "@/components/db";
 import sha1 from "sha1";
 import { summarizeProposal } from "@/components/ai/summary";
+import { labelProposal } from "@/components/ai/proposalClassLabel";
 import { createClient } from "@supabase/supabase-js";
+import {
+    PROPOSAL_CLASSES,
+    PROPOSAL_CLASS_OTHER,
+} from "@/constants/proposalClasses";
 
-export const maxDuration = 60;
+export const maxDuration = 600;
+const NO_SUMMARY_FILLER_TEXT = "No content available.";
 var supabase = null;
 
 /*
@@ -54,7 +60,7 @@ export async function POST(req) {
 
     // if "procotol" is in the request body, only handle proposals for the specified protocol
     if (requestBody && requestBody.protocol) {
-        console.log("Only uploading proposals for ", requestBody.protocol);
+        console.log(`Only uploading proposals for ${requestBody.protocol}`);
         protocolsData = protocolsData.filter(
             ({ cname }) => cname == requestBody.protocol,
         );
@@ -66,7 +72,7 @@ export async function POST(req) {
         }
     }
 
-    let protocolNames = protocolsData.map((protocolData) => protocolData.cname);
+    let protocolIds = protocolsData.map((protocolData) => protocolData.cname);
 
     // get known protocolIds from database
     var { data, err } = await supabase.from("protocols").select("id");
@@ -75,12 +81,11 @@ export async function POST(req) {
         console.log(message);
         return Response.json({ message }, { status: 503 });
     }
-    const existingProtocolNames = new Set(data.map((p) => p.id));
-    // console.log(newProtocolsData)
+    const existingProtocolIds = new Set(data.map((p) => p.id));
 
     // add newly discovered protocols to db, if any
     let newProtocolsData = protocolsData.filter(
-        ({ cname }) => !existingProtocolNames.has(cname),
+        ({ cname }) => !existingProtocolIds.has(cname),
     );
     if (newProtocolsData.length) {
         console.log(
@@ -114,8 +119,8 @@ export async function POST(req) {
     // get active proposals from Boardroom
     let proposalEntriesToUpdate = [];
     let proposalEntriesToCreate = [];
-    const proposalPromises = protocolNames.map(async (protocolName) => {
-        let proposalsData = await getProposalsFromBoardroom(protocolName);
+    const proposalPromises = protocolIds.map(async (protocolId) => {
+        let proposalsData = await getProposalsFromBoardroom(protocolId);
         proposalsData = proposalsData.data;
         // filter out repeated proposals from the response
         proposalsData = [
@@ -132,21 +137,21 @@ export async function POST(req) {
             let proposalId = calculateProposalId(proposalData);
             var proposalDbEntry;
             if (existingProposalIds.includes(proposalId)) {
-                // if the proposal is already in Tribuni db, update its metadata, but do not create a new AI summary
+                // if the proposal is already in Tribuni db, only update its metadata which has changed
                 proposalDbEntry = await fromRawProposal(
                     proposalData,
                     existingProposalsMap.get(proposalId),
-                    protocolName,
+                    protocolId,
                 );
                 if (proposalDbEntry) {
                     proposalEntriesToUpdate.push(proposalDbEntry);
                 }
             } else {
-                // if the proposal is new, create a new AI summary
+                // if the proposal is new, create a new AI summary and corresponding proposal class label
                 proposalDbEntry = await fromRawProposal(
                     proposalData,
                     null,
-                    protocolName,
+                    protocolId,
                 );
                 if (proposalDbEntry) {
                     proposalEntriesToCreate.push(proposalDbEntry);
@@ -165,7 +170,6 @@ export async function POST(req) {
         proposalEntriesToUpdate,
     );
     var { data, err } = await upsertProposalData(proposalEntriesToUpsert);
-
     if (err) {
         const message = `could not upload proposal updates to database: ${err}`;
         console.log(message);
@@ -180,74 +184,126 @@ export async function POST(req) {
 async function fromRawProposal(
     rawProposal,
     existingProposalDbEntry,
-    protocolName,
+    protocolId,
 ) {
     let updatedDbEntry = existingProposalDbEntry || {};
-    updatedDbEntry["id"] = calculateProposalId(rawProposal);
-    updatedDbEntry["protocol"] = protocolName;
+
+    // sanitize and copy over fields from rawProposal
+    updatedDbEntry["id"] =
+        updatedDbEntry["id"] || calculateProposalId(rawProposal);
+    updatedDbEntry["protocol"] = protocolId;
     updatedDbEntry["proposer"] = rawProposal.proposer;
     updatedDbEntry["title"] = sanitizeText(rawProposal.title).trim();
     updatedDbEntry["starttime"] = parseInt(rawProposal.startTimestamp);
     updatedDbEntry["endtime"] = parseInt(rawProposal.endTimestamp);
     updatedDbEntry["url"] = updatedDbEntry["url"] || rawProposal.externalUrl;
-
-    if (!updatedDbEntry["url"]) {
-        // Boardroom does not know the voting URL for some protocols. Manually enter them here
-        if (protocolName == "optimism") {
-            updatedDbEntry["url"] =
-                `https://vote.optimism.io/proposals/${rawProposal.id}`;
-        } else if (protocolName == "arbitrum") {
-            updatedDbEntry["url"] =
-                `https://www.tally.xyz/gov/arbitrum/proposal/${rawProposal.id}`;
-        } else if (protocolName == "aave") {
-            const proposalRawId = parseInt(rawProposal.id, 10);
-            if (!isNaN(proposalRawId)) {
-                updatedDbEntry["url"] =
-                    `https://app.aave.com/governance/v3/proposal/?proposalId=${proposalRawId}`;
-            }
-        } else {
-            updatedDbEntry["url"] =
-                `https://www.google.com/search?q=${protocolName} ${updatedDbEntry["title"]}`;
-        }
-    }
-
-    if (!updatedDbEntry["was_summarized"]) {
-        if (
-            rawProposal["content"] == "" ||
-            rawProposal["content"] == null ||
-            rawProposal["content"] == undefined
-        ) {
-            updatedDbEntry["raw_summary"] = "No content available.";
-            dbEupdatedDbEntryntry["summary"] = "No content available.";
-            updatedDbEntry["was_summarized"] = false;
-        } else {
-            let sanitizedContent = sanitizeText(rawProposal["content"]).trim();
-            if (sanitizedContent.length > 200)
-                updatedDbEntry["raw_summary"] =
-                    sanitizedContent.slice(0, 200) + "...";
-            else updatedDbEntry["raw_summary"] = sanitizedContent;
-
-            try {
-                updatedDbEntry["summary"] = await summarizeProposal(
-                    updatedDbEntry["raw_summary"],
-                );
-                updatedDbEntry["was_summarized"] = true;
-            } catch (err) {
-                updatedDbEntry["summary"] = dbEntry["raw_summary"];
-                updatedDbEntry["was_summarized"] = false;
-            }
-        }
-    }
-
     updatedDbEntry["choices"] = rawProposal.choices.map((choice) =>
         sanitizeText(choice).trim(),
     );
     updatedDbEntry["results"] = rawProposal.indexedResult;
+
+    if (!updatedDbEntry["url"]) {
+        // Boardroom does not know the voting URL for some protocols. Use fallback logic to find some url
+        populateFallbackUrl(updatedDbEntry, rawProposal);
+    }
+
+    if (!updatedDbEntry["was_summarized"]) {
+        await populateProposalSummary(updatedDbEntry, rawProposal["content"]);
+    }
+
+    if (!updatedDbEntry["proposal_class"]) {
+        await populateProposalClass(updatedDbEntry);
+    }
+
     return updatedDbEntry;
 }
 
+/*
+    calculateProposalId: create a unique id for each proposal
+*/
 function calculateProposalId(rawProposal) {
     return sha1(rawProposal.id);
+}
+
+/*
+    populateFallbackUrl: identify a reasonable "Vote Now" link if Boardroom API doesn't provide one
+    The fallback logic is per-protocol. If there's no good logic, fallback to linking a Google search result
+*/
+function populateFallbackUrl(dbEntry, rawProposal) {
+    const protocolId = dbEntry.protocol;
+    if (protocolId == "optimism") {
+        dbEntry["url"] = `https://vote.optimism.io/proposals/${rawProposal.id}`;
+    } else if (protocolId == "arbitrum") {
+        dbEntry["url"] =
+            `https://www.tally.xyz/gov/arbitrum/proposal/${rawProposal.id}`;
+    } else if (protocolId == "aave") {
+        const proposalRawId = parseInt(rawProposal.id, 10);
+        if (!isNaN(proposalRawId)) {
+            dbEntry["url"] =
+                `https://app.aave.com/governance/v3/proposal/?proposalId=${proposalRawId}`;
+        }
+    } else {
+        dbEntry["url"] =
+            `https://www.google.com/search?q=${protocolId} ${dbEntry["title"]}`;
+    }
+}
+
+/*
+    populateProposalSummary: create and save an AI summary of the proposal
+*/
+async function populateProposalSummary(dbEntry, rawContentStr) {
+    if (!rawContentStr) {
+        dbEntry["raw_summary"] = NO_SUMMARY_FILLER_TEXT;
+        dbEntry["summary"] = NO_SUMMARY_FILLER_TEXT;
+        dbEntry["was_summarized"] = false;
+        return;
+    }
+
+    let sanitizedContent = sanitizeText(rawContentStr).trim();
+    if (sanitizedContent.length > 200)
+        dbEntry["raw_summary"] = sanitizedContent.slice(0, 200) + "...";
+    else dbEntry["raw_summary"] = sanitizedContent;
+
+    try {
+        dbEntry["summary"] = await summarizeProposal(dbEntry["raw_summary"]);
+        dbEntry["was_summarized"] = true;
+    } catch (err) {
+        dbEntry["summary"] = dbEntry["raw_summary"];
+        dbEntry["was_summarized"] = false;
+    }
+}
+
+/*
+    populateProposalClass: create and save an AI-created proposal class label of the proposal
+*/
+async function populateProposalClass(dbEntry) {
+    var label, summary;
+    if (!dbEntry["was_summarized"]) {
+        if (dbEntry["raw_summary"] === NO_SUMMARY_FILLER_TEXT) {
+            dbEntry["proposal_class"] = PROPOSAL_CLASS_OTHER;
+            return;
+        }
+        summary = dbEntry["raw_summary"];
+    } else {
+        summary = dbEntry["summary"];
+    }
+    try {
+        label = await labelProposal(summary);
+    } catch (err) {
+        // in case of openAI error, do not label the proposal and wait for next update
+        console.log(err);
+        return;
+    }
+
+    // make sure the label is one of the predefined classes
+    const label_lowercase = label.toLowerCase();
+    for (const _class of PROPOSAL_CLASSES) {
+        if (label_lowercase.includes(_class.toLowerCase())) {
+            dbEntry["proposal_class"] = label;
+            return;
+        }
+    }
+    dbEntry["proposal_class"] = PROPOSAL_CLASS_OTHER;
 }
 
 async function getProtocolsFromBoardroom() {
@@ -261,8 +317,8 @@ async function getProtocolsFromBoardroom() {
     return protocolsResJson.data;
 }
 
-async function getProposalsFromBoardroom(protocolName) {
-    const proposalsURL = `https://api.boardroom.info/v1/protocols/${protocolName}/proposals?status=active&key=${process.env.BOARDROOM_API_KEY}`;
+async function getProposalsFromBoardroom(protocolId) {
+    const proposalsURL = `https://api.boardroom.info/v1/protocols/${protocolId}/proposals?status=active&key=${process.env.BOARDROOM_API_KEY}`;
     const proposalsOptions = {
         method: "GET",
         headers: { Accept: "application/json" },
@@ -305,6 +361,7 @@ async function upsertProposalData(proposalData) {
                 url,
                 raw_summary,
                 summary,
+                proposal_class,
                 was_summarized,
                 choices,
                 results,
@@ -318,6 +375,7 @@ async function upsertProposalData(proposalData) {
                 url,
                 raw_summary,
                 summary,
+                proposal_class,
                 was_summarized,
                 choices,
                 results,
