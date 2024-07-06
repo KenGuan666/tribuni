@@ -8,7 +8,7 @@ import {
     PROPOSAL_CLASS_OTHER,
 } from "@/constants/proposalClasses";
 
-export const maxDuration = 600;
+export const maxDuration = 300;
 const NO_SUMMARY_FILLER_TEXT = "No content available.";
 var supabase = null;
 
