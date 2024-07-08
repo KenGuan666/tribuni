@@ -55,7 +55,7 @@ export const UserConnector = () => {
                             >
                                 <button
                                     onClick={() => {
-                                        setPageLoading(true);
+                                        // setPageLoading(true);
                                         router.push(
                                             `${ele.path}?username=${user.id}&chatid=${user.chatid}`,
                                         );

@@ -298,7 +298,7 @@ export const Settings = () => {
                             onClick={async () => {
                                 try {
                                     let res = await fetch(
-                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/telegram`,
+                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/telegramv2`,
                                         {
                                             method: "POST",
                                             headers: {

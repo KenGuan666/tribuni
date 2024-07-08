@@ -10,10 +10,18 @@ export async function fetchUserData(username, chatid) {
         LIMIT 1;
     `;
     const users = await sql.unsafe(userQuery);
-    if (users.length) {
+    if (users && users.length) {
         return users[0];
     }
-    return {};
+    return null;
+}
+
+export async function fetchAllUsersData() {
+    const userQuery = `
+        SELECT *
+        FROM telegram_users;
+    `;
+    return await sql.unsafe(userQuery);
 }
 
 export async function saveUserBookmarkUpdates(user) {

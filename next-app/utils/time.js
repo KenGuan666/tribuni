@@ -28,3 +28,16 @@ export function relativeTimeLabel(timestamp) {
 export function isInThePast(timestamp) {
     return new Date() > new Date(timestamp * 1000);
 }
+
+/*
+    isNearUTCSecondStampNow: whether utcSecondStamp is within timeDifferenceCap seconds of the UTC second stamp now.
+    "Second stamp" is an integer between 0 and 86399 which specifies how many seconds have passed since midnight
+*/
+export function isNearUTCSecondStampNow(secondStampUTC, timeDifferenceCap) {
+    const currentDate = new Date();
+    const currentSecondStampUTC =
+        currentDate.getUTCHours() * 3600 +
+        currentDate.getUTCMinutes() * 60 +
+        currentDate.getUTCSeconds();
+    return Math.abs(currentSecondStampUTC - secondStampUTC) < timeDifferenceCap;
+}
