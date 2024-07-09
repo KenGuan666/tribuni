@@ -3,20 +3,18 @@ import { fetchProposalsByIds } from "@/components/db/proposal";
 import { fetchProtocolsByIds } from "@/components/db/protocol";
 import { isInThePast } from "@/utils/time";
 
-/* 
-    alertContentForUsers: return a map of [userId, chatId] => alertContents
-    
-    alertContents is a list of objects, each object contains a protocol's metadata which goes into an alert
-    [
-        { 
-            protocolInfo: {...}, 
-            proposalsData: [
-                {...},
-                {...},
-            ],
-        },
-        ...
-    ],
+/*
+    alertContentForUsers: return a list of alertContent
+
+    alertContent is an object, which contains a protocol's metadata which goes into an alert, and the recipient's metadata
+    {
+        protocolInfo: {...},
+        proposalsData: [
+            {...},
+            {...},
+        ],
+        user: {...},
+    }
 */
 export async function alertContentForUsers(users) {
     // fetch proposals bookmarked by at least one user
@@ -70,7 +68,7 @@ export async function alertContentForUsers(users) {
     );
 
     // construct alertContent for each user
-    let alertContentsMap = new Map();
+    let alertContents = [];
     users.forEach((user) => {
         // protocolId => proposalIds map for current user
         const proposalsByProtocolId = user.bookmarks.reduce(
@@ -85,15 +83,14 @@ export async function alertContentForUsers(users) {
             new Map(),
         );
 
-        let alertContents = [];
         proposalsByProtocolId.forEach((proposalsData, protocolId) => {
             const protocolInfo = protocolsById.get(protocolId);
             alertContents.push({
                 protocolInfo,
                 proposalsData,
+                user,
             });
         });
-        alertContentsMap.set(List([user.id, user.chatid]), alertContents);
     });
-    return alertContentsMap;
+    return alertContents;
 }

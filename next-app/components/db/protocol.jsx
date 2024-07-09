@@ -1,6 +1,5 @@
 "use server";
 import { sql } from "./sql";
-import { postgresLookupArrayFromJsArray } from "./utilities";
 
 export async function fetchProtocolById(protocolId) {
     const query = `
@@ -17,13 +16,15 @@ export async function fetchProtocolById(protocolId) {
 }
 
 export async function fetchProtocolsByIds(protocolIds) {
-    const protocolIdsPostgres = postgresLookupArrayFromJsArray(protocolIds);
+    if (!protocolIds.length) {
+        return [];
+    }
     const query = `
         SELECT *
         FROM protocols
-        WHERE id IN ${protocolIdsPostgres};
+        WHERE id = ANY($1);
     `;
-    return await sql.unsafe(query);
+    return await sql.unsafe(query, [protocolIds]);
 }
 
 export async function fetchProtocolsWithActiveAndNewCols() {

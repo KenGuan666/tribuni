@@ -1,6 +1,5 @@
 "use server";
 import { sql } from "./sql";
-import { postgresLookupArrayFromJsArray } from "./utilities";
 
 export async function fetchProposalById(proposalId) {
     const query = `
@@ -17,13 +16,15 @@ export async function fetchProposalById(proposalId) {
 }
 
 export async function fetchProposalsByIds(proposalIds) {
-    const proposalIdsPostgres = postgresLookupArrayFromJsArray(proposalIds);
+    if (!proposalIds.length) {
+        return [];
+    }
     const query = `
         SELECT *
         FROM proposals
-        WHERE id IN ${proposalIdsPostgres};
+        WHERE id = ANY($1);
     `;
-    return await sql.unsafe(query);
+    return await sql.unsafe(query, [proposalIds]);
 }
 
 export async function fetchProposalByProtocolId(protocolId) {

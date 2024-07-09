@@ -57,9 +57,8 @@ export default function Page({ searchParams }) {
 
     const fetchData = async () => {
         // Bookmark page is an entry point. It must be able to load user from params
-        if (user == BASE_USER) {
-            await _fetchUserData();
-        }
+        user = BASE_USER;
+        await _fetchUserData();
 
         // load bookmarked proposals
         if (!proposalsData && user != BASE_USER) {

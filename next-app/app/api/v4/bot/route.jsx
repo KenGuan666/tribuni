@@ -9,7 +9,7 @@ export async function POST(req) {
 
         if (body.callback_query) {
             // callback
-            // await HandleCallback({ bot, body });
+            await HandleCallback({ bot, body });
         } else {
             // default
             await DefaultReply({ bot, body });

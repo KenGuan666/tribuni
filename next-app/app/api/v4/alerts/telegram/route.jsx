@@ -1,196 +1,94 @@
-import { sql } from "@/components/db";
-import { rawTimeFromNow } from "@/components/utilities";
-import { getBot } from "@/components/bot";
+import { fetchUserData } from "@/components/db/user";
+import { isInThePast, isNearUTCSecondStampNow } from "@/utils/time";
+import { alertContentForUsers } from "../alertContent";
+import { pushTelegramAlerts } from "./telegram";
 
-export function generateMarkdown({ subscriptions, username, chatid }) {
-    let markdown = "";
-    let isFirstProtocol = true;
-    let currentProtocol = "";
-    let protocolProposalCounts = {}; // Object to store proposal counts for each protocol
+/*
+    POST: this endpoint sends v2 telegram alerts to users when called
 
-    for (const subscription of subscriptions) {
-        const { protocol_id, protocol, title, endtime, url } = subscription;
-        const votingLink =
-            url && url !== "undefined" ? `👉 [Vote Now](${url})` : "";
+    A v2 telegram alert concerns a single Protocol. It contains:
+        - all proposals of the Protocol bookmarked by the user
+        - summary of the first proposal
+        - a series of buttons leading user into the telegram bot or voting site
 
-        // Initialize proposal count for the current protocol if it's the first time encountering it
-        if (protocol !== currentProtocol) {
-            if (!isFirstProtocol) {
-                markdown += "\n";
-            }
-            markdown += `*Protocol:* [${protocol}](${process.env.SERVER_URL}/proposals?protocol=${protocol_id}&username=${username}&chatid=${chatid})`;
-            isFirstProtocol = false;
-            currentProtocol = protocol;
-            protocolProposalCounts[currentProtocol] = 0;
-        }
-
-        // Increment proposal count for the current protocol
-        protocolProposalCounts[currentProtocol]++;
-
-        // Generate markdown with proposal number relative to the current protocol
-        markdown += `\n${
-            protocolProposalCounts[currentProtocol]
-        }. _${title}_ \n🔴 _Ends in ${rawTimeFromNow(
-            parseInt(endtime),
-        )}_ | ${votingLink}\n`;
-
-        // Break the loop if 10 proposals have been processed for the current protocol
-        if (protocolProposalCounts[currentProtocol] >= 10) {
-            break;
-        }
+    Params:
+        username (string): telegram handle of the target user (e.g. ken12358)
+            if provided, only send alert to specified user
+            must be provided together with chatid
+        chatid (string): telegram-generated id which identifies specified user's chat
+            must be provided together with username
+        test (boolean): if true, the alert will be fired regardless of the user's alert settings
+*/
+export async function POST(req) {
+    let requestBody = {};
+    try {
+        requestBody = await req.json();
+    } catch (err) {
+        console.log(err);
+        return Response.json(
+            { message: `Could not parse the alert request: ${err.message}` },
+            { status: 500 },
+        );
     }
 
-    markdown += `\n[Manage Alert Settings](${process.env.SERVER_URL}/settings?username=${username}&chatid=${chatid})`;
+    // determine users who will receive the alert
+    var users;
+    if (requestBody.username && requestBody.chatid) {
+        // If a username and chatid is provided, only alert this user
+        const user = await fetchUserData(
+            requestBody.username,
+            requestBody.chatid,
+        );
 
-    return markdown;
-}
+        // If a bad username is provided, return 400
+        if (!user) {
+            return Response.json(
+                { message: `Could not find user ${requestBody.username}` },
+                { status: 400 },
+            );
+        }
+        users = [user];
+    } else {
+        // If no username or chatid is provided, alert all users
+        users = await fetchUsersEligibleForAlertNow();
+    }
 
-export async function POST(req) {
-    const bot = getBot();
+    // Filter users eligible to receive alerts based on settings, if "test" param is not True
+    if (!requestBody.test) {
+        users = users.filter((user) => {
+            return (
+                user.telegram_alerts && // alert is enabled
+                !user.pause_alerts && // alert is not paused
+                isInThePast(user.last_telegram_alert + user.duration) && // last alert was fired long enough ago
+                isNearUTCSecondStampNow(user.alert_time, 30)
+            ); // user opted to receive alerts at this minute
+        });
+    }
+    console.log(
+        `sending Telegram alerts to users with userid: ${users.map((user) => user.id)}`,
+    );
 
+    const alertContents = await alertContentForUsers(users);
+    if (!alertContents) {
+        return Response.json(
+            { message: `Could not prepare alerts` },
+            { status: 500 },
+        );
+    }
     try {
-        const body = await req.json().catch(() => null);
-
-        if (body && body.test && body.username && body.chatid) {
-            console.log("test alert");
-
-            const { username, chatid } = body;
-
-            const testSubscriptionQuery = `
-        SELECT p.id,
-              pr.id as protocol_id,
-              pr.name AS protocol,
-              p.title,
-              p.endTime,
-              p.url
-        FROM proposals p
-        JOIN protocols pr ON p.protocol = pr.id
-        WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${username}')
-          AND p.endTime > EXTRACT(epoch FROM NOW())::INT
-        ORDER BY pr.name ASC;
-      `;
-
-            const testSubscriptions = await sql.unsafe(testSubscriptionQuery);
-            const testMarkdown = generateMarkdown({
-                subscriptions: testSubscriptions,
-                username,
-                chatid,
-            });
-
-            if (testSubscriptions.length !== 0) {
-                await bot.sendMessage(chatid, `${testMarkdown}`, {
-                    parse_mode: "Markdown",
-                });
-
-                return Response.json(
-                    {
-                        status: "success",
-                        message: "Test alert sent successfully",
-                    },
-                    { status: 201 },
-                );
-            } else {
-                return Response.json(
-                    {
-                        status: "error",
-                        message: "No subscriptions found for the test user",
-                    },
-                    { status: 404 },
-                );
-            }
-        }
-
-        const usersQuery = `
-      SELECT *
-      FROM telegram_users
-      WHERE pause_alerts = FALSE
-        AND telegram_alerts = TRUE
-        AND last_telegram_alert + duration < ${Math.floor(Date.now() / 1000)};
-    `;
-
-        const users = await sql.unsafe(usersQuery);
-
-        const usersToReceive = [];
-        for (const user of users) {
-            if (!user.id || !user.chatid) continue;
-            if (user.alert_time) {
-                const alertTime = user.alert_time;
-
-                const currentDate = new Date();
-                const currentTime =
-                    currentDate.getUTCHours() * 3600 +
-                    currentDate.getUTCMinutes() * 60 +
-                    currentDate.getUTCSeconds();
-
-                const timeDifference = Math.abs(currentTime - alertTime);
-
-                if (timeDifference < 30) {
-                    usersToReceive.push(user);
-                }
-            } else {
-                usersToReceive.push(user);
-            }
-        }
-
-        if (usersToReceive.length !== 0) {
-            const promises = usersToReceive.map(async (user) => {
-                const subscriptionsQuery = `
-          SELECT p.id,
-                 pr.id as protocol_id,
-                 pr.name AS protocol,
-                 p.title,
-                 p.endTime,
-                 p.url
-          FROM proposals p
-          JOIN protocols pr ON p.protocol = pr.id
-          WHERE p.protocol IN (SELECT unnest(subscriptions) FROM telegram_users WHERE id = '${user.id}')
-            AND p.endTime > EXTRACT(epoch FROM NOW())::INT
-          ORDER BY pr.name ASC;
-        `;
-
-                const subscriptions = await sql.unsafe(subscriptionsQuery);
-
-                const markdown = generateMarkdown({
-                    subscriptions,
-                    username: user.id,
-                    chatid: user.chatid,
-                });
-
-                if (subscriptions.length !== 0) {
-                    try {
-                        await bot.sendMessage(user.chatid, `${markdown}`, {
-                            parse_mode: "Markdown",
-                        });
-
-                        await sql.unsafe(`
-              UPDATE telegram_users
-              SET last_telegram_alert = ${Math.floor(Date.now() / 1000)}
-              WHERE id = '${user.id}';
-            `);
-                    } catch (err) {
-                        console.log("failed to send chat to user", user.id);
-                    }
-                }
-            });
-
-            await Promise.all(promises);
-        }
-
+        await pushTelegramAlerts(alertContents);
         return Response.json(
             {
-                status: "success",
-                message: "Telegram alerts sent successfully",
-                n_alerts: usersToReceive.length,
+                message: "Successfully sent telegram alerts",
+                n_alerts: users.length,
             },
             { status: 201 },
         );
     } catch (err) {
         console.log(err);
         return Response.json(
-            {
-                status: "error",
-            },
-            { status: 400 },
+            { message: `Could not send telegram alerts: ${err.message}` },
+            { status: 500 },
         );
     }
 }

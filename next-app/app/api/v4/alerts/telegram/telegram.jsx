@@ -1,35 +1,29 @@
 import { relativeTimeLabel } from "@/utils/time";
 import { getBot } from "@/components/bot";
 
-export async function pushTelegramAlerts(alertContentsByUser) {
+export async function pushTelegramAlerts(alertContents) {
     const bot = getBot();
     let promises = [];
 
     // Each alertContent of each user leads to a Telegram message
-    alertContentsByUser.forEach((alertContents, [userId, chatId]) => {
-        alertContents.forEach(({ protocolInfo, proposalsData }) => {
-            // show the most urgent proposal first
-            proposalsData.sort((p1, p2) => p1.endtime - p2.endtime);
-            const alertText = generateAlertMarkdownText(
-                protocolInfo,
-                proposalsData,
-            );
-            const alertButtons = generateAlertButtons(
-                userId,
-                chatId,
-                proposalsData,
-            );
+    alertContents.forEach(({ protocolInfo, proposalsData, user }) => {
+        // show the most urgent proposal first
+        proposalsData.sort((p1, p2) => p1.endtime - p2.endtime);
+        const alertText = generateAlertMarkdownText(
+            protocolInfo,
+            proposalsData,
+        );
+        const alertButtons = generateAlertButtons(user, proposalsData);
 
-            const telegramMessageOptions = {
-                parse_mode: "Markdown",
-                reply_markup: {
-                    inline_keyboard: alertButtons,
-                },
-            };
-            promises.push(
-                bot.sendMessage(chatId, alertText, telegramMessageOptions),
-            );
-        });
+        const telegramMessageOptions = {
+            parse_mode: "Markdown",
+            reply_markup: {
+                inline_keyboard: alertButtons,
+            },
+        };
+        promises.push(
+            bot.sendMessage(user.chatid, alertText, telegramMessageOptions),
+        );
     });
     await Promise.all(promises);
 }
@@ -52,7 +46,9 @@ function generateAlertMarkdownText(protocolInfo, proposalsData) {
     return message;
 }
 
-function generateAlertButtons(userId, chatId, proposalsData) {
+function generateAlertButtons(user, proposalsData) {
+    const userId = user.id;
+    const chatId = user.chatid;
     // TODO: add metrics collection using Telegram API's callback feature
 
     // "View my Bookmarks" takes user to bookmarks page in web-app
@@ -79,20 +75,21 @@ function generateAlertButtons(userId, chatId, proposalsData) {
 
     // "I Voted!" unbookmarks related proposals
     // Telegram bot will reply with confirmation
-    // TODO: instead of taking user to web-app, handle unbookmark in background and reply
+
+    // callback_data can be at most 64 bytes.
+    // we'll encode proposals to remove by first 5 chars of their id
+    const callback_data =
+        `book ${proposalsData.map((p) => p.id.slice(0, 5))}`.slice(0, 64);
+
     if (proposalsData.length === 1) {
         votedButton = {
             text: "I Voted!",
-            web_app: {
-                url: `${process.env.SERVER_URL}/bookmarks?username=${userId}&chatid=${chatId}`,
-            },
+            callback_data,
         };
     } else {
         votedButton = {
             text: `I Voted on all ${proposalsData.length}!`,
-            web_app: {
-                url: `${process.env.SERVER_URL}/bookmarks?username=${userId}&chatid=${chatId}`,
-            },
+            callback_data,
         };
     }
     return [[voteNowButton], [votedButton, bookmarkButton]];
