@@ -1,4 +1,4 @@
-import { fetchUserData } from "@/components/db/user";
+import { fetchUserData, fetchAllUsersData } from "@/components/db/user";
 import { isInThePast, isNearUTCSecondStampNow } from "@/utils/time";
 import { alertContentForUsers } from "../alertContent";
 import { pushTelegramAlerts } from "./telegram";
@@ -50,7 +50,7 @@ export async function POST(req) {
         users = [user];
     } else {
         // If no username or chatid is provided, alert all users
-        users = await fetchUsersEligibleForAlertNow();
+        users = await fetchAllUsersData();
     }
 
     // Filter users eligible to receive alerts based on settings, if "test" param is not True

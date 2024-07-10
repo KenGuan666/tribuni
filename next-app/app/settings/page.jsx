@@ -13,19 +13,21 @@ export default function Page({ searchParams }) {
     const { username, chatid } = searchParams;
     const fetchData = async () => {
         // Setting page is an entry point. It must be able to load user from params
-        if (user == BASE_USER) {
-            try {
-                const userData = await fetchUserData(username, chatid);
-                setUser(userData);
-            } catch (err) {
-                console.log(err);
-            }
+        try {
+            const userData = await fetchUserData(username, chatid);
+            setUser(userData);
+        } catch (err) {
+            console.log(err);
         }
     };
 
     useEffect(() => {
         fetchData();
     }, []);
+
+    if (user == BASE_USER) {
+        return null;
+    }
 
     return (
         <PageLoader

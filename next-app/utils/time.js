@@ -39,5 +39,6 @@ export function isNearUTCSecondStampNow(secondStampUTC, timeDifferenceCap) {
         currentDate.getUTCHours() * 3600 +
         currentDate.getUTCMinutes() * 60 +
         currentDate.getUTCSeconds();
+
     return Math.abs(currentSecondStampUTC - secondStampUTC) < timeDifferenceCap;
 }
