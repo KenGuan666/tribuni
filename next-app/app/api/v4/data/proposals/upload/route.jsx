@@ -2,16 +2,24 @@ import { sanitizeText } from "@/components/db";
 import sha1 from "sha1";
 import { summarizeProposal } from "@/components/ai/summary";
 import { labelProposal } from "@/components/ai/proposalClassLabel";
-import { createClient } from "@supabase/supabase-js";
+import {
+    getSupabase,
+    upsertProtocolsData,
+    upsertProposalData,
+} from "@/components/db/supabase";
 import {
     PROPOSAL_CLASSES,
     PROPOSAL_CLASS_OTHER,
 } from "@/constants/proposalClasses";
 import { bookmarkForSubscribers } from "./bookmarkUpdate";
+import {
+    getProposalsFromBoardroom,
+    getProtocolsFromBoardroom,
+} from "./boardroom";
+import { populateFallbackUrl } from "./url";
 
 export const maxDuration = 300;
 const NO_SUMMARY_FILLER_TEXT = "No content available.";
-var supabase = null;
 
 /*
 The /data/proposals/upload endpoint does the following:
@@ -29,6 +37,7 @@ Request Body: {
 export async function POST(req) {
     // parse request body
     var requestBody;
+    var supabase;
     try {
         requestBody = await req.json().catch(() => null);
     } catch (err) {
@@ -41,7 +50,7 @@ export async function POST(req) {
     // initialize database
     if (!supabase) {
         try {
-            initDatabase();
+            supabase = getSupabase();
         } catch (err) {
             const message = `could not initialize database: ${err}`;
             console.log(message);
@@ -99,7 +108,10 @@ export async function POST(req) {
             "Adding new protocols to database: ",
             newProtocolsData.map((p) => p.cname),
         );
-        var { data, err } = await upsertProtocolsData(newProtocolsData);
+        var { data, err } = await upsertProtocolsData(
+            supabase,
+            newProtocolsData,
+        );
 
         if (err) {
             const message = `could not upload new protocols to database: ${error}`;
@@ -178,7 +190,7 @@ export async function POST(req) {
     const proposalEntriesToUpsert = proposalEntriesToCreate.concat(
         proposalEntriesToUpdate,
     );
-    var err = await upsertProposalData(proposalEntriesToUpsert);
+    var err = await upsertProposalData(supabase, proposalEntriesToUpsert);
     if (err) {
         const message = `could not upload proposal updates to database: ${err}`;
         console.log(message);
@@ -244,29 +256,6 @@ function calculateProposalId(rawProposal) {
 }
 
 /*
-    populateFallbackUrl: identify a reasonable "Vote Now" link if Boardroom API doesn't provide one
-    The fallback logic is per-protocol. If there's no good logic, fallback to linking a Google search result
-*/
-function populateFallbackUrl(dbEntry, rawProposal) {
-    const protocolId = dbEntry.protocol;
-    if (protocolId == "optimism") {
-        dbEntry["url"] = `https://vote.optimism.io/proposals/${rawProposal.id}`;
-    } else if (protocolId == "arbitrum") {
-        dbEntry["url"] =
-            `https://www.tally.xyz/gov/arbitrum/proposal/${rawProposal.id}`;
-    } else if (protocolId == "aave") {
-        const proposalRawId = parseInt(rawProposal.id, 10);
-        if (!isNaN(proposalRawId)) {
-            dbEntry["url"] =
-                `https://app.aave.com/governance/v3/proposal/?proposalId=${proposalRawId}`;
-        }
-    } else {
-        dbEntry["url"] =
-            `https://www.google.com/search?q=${protocolId} ${dbEntry["title"]}`;
-    }
-}
-
-/*
     populateProposalSummary: create and save an AI summary of the proposal
 */
 async function populateProposalSummary(dbEntry, rawContentStr) {
@@ -322,98 +311,4 @@ async function populateProposalClass(dbEntry) {
         }
     }
     dbEntry["proposal_class"] = PROPOSAL_CLASS_OTHER;
-}
-
-async function getProtocolsFromBoardroom() {
-    const protocolsURL = `https://api.boardroom.info/v1/protocols?key=${process.env.BOARDROOM_API_KEY}`;
-    const protocolsOptions = {
-        method: "GET",
-        headers: { Accept: "application/json" },
-    };
-    const protocolsResponse = await fetch(protocolsURL, protocolsOptions);
-    const protocolsResJson = await protocolsResponse.json();
-    return protocolsResJson.data;
-}
-
-async function getProposalsFromBoardroom(protocolId) {
-    const proposalsURL = `https://api.boardroom.info/v1/protocols/${protocolId}/proposals?status=active&key=${process.env.BOARDROOM_API_KEY}`;
-    const proposalsOptions = {
-        method: "GET",
-        headers: { Accept: "application/json" },
-    };
-    const proposalsResponse = await fetch(proposalsURL, proposalsOptions);
-    return await proposalsResponse.json();
-}
-
-function initDatabase() {
-    supabase = createClient(
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY,
-    );
-}
-
-async function upsertProtocolsData(protocolsData) {
-    return await supabase.from("protocols").upsert(
-        protocolsData.map((d) => ({
-            id: d.cname,
-            name: d.name,
-            icon: d.icons ? d.icons[0].url : "",
-        })),
-        {
-            onConflict: "id",
-            ignoreDuplicates: false,
-        },
-    );
-}
-
-async function upsertProposalData(proposalsData) {
-    const batchSize = 20;
-    for (let i = 0; i < proposalsData.length; i += batchSize) {
-        let { err } = upsertProposalDataDb(
-            proposalsData.slice(i, i + batchSize),
-        );
-        if (err) {
-            return err;
-        }
-    }
-}
-
-async function upsertProposalDataDb(proposalsData) {
-    return await supabase.from("proposals").upsert(
-        proposalsData.map(
-            ({
-                id,
-                protocol,
-                proposer,
-                title,
-                starttime,
-                endtime,
-                url,
-                raw_summary,
-                summary,
-                proposal_class,
-                was_summarized,
-                choices,
-                results,
-            }) => ({
-                id,
-                protocol,
-                proposer,
-                title,
-                starttime,
-                endtime,
-                url,
-                raw_summary,
-                summary,
-                proposal_class,
-                was_summarized,
-                choices,
-                results,
-            }),
-        ),
-        {
-            onConflict: "id",
-            ignoreDuplicates: false,
-        },
-    );
 }
