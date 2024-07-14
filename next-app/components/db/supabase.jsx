@@ -7,8 +7,8 @@ export function getSupabase() {
     );
 }
 
-export async function saveUsers(users) {
-    const res = await supabase.from("telegram_users").upsert(usersToUpdate, {
+export async function saveUsers(supabase, users) {
+    const res = await supabase.from("telegram_users").upsert(users, {
         onConflict: "id",
         ignoreDuplicates: false,
     });

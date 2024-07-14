@@ -76,7 +76,7 @@ export async function POST(req) {
         );
     }
     try {
-        await pushTelegramAlerts(alertContents);
+        await pushTelegramAlerts(alertContents, "unimplemented");
         return Response.json(
             {
                 message: "Successfully sent telegram alerts",

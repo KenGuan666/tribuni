@@ -1,10 +1,9 @@
-import { List } from "immutable";
 import { fetchProposalsByIds } from "@/components/db/proposal";
 import { fetchProtocolsByIds } from "@/components/db/protocol";
 import { isInThePast } from "@/utils/time";
 
 /*
-    alertContentForUsers: return a list of alertContent
+    alertContentForUsers: return a list of alertContent, representing bookmarked proposals by each user
 
     alertContent is an object, which contains a protocol's metadata which goes into an alert, and the recipient's metadata
     {
@@ -24,7 +23,7 @@ export async function alertContentForUsers(users) {
             proposalIdsWithRepeat.push(proposalId),
         );
     });
-    let proposalIds = Array.from(new Set(proposalIdsWithRepeat));
+    const proposalIds = Array.from(new Set(proposalIdsWithRepeat));
 
     var proposalsData;
     try {
@@ -38,9 +37,14 @@ export async function alertContentForUsers(users) {
     proposalsData = proposalsData.filter(
         (proposal) => !isInThePast(proposal.endtime),
     );
-    proposalIds = proposalsData.map((proposal) => proposal.id);
+    return alertContentWithProposals(users, proposalsData);
+}
 
-    // fetch protocols of which at least one proposal is bookmarked
+/*
+    alertContentWithProposals: return a list of alertContent, representing specified proposals
+*/
+export async function alertContentWithProposals(users, proposalsData) {
+    // fetch protocols of which at least one proposal is specified
     let protocolIdsWithRepeat = [];
     proposalsData.forEach((proposalData) =>
         protocolIdsWithRepeat.push(proposalData.protocol),

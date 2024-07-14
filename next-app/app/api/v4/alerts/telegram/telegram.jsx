@@ -1,7 +1,10 @@
 import { relativeTimeLabel } from "@/utils/time";
 import { getBot } from "@/components/bot";
 
-export async function pushTelegramAlerts(alertContents) {
+export async function pushTelegramAlerts(alertContents, variation) {
+    if (variation == "unimplemented") {
+        return;
+    }
     const bot = getBot();
     let promises = [];
 
@@ -12,6 +15,7 @@ export async function pushTelegramAlerts(alertContents) {
         const alertText = generateAlertMarkdownText(
             protocolInfo,
             proposalsData,
+            variation,
         );
         const alertButtons = generateAlertButtons(user, proposalsData);
 
@@ -28,11 +32,16 @@ export async function pushTelegramAlerts(alertContents) {
     await Promise.all(promises);
 }
 
-function generateAlertMarkdownText(protocolInfo, proposalsData) {
+function generateAlertMarkdownText(protocolInfo, proposalsData, variation) {
     let message = "";
     const firstProposal = proposalsData[0];
 
-    message += `📣 *${protocolInfo.name}* community is voting on *${proposalsData.length} proposals*!\n`;
+    let firstLine = `📣 *${protocolInfo.name}* community is voting on *${proposalsData.length} proposals*!\n`;
+    if (variation == "new") {
+        firstLine = `📣 *${protocolInfo.name}* posted ${proposalsData.length} new proposals!`;
+    }
+
+    message += firstLine;
     message += "\n";
     message += `1. *${firstProposal.title}*\n`;
     message += `${firstProposal.summary}\n`;

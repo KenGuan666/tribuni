@@ -11,7 +11,7 @@ import {
     PROPOSAL_CLASSES,
     PROPOSAL_CLASS_OTHER,
 } from "@/constants/proposalClasses";
-import { bookmarkForSubscribers } from "./bookmarkUpdate";
+import { bookmarkAndAlertForSubscribers } from "./bookmarkAndAlert";
 import {
     getProposalsFromBoardroom,
     getProtocolsFromBoardroom,
@@ -199,7 +199,10 @@ export async function POST(req) {
     }
 
     // for each new proposal, bookmark them for subscribed users
-    err = await bookmarkForSubscribers(supabase, proposalEntriesToCreate);
+    err = await bookmarkAndAlertForSubscribers(
+        supabase,
+        proposalEntriesToCreate,
+    );
     if (err) {
         const message = `could not bookmark new proposals for subscribed users: ${err}`;
         console.log(message);
