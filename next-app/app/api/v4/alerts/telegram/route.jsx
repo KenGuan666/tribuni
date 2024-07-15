@@ -1,7 +1,10 @@
 import { fetchUserData, fetchAllUsersData } from "@/components/db/user";
-import { isInThePast, isNearUTCSecondStampNow } from "@/utils/time";
-import { alertContentForUsers } from "../alertContent";
+import { fetchProposalsByIds } from "@/components/db/proposal";
+import { secondsFromNow } from "@/utils/time";
+import { alertContentWithProposals } from "../alertContent";
 import { pushTelegramAlerts } from "./telegram";
+
+const alertTimeBeforeCompletion = 2 * 86400; // alert 2 days before proposal completes
 
 /*
     POST: this endpoint sends v2 telegram alerts to users when called
@@ -58,17 +61,35 @@ export async function POST(req) {
         users = users.filter((user) => {
             return (
                 user.telegram_alerts && // alert is enabled
-                !user.pause_alerts && // alert is not paused
-                isInThePast(user.last_telegram_alert + user.duration) && // last alert was fired long enough ago
-                isNearUTCSecondStampNow(user.alert_time, 30)
-            ); // user opted to receive alerts at this minute
+                !user.pause_alerts // alert is not paused
+            );
         });
     }
-    console.log(
-        `sending Telegram alerts to users with userid: ${users.map((user) => user.id)}`,
+
+    // Filter proposals by completion time
+    const proposalIdsSet = users.reduce((set, user) => {
+        user.bookmarks.forEach((proposalId) => set.add(proposalId));
+        return set;
+    }, new Set());
+    const proposalIds = Array.from(proposalIdsSet);
+    const bookmarkedProposals = await fetchProposalsByIds(proposalIds);
+    const proposalsToAlert = bookmarkedProposals.filter((proposal) =>
+        shouldAlertProposal(proposal),
     );
 
-    const alertContents = await alertContentForUsers(users);
+    if (!proposalsToAlert.length) {
+        return Response.json(
+            {
+                message:
+                    "No proposals completing in exactly 48 hours. No alerts sent.",
+            },
+            { status: 201 },
+        );
+    }
+    const alertContents = await alertContentWithProposals(
+        users,
+        proposalsToAlert,
+    );
     if (!alertContents) {
         return Response.json(
             { message: `Could not prepare alerts` },
@@ -76,11 +97,11 @@ export async function POST(req) {
         );
     }
     try {
-        await pushTelegramAlerts(alertContents, "unimplemented");
+        await pushTelegramAlerts(alertContents, "ending");
         return Response.json(
             {
                 message: "Successfully sent telegram alerts",
-                n_alerts: users.length,
+                n_proposals: proposalsToAlert.length,
             },
             { status: 201 },
         );
@@ -91,4 +112,12 @@ export async function POST(req) {
             { status: 500 },
         );
     }
+}
+
+function shouldAlertProposal(proposalData) {
+    const timeUntilCompletion = secondsFromNow(proposalData.endtime);
+    return (
+        alertTimeBeforeCompletion < timeUntilCompletion &&
+        timeUntilCompletion < alertTimeBeforeCompletion + 60
+    );
 }

@@ -29,6 +29,11 @@ export function isInThePast(timestamp) {
     return new Date() > new Date(timestamp * 1000);
 }
 
+export function secondsFromNow(timestamp) {
+    const nowInSeconds = Math.floor(Date.now() / 1000);
+    return timestamp - nowInSeconds;
+}
+
 /*
     isNearUTCSecondStampNow: whether utcSecondStamp is within timeDifferenceCap seconds of the UTC second stamp now.
     "Second stamp" is an integer between 0 and 86399 which specifies how many seconds have passed since midnight
