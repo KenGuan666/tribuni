@@ -235,134 +235,13 @@ export const Settings = () => {
                         </div>
                     </div>
 
-                    <div
+                    {/* <div
                         className={clsx(
                             "w-full bg-isWhite py-2 rounded-xl flex flex-col overflow-hidden",
                             MAX_WIDTH,
                         )}
-                    >
-                        <div className="flex flex-row items-center px-3 space-x-2">
-                            <div className="flex flex-col items-center w-6 h-6 rounded-md bg-isCyanLight shrink-0">
-                                <AlarmFill
-                                    classes={clsx("w-6 h-6 fill-isWhite")}
-                                />
-                            </div>
-
-                            <div className="font-400 text-isLabelLightPrimary">
-                                Alert Frequency
-                            </div>
-                        </div>
-
-                        <hr className="w-full my-2 rounded-full bg-isSeparatorLight" />
-
-                        <div className="w-full px-3">
-                            <div
-                                className={clsx(
-                                    "w-full p-[0.15rem] rounded-lg bg-isGrayLight4 text-sm grid grid-cols-3 gap-1 text-isLabelLightPrimary font-400",
-                                    MAX_WIDTH,
-                                )}
-                            >
-                                {freqs.map((freq) => (
-                                    <button
-                                        key={freq.key}
-                                        onClick={async () => {
-                                            let newUser = {
-                                                ...user,
-                                                duration: freq.duration,
-                                            };
-
-                                            setUser(newUser);
-
-                                            await ChangeAlertFrequency({
-                                                username: user.id,
-                                                duration: freq.duration,
-                                            });
-                                        }}
-                                        className={clsx(
-                                            "w-full text-center rounded-[0.35rem] py-[0.1rem]",
-                                            ANIMATE,
-                                            user.duration === freq.duration &&
-                                                "bg-isWhite",
-                                            // filter === tag ? "bg-isWhite" : ""
-                                        )}
-                                    >
-                                        {freq.name}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-
-                        <hr className="w-full mt-2 rounded-full bg-isSeparatorLight" />
-
-                        <button
-                            onClick={async () => {
-                                try {
-                                    let res = await fetch(
-                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/telegram`,
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type":
-                                                    "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                                test: true,
-                                                username: user.id,
-                                                chatid: user.chatid,
-                                            }),
-                                        },
-                                    );
-
-                                    if (res.ok) {
-                                        toast.success("Telegram Alert Sent");
-                                    } else {
-                                        toast.success("No Active Proposals");
-                                        return;
-                                    }
-
-                                    if (user.email !== null) {
-                                        await fetch(
-                                            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/email`,
-                                            {
-                                                method: "POST",
-                                                headers: {
-                                                    "Content-Type":
-                                                        "application/json",
-                                                },
-                                                body: JSON.stringify({
-                                                    test: true,
-                                                    username: user.id,
-                                                    userEmail: user.email,
-                                                }),
-                                            },
-                                        );
-
-                                        toast.success("Email Alert Sent");
-                                    } else {
-                                        toast.error(
-                                            "Email address was not found",
-                                        );
-                                    }
-                                } catch (err) {
-                                    console.log(err);
-                                }
-                            }}
-                            className={clsx(
-                                "p-2 -mb-2 text-sm cursor-pointer text-center font-500 text-isLabelLightPrimary bg-isCyanLight text-isWhite hover:bg-isCyanLightEmphasis",
-                                ANIMATE,
-                            )}
-                        >
-                            Click here to send test alert now.
-                        </button>
-                    </div>
-
-                    <div
-                        className={clsx(
-                            "w-full bg-isWhite py-2 rounded-xl flex flex-col overflow-hidden",
-                            MAX_WIDTH,
-                        )}
-                    >
-                        <div className="flex flex-row items-center px-3 space-x-2">
+                    > */}
+                        {/* <div className="flex flex-row items-center px-3 space-x-2">
                             <div className="flex flex-col items-center w-6 h-6 rounded-md bg-transparent shrink-0">
                                 <AlarmClock
                                     classes={clsx("w-6 h-6 fill-isWhite")}
@@ -372,11 +251,11 @@ export const Settings = () => {
                             <div className="font-400 text-isLabelLightPrimary">
                                 Alert Time
                             </div>
-                        </div>
+                        </div> */}
 
-                        <hr className="w-full my-2 rounded-full bg-isSeparatorLight" />
+                        {/* <hr className="w-full my-2 rounded-full bg-isSeparatorLight" /> */}
 
-                        <div className="w-full px-3">
+                        {/* <div className="w-full px-3">
                             <div className="flex items-center space-between w-full py-2 px-4">
                                 <select
                                     value={alertHour}
@@ -476,8 +355,8 @@ export const Settings = () => {
                                     ))}
                                 </select>
                             </div>
-                        </div>
-                    </div>
+                        </div> */}
+                    {/* </div> */}
                     <div
                         className={clsx(
                             "w-full bg-isWhite py-2 rounded-xl flex flex-col overflow-hidden",
@@ -559,6 +438,127 @@ export const Settings = () => {
                                 ? "Please add email to receive email alerts."
                                 : "Email is added and verified."}
                         </div>
+                    </div>
+
+                    <div
+                        className={clsx(
+                            "w-full bg-isWhite py-2 rounded-xl flex flex-col overflow-hidden",
+                            MAX_WIDTH,
+                        )}
+                    >
+                        {/* <div className="flex flex-row items-center px-3 space-x-2">
+                            <div className="flex flex-col items-center w-6 h-6 rounded-md bg-isCyanLight shrink-0">
+                                <AlarmFill
+                                    classes={clsx("w-6 h-6 fill-isWhite")}
+                                />
+                            </div>
+
+                            <div className="font-400 text-isLabelLightPrimary">
+                                Alert Frequency
+                            </div>
+                        </div>
+
+                        <hr className="w-full my-2 rounded-full bg-isSeparatorLight" /> */}
+
+                        {/* <div className="w-full px-3">
+                            <div
+                                className={clsx(
+                                    "w-full p-[0.15rem] rounded-lg bg-isGrayLight4 text-sm grid grid-cols-3 gap-1 text-isLabelLightPrimary font-400",
+                                    MAX_WIDTH,
+                                )}
+                            >
+                                {freqs.map((freq) => (
+                                    <button
+                                        key={freq.key}
+                                        onClick={async () => {
+                                            let newUser = {
+                                                ...user,
+                                                duration: freq.duration,
+                                            };
+
+                                            setUser(newUser);
+
+                                            await ChangeAlertFrequency({
+                                                username: user.id,
+                                                duration: freq.duration,
+                                            });
+                                        }}
+                                        className={clsx(
+                                            "w-full text-center rounded-[0.35rem] py-[0.1rem]",
+                                            ANIMATE,
+                                            user.duration === freq.duration &&
+                                                "bg-isWhite",
+                                            // filter === tag ? "bg-isWhite" : ""
+                                        )}
+                                    >
+                                        {freq.name}
+                                    </button>
+                                ))}
+                            </div>
+                        </div> */}
+
+                        {/* <hr className="w-full mt-2 rounded-full bg-isSeparatorLight" /> */}
+
+                        <button
+                            onClick={async () => {
+                                try {
+                                    let res = await fetch(
+                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/telegram`,
+                                        {
+                                            method: "POST",
+                                            headers: {
+                                                "Content-Type":
+                                                    "application/json",
+                                            },
+                                            body: JSON.stringify({
+                                                test: true,
+                                                username: user.id,
+                                                chatid: user.chatid,
+                                            }),
+                                        },
+                                    );
+
+                                    if (res.ok) {
+                                        toast.success("Telegram Alert Sent");
+                                    } else {
+                                        toast.success("No Active Proposals");
+                                        return;
+                                    }
+
+                                    if (user.email !== null) {
+                                        await fetch(
+                                            `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/email`,
+                                            {
+                                                method: "POST",
+                                                headers: {
+                                                    "Content-Type":
+                                                        "application/json",
+                                                },
+                                                body: JSON.stringify({
+                                                    test: true,
+                                                    username: user.id,
+                                                    userEmail: user.email,
+                                                }),
+                                            },
+                                        );
+
+                                        toast.success("Email Alert Sent");
+                                    } else {
+                                        toast.error(
+                                            "Email address was not found",
+                                        );
+                                    }
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                            }}
+                            className={clsx(
+                                "p-2 -mb-2 -mt-2 cursor-pointer text-center font-500 text-isLabelLightPrimary bg-isCyanLight text-isWhite hover:bg-isCyanLightEmphasis",
+                                ANIMATE,
+                            )}
+                        >
+                            Send a test email alert now
+                        </button>
                     </div>
                 </div>
             </div>
