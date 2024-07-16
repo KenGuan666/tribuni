@@ -28,10 +28,6 @@ export async function POST(req) {
         requestBody = await req.json();
     } catch (err) {
         console.log(err);
-        return Response.json(
-            { message: `Could not parse the alert request: ${err.message}` },
-            { status: 500 },
-        );
     }
 
     // determine users who will receive the alert
