@@ -27,7 +27,6 @@ export async function POST(req) {
     try {
         requestBody = await req.json();
     } catch (err) {
-        console.log(err);
     }
 
     // determine users who will receive the alert
