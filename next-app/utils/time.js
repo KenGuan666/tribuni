@@ -29,6 +29,10 @@ export function isInThePast(timestamp) {
     return new Date() > new Date(timestamp * 1000);
 }
 
+export function timestampNow() {
+    return Math.floor(Date.now() / 1000);
+}
+
 export function secondsFromNow(timestamp) {
     const nowInSeconds = Math.floor(Date.now() / 1000);
     return timestamp - nowInSeconds;

@@ -17,6 +17,7 @@ import {
     getProtocolsFromBoardroom,
 } from "./boardroom";
 import { populateFallbackUrl } from "./url";
+import { timestampNow } from "@/utils/time";
 
 export const maxDuration = 300;
 const NO_SUMMARY_FILLER_TEXT = "No content available.";
@@ -39,12 +40,9 @@ export async function POST(req) {
     var requestBody;
     var supabase;
     try {
-        requestBody = await req.json().catch(() => null);
+        requestBody = await req.json();
     } catch (err) {
-        const message = `failed to parse request body: ${err}`;
-        console.log(message);
-        console.log(err);
-        return Response.json({ message }, { status: 400 });
+        requestBody = {}
     }
 
     // initialize database
@@ -64,7 +62,7 @@ export async function POST(req) {
     try {
         protocolsData = await getProtocolsFromBoardroom();
     } catch (err) {
-        const message = `could not get protocols from database: ${err}`;
+        const message = `could not get protocols from boardroom: ${err}`;
         console.log(message);
         console.log(err);
         return Response.json({ message }, { status: 503 });
@@ -103,6 +101,7 @@ export async function POST(req) {
     let newProtocolsData = protocolsData.filter(
         ({ cname }) => !existingProtocolIds.has(cname),
     );
+    console.log("new protocols:", newProtocolsData.map((p) => p.cname))
     if (newProtocolsData.length) {
         console.log(
             "Adding new protocols to database: ",
@@ -114,7 +113,7 @@ export async function POST(req) {
         );
 
         if (err) {
-            const message = `could not upload new protocols to database: ${error}`;
+            const message = `could not upload new protocols to database: ${err}`;
             console.log(message);
             console.log(err);
             return Response.json({ message }, { status: 503 });
@@ -122,9 +121,11 @@ export async function POST(req) {
     }
 
     // read all existing proposals from Tribuni db
+    const timeNow = timestampNow();
     var { data: existingProposals, err } = await supabase
         .from("proposals")
-        .select("*");
+        .select("*")
+        .gt("endtime", timeNow);
     if (err) {
         const message = `could not fetch proposals from database: ${err}`;
         console.log(message);
@@ -136,6 +137,7 @@ export async function POST(req) {
         existingProposalsMap.set(proposal.id, proposal),
     );
     const existingProposalIds = Array.from(existingProposalsMap.keys());
+    console.log("existingProposalIds", existingProposalIds)
 
     // get active proposals from Boardroom
     let proposalEntriesToUpdate = [];
