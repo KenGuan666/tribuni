@@ -22,7 +22,6 @@ export default function Page({ searchParams }) {
             promises.push(
                 fetchProtocolsWithActiveAndNewCols().then(
                     (protocols) => {
-                        console.log(protocols);
                         protocolsInfo = protocols;
                         setProtocolsInfo(protocols);
                         cacheProtocols(
