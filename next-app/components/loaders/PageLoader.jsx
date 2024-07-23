@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Head from 'next/head';
 import { useStore } from "@/store";
 import { useEffect } from "react";
 import { Spinner } from "./Spinner";
