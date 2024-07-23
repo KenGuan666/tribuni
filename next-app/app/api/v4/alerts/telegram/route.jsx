@@ -26,8 +26,7 @@ export async function POST(req) {
     let requestBody = {};
     try {
         requestBody = await req.json();
-    } catch (err) {
-    }
+    } catch (err) {}
 
     // determine users who will receive the alert
     var users;

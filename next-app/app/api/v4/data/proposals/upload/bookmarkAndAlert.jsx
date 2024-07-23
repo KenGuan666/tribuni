@@ -48,10 +48,10 @@ export async function bookmarkAndAlertForSubscribers(supabase, proposalsData) {
     }
 
     // push alerts for users
-    // const alertContents = await alertContentWithProposals(
-    //     usersToUpdate,
-    //     proposalsData,
-    // );
-    // await pushTelegramAlerts(alertContents, "new");
+    const alertContents = await alertContentWithProposals(
+        usersToUpdate,
+        proposalsData,
+    );
+    await pushTelegramAlerts(alertContents, "new");
     return undefined;
 }

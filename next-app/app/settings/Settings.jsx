@@ -241,7 +241,7 @@ export const Settings = () => {
                             MAX_WIDTH,
                         )}
                     > */}
-                        {/* <div className="flex flex-row items-center px-3 space-x-2">
+                    {/* <div className="flex flex-row items-center px-3 space-x-2">
                             <div className="flex flex-col items-center w-6 h-6 rounded-md bg-transparent shrink-0">
                                 <AlarmClock
                                     classes={clsx("w-6 h-6 fill-isWhite")}
@@ -253,9 +253,9 @@ export const Settings = () => {
                             </div>
                         </div> */}
 
-                        {/* <hr className="w-full my-2 rounded-full bg-isSeparatorLight" /> */}
+                    {/* <hr className="w-full my-2 rounded-full bg-isSeparatorLight" /> */}
 
-                        {/* <div className="w-full px-3">
+                    {/* <div className="w-full px-3">
                             <div className="flex items-center space-between w-full py-2 px-4">
                                 <select
                                     value={alertHour}
@@ -502,29 +502,6 @@ export const Settings = () => {
                         <button
                             onClick={async () => {
                                 try {
-                                    let res = await fetch(
-                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/telegram`,
-                                        {
-                                            method: "POST",
-                                            headers: {
-                                                "Content-Type":
-                                                    "application/json",
-                                            },
-                                            body: JSON.stringify({
-                                                test: true,
-                                                username: user.id,
-                                                chatid: user.chatid,
-                                            }),
-                                        },
-                                    );
-
-                                    if (res.ok) {
-                                        toast.success("Telegram Alert Sent");
-                                    } else {
-                                        toast.success("No Active Proposals");
-                                        return;
-                                    }
-
                                     if (user.email !== null) {
                                         await fetch(
                                             `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/alerts/email`,

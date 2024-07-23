@@ -26,7 +26,9 @@ export default function RootLayout({ children }) {
                     {children}
                 </div>
 
-                <GoogleAnalytics gaId="G-E01KYBXTBW" />
+                <GoogleAnalytics
+                    gaId={process.env.GOOGLE_ANALYTICS_MEASUREMENT_ID}
+                />
                 {/* <Toaster position="top-center" richColors /> */}
 
                 <Toaster />

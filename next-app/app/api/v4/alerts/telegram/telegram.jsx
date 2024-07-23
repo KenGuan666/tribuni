@@ -41,7 +41,7 @@ function generateAlertMarkdownText(protocolInfo, proposalsData, variation) {
         firstLine = `📣 *${protocolInfo.name}* posted ${proposalsData.length} new proposals!`;
     }
     if (variation == "ending") {
-        firstLine = `📣 *${protocolInfo.name}* votes are closing in 48 hours!`;
+        firstLine = `📣 ${proposalsData.length} *${protocolInfo.name}* proposals close in 48 hours!`;
     }
 
     message += firstLine;

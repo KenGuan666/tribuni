@@ -42,7 +42,7 @@ export async function POST(req) {
     try {
         requestBody = await req.json();
     } catch (err) {
-        requestBody = {}
+        requestBody = {};
     }
 
     // initialize database
@@ -101,7 +101,10 @@ export async function POST(req) {
     let newProtocolsData = protocolsData.filter(
         ({ cname }) => !existingProtocolIds.has(cname),
     );
-    console.log("new protocols:", newProtocolsData.map((p) => p.cname))
+    console.log(
+        "new protocols:",
+        newProtocolsData.map((p) => p.cname),
+    );
     if (newProtocolsData.length) {
         console.log(
             "Adding new protocols to database: ",
@@ -137,7 +140,6 @@ export async function POST(req) {
         existingProposalsMap.set(proposal.id, proposal),
     );
     const existingProposalIds = Array.from(existingProposalsMap.keys());
-    console.log("existingProposalIds", existingProposalIds)
 
     // get active proposals from Boardroom
     let proposalEntriesToUpdate = [];

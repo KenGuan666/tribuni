@@ -122,6 +122,7 @@ export default function Page({ searchParams }) {
                     />
                 </div>
             }
+            title={protocolInfo.name}
         />
     );
 }

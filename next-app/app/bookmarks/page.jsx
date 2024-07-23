@@ -132,6 +132,7 @@ export default function Page({ searchParams }) {
                     <UserConnector />
                 </div>
             }
+            title={"Bookmarks"}
         />
     );
 }
