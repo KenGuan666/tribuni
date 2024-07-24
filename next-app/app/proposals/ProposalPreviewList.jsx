@@ -1,23 +1,21 @@
 "use client";
 
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { Spinner } from "@/components/loaders";
 import { ExclamationmarkSquareFill } from "@/components/ios";
 import { Hr, Tabs } from "@/components/ui/page";
-import { useStore } from "@/store";
+import { SearchBar } from "@/components/page";
 import { ProposalPreview } from "./ProposalPreview";
 
-export const ProposalPreviewList = ({ proposalMap, protocol }) => {
+export const ProposalPreviewList = ({ proposalMap }) => {
     if (!proposalMap) {
         return <Spinner />;
     }
 
     const [filter, setFilter] = useState("all");
-    const { user, setPageLoading } = useStore();
-    const router = useRouter();
+    const [search, setSearch] = useState("");
 
     let proposals = Object.keys(proposalMap).map((key) => {
         return proposalMap[key];
@@ -35,6 +33,13 @@ export const ProposalPreviewList = ({ proposalMap, protocol }) => {
     });
 
     const filteredProposals = proposals.filter((proposal) => {
+        const isMatch =
+            proposal.title.toLowerCase().includes(search.toLowerCase()) ||
+            proposal.proposal_class
+                ?.toLowerCase()
+                .includes(search.toLowerCase());
+        if (!isMatch) return false;
+
         const currentTime = Math.floor(Date.now() / 1000);
         const timeDifference = proposal.endtime - currentTime;
 
@@ -51,11 +56,18 @@ export const ProposalPreviewList = ({ proposalMap, protocol }) => {
 
     return (
         <React.Fragment>
+            <SearchBar
+                searchTerm={search}
+                setSearch={setSearch}
+                placeholder="Search by proposal title, type"
+                classes={clsx("!pt-0 !px-0 !max-w-none mt-1")}
+            />
+
             <Tabs
                 list={["all", "active", "completed"]}
                 setter={setFilter}
                 active={filter}
-                classes={clsx("!pt-0 !px-0 !max-w-none mt-1")}
+                classes={clsx("!pt-4 !px-0 !max-w-none mt-1")}
             />
 
             <div
@@ -94,14 +106,18 @@ export const ProposalPreviewList = ({ proposalMap, protocol }) => {
                         />
                     ))}
 
-                    {
-                        filteredProposals.length > 0 && (
-                        <div style={{ color: "darkgray", fontSize: "14px", textAlign: "center" }}>
+                    {filteredProposals.length > 0 && (
+                        <div
+                            style={{
+                                color: "darkgray",
+                                fontSize: "14px",
+                                textAlign: "center",
+                            }}
+                        >
                             <div style={{ height: "20px" }}></div>
                             Displaying completed proposals for 45 days
                         </div>
-                        )
-                    }
+                    )}
                 </React.Fragment>
             </div>
         </React.Fragment>

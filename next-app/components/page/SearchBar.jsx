@@ -3,12 +3,13 @@ import { ANIMATE, MAX_WIDTH, delay } from "@/components/constants";
 import { MagnifyingGlass } from "@/components/ios";
 import { Cancel } from "@/components/material-rounded/Cancel";
 
-export const SearchBar = ({ searchTerm, setSearch, placeholder }) => {
+export const SearchBar = ({ searchTerm, setSearch, placeholder, classes }) => {
     placeholder = placeholder ? placeholder : "Search";
     return (
         <div
             className={clsx(
                 "flex flex-row items-center w-full px-4 shrink-0 pt-3",
+                classes,
                 ANIMATE,
                 MAX_WIDTH,
             )}
