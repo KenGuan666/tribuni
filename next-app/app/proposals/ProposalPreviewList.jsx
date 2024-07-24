@@ -93,6 +93,15 @@ export const ProposalPreviewList = ({ proposalMap, protocol }) => {
                             showIcon={false}
                         />
                     ))}
+
+                    {
+                        filteredProposals.length > 0 && (
+                        <div style={{ color: "darkgray", fontSize: "14px", textAlign: "center" }}>
+                            <div style={{ height: "20px" }}></div>
+                            Displaying completed proposals for 45 days
+                        </div>
+                        )
+                    }
                 </React.Fragment>
             </div>
         </React.Fragment>

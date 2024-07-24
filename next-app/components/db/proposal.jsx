@@ -1,4 +1,5 @@
 "use server";
+import { timestampNow } from "@/utils/time";
 import { sql } from "./sql";
 
 export async function fetchProposalById(proposalId) {
@@ -28,10 +29,13 @@ export async function fetchProposalsByIds(proposalIds) {
 }
 
 export async function fetchProposalByProtocolId(protocolId) {
+    // Only return completed proposals closed within 60 days
+    const timeCutoff = timestampNow() - 45 * 24 * 60 * 60;
     const query = `
         SELECT *
         FROM proposals
-        WHERE protocol = '${protocolId}';
+        WHERE protocol = '${protocolId}'
+        AND endtime > ${timeCutoff};
     `;
     return await sql.unsafe(query);
 }
