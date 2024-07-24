@@ -35,3 +35,13 @@ export async function fetchProposalByProtocolId(protocolId) {
     `;
     return await sql.unsafe(query);
 }
+
+export async function fetchProposalCountByProtocols(protocolIds) {
+    const query = `
+        SELECT protocol, COUNT(*) AS count
+        FROM proposals
+        WHERE protocol = ANY($1)
+        GROUP BY protocol;
+    `;
+    return await sql.unsafe(query, [protocolIds]);
+}

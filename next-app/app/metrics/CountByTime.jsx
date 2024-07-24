@@ -1,12 +1,11 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
-import { Chart, registerables } from "chart.js";
+import { Chart, registerables, TimeScale } from "chart.js";
 import "chartjs-adapter-date-fns";
 
-Chart.register(...registerables);
+Chart.register(...registerables, TimeScale);
 
 export const CountByTimeChart = ({ timestamps }) => {
-    console.log(timestamps);
     const aggregatedData = aggregateByDate(timestamps);
 
     const data = {
@@ -16,12 +15,12 @@ export const CountByTimeChart = ({ timestamps }) => {
                 label: "Tribuni User Count Over Time",
                 data: aggregatedData.map((dataPoint) => dataPoint.count),
                 fill: false,
-                backgroundColor: "rgba(75,192,192,1)",
-                borderColor: "rgba(75,192,192,1)",
-                pointBackgroundColor: "rgba(75,192,192,1)",
+                backgroundColor: "rgba(0,199,190,1)",
+                borderColor: "rgba(0,199,190,1)",
+                pointBackgroundColor: "rgba(0,199,190,1)",
                 pointBorderColor: "#fff",
                 pointHoverBackgroundColor: "#fff",
-                pointHoverBorderColor: "rgba(75,192,192,1)",
+                pointHoverBorderColor: "rgba(0,199,190,1)",
             },
         ],
     };
