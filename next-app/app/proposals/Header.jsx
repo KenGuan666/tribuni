@@ -17,7 +17,6 @@ export const Header = ({ protocolInfo }) => {
             <div className="contents">
                 <div className="flex flex-col items-center w-full my-2 space-y-2">
                     <div className="relative w-[4.5rem] h-[4.5rem] overflow-hidden rounded-full">
-                        <div className="absolute w-full h-full bg-gradient-to-br from-isWhite to-isSystemLightTertiary animate-pulse" />
                         <ProtocolIcon protocol={protocolInfo} fill={true} />
                     </div>
 
