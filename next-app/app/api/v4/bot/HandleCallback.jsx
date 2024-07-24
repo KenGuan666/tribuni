@@ -14,7 +14,7 @@ export const HandleCallback = async ({ bot, body }) => {
         const proposalsToRemove = query_params.split(",");
         try {
             await removeBookmarksForUser(userId, chatId, proposalsToRemove);
-            bot.sendMessage(
+            await bot.sendMessage(
                 chatId,
                 `You won't be alerted again. Thanks for voting!`,
             );
@@ -22,13 +22,11 @@ export const HandleCallback = async ({ bot, body }) => {
                 "sending metrics event:",
                 "alert_delete_bookmark_event",
             );
-            sendGA4Events(userId, "alert_delete_bookmark_event", {
+            sendGA4Events(userId, "alert_delete_bookmark_event", [{
                 username: userId,
-            });
+            }]);
 
-            const messageId = query.message.message_id;
-            bot.deleteMessage(chatId, messageId);
-            bot.answerCallbackQuery(query.id, {});
+            await bot.answerCallbackQuery(query.id, {});
         } catch (err) {
             bot.answerCallbackQuery(query.id, {
                 text: `Encountered error: ${err.message}. Please contact Tribuni support.`,
