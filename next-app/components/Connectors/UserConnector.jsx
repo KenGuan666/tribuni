@@ -22,7 +22,7 @@ export const UserConnector = () => {
             {user.id !== null && (
                 <div
                     className={clsx(
-                        "h-16 w-full bg-[#F9F9F9] fixed bottom-0 grid grid-cols-3 items-center place-content-center",
+                        "h-16 w-full bg-[#F9F9F9] fixed bottom-0 grid grid-cols-4 items-center place-content-center",
                         MAX_WIDTH,
                     )}
                 >
@@ -37,11 +37,11 @@ export const UserConnector = () => {
                             icon: NavBookmarks,
                             path: "/bookmarks",
                         },
-                        // {
-                        //     key: "social",
-                        //     icon: NavSocial,
-                        //     path: "/directory",
-                        // },
+                        {
+                            key: "social",
+                            icon: NavSocial,
+                            path: "/forum",
+                        },
                         {
                             key: "settings",
                             icon: NavSettings,

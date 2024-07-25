@@ -22,7 +22,7 @@ async function sendEmail(userEmail, message) {
     await transporter.sendMail(mailOptions);
 }
 
-export async function generateMarkdownAndSendEmail({
+async function generateMarkdownAndSendEmail({
     subscriptions,
     userEmail,
     username,

@@ -83,6 +83,10 @@ export const DefaultReply = async ({ bot, body }) => {
                 path: "bookmarks",
             },
             {
+                text: "Explore Forum Activity",
+                path: "forum",
+            },
+            {
                 text: "Edit Settings",
                 path: "settings",
             },

@@ -1,0 +1,95 @@
+export const foraInfo = {
+    optimism: {
+        url: "https://gov.optimism.io",
+        name: "Optimistic Digest",
+        primaryColor: "rgba(255, 0, 0, 1)",
+        backgroundColor: "rgba(255, 0, 0, 0.1)",
+        icon: "https://tribuni.s3.amazonaws.com/op-forum-logo.png",
+        tags: [
+            {
+                name: "Get Started",
+                emoji: "🗳️",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Mission Grants",
+                emoji: "🎯",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Delegates",
+                emoji: "👥",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Retro Funding",
+                emoji: "💸",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Citizens",
+                emoji: "👩‍👦",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Elected Representatives",
+                emoji: "👩‍💼",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Technical Proposals",
+                emoji: "🔧",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Policies and Templates",
+                emoji: "📜",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Collective Strategy",
+                emoji: "🎯",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Updates and Announcements",
+                emoji: "📢",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Governance Design",
+                emoji: "🏛️",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Feedback",
+                emoji: "📝",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "Accountability",
+                emoji: "🔍",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+            {
+                name: "General Discussions",
+                emoji: "🗣️",
+                primaryColor: "rbga(255, 0, 0, 1)",
+                backgroundColor: "rbga(255, 0, 0, 0.1)",
+            },
+        ],
+    },
+};
