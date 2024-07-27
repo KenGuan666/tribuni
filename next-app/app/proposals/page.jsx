@@ -8,7 +8,7 @@ import { SubscriptionSwitch } from "./SubscriptionSwitch";
 import { fetchProposalByProtocolId } from "@/components/db/proposal";
 import { fetchProtocolById } from "@/components/db/protocol";
 import { fetchUserData } from "@/components/db/user";
-import { BASE_USER, MAX_WIDTH } from "@/components/constants";
+import { ANIMATE, BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { PageLoader, Spinner } from "@/components/loaders";
 import { Navigator } from "@/components/page/Navigator";
 import { useStore } from "@/store";
@@ -109,17 +109,24 @@ export default function Page({ searchParams }) {
                         text={"Protocols"}
                     />
 
-                    {/* Header: Protocol name, icon */}
-                    <Header protocolInfo={protocolInfo} />
+                    {/* Allow proposal header to be hidden by scrolling down */}
+                    <div className={clsx(
+                        "w-full overflow-y-auto grow !space-y-2 text-md hide-scrollbar mt-5 pb-20",
+                        ANIMATE,
+                        MAX_WIDTH,
+                    )}>
+                        {/* Header: Protocol name, icon */}
+                        <Header protocolInfo={protocolInfo} />
 
-                    {/* SubscriptionSwitch: Subscription state */}
-                    <SubscriptionSwitch protocolId={protocol} />
+                        {/* SubscriptionSwitch: Subscription state */}
+                        <SubscriptionSwitch protocolId={protocol} />
 
-                    {/* ProposalList: display list of proposals, or the detail of the selected proposal */}
-                    <ProposalPreviewList
-                        proposalMap={proposalMap}
-                        protocol={protocol}
-                    />
+                        {/* ProposalList: display list of proposals, or the detail of the selected proposal */}
+                        <ProposalPreviewList
+                            proposalMap={proposalMap}
+                            protocol={protocol}
+                        />
+                    </div>
                 </div>
             }
             title={protocolInfo.name}

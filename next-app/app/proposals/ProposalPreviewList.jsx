@@ -73,7 +73,7 @@ export const ProposalPreviewList = ({ proposalMap }) => {
             <div
                 id="proposal-detail"
                 className={clsx(
-                    "w-full overflow-y-auto grow !space-y-2 text-md hide-scrollbar mt-5 pb-20",
+                    "w-full grow !space-y-2 text-md hide-scrollbar mt-5",
                     ANIMATE,
                     MAX_WIDTH,
                 )}
