@@ -22,9 +22,11 @@ export const HandleCallback = async ({ bot, body }) => {
                 "sending metrics event:",
                 "alert_delete_bookmark_event",
             );
-            sendGA4Events(userId, "alert_delete_bookmark_event", [{
-                username: userId,
-            }]);
+            sendGA4Events(userId, "alert_delete_bookmark_event", [
+                {
+                    username: userId,
+                },
+            ]);
 
             await bot.answerCallbackQuery(query.id, {});
         } catch (err) {
