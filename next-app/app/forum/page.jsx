@@ -2,6 +2,7 @@
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { fetchUserData } from "@/components/db/user";
+import { fetchFora } from "@/components/db/forum";
 import { UserConnector } from "@/components/Connectors";
 import { BASE_USER, MAX_WIDTH } from "@/components/constants";
 import { PageLoader, Spinner } from "@/components/loaders";
@@ -24,10 +25,8 @@ export default function Page({ searchParams }) {
             const userData = await fetchUserData(username, chatid);
             setUser(userData);
 
-            const foraResponse = await axios.get(
-                `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/forum/`,
-            );
-            setProtocolForums(foraResponse.data);
+            const foraResponse = await fetchFora();
+            setProtocolForums(foraResponse);
         } catch (err) {
             console.log(err);
         }

@@ -283,28 +283,6 @@ export async function POST() {
     });
 }
 
-export async function GET() {
-    const _cookies = cookies();
-    const db = createClient(
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY,
-    );
-
-    const { data, error } = await db.from("fora").select("*");
-
-    if (error) {
-        // return 500 with error
-        return new Response(error, {
-            status: 500,
-        });
-    }
-
-    // return 200 with data
-    return new Response(JSON.stringify(data), {
-        status: 200,
-    });
-}
-
 export async function DELETE() {
     // clear all posts that are older than 7 days
 

@@ -2,6 +2,7 @@
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
+import { fetchForumById, fetchForumPostById } from "@/components/db/forum";
 import { PageLoader, Spinner } from "@/components/loaders";
 import { ProtocolIcon } from "@/components/page/ProtocolIcon";
 import IosShareIcon from "@mui/icons-material/IosShare";
@@ -14,10 +15,9 @@ import LikesRedIcon from "@/public/assets/likes_red.png";
 import CommentsIcon from "@/public/assets/comments.png";
 import BookmarkIcon from "@/public/assets/bookmark.jsx";
 import QuoteIcon from "@/public/assets/quote.jsx";
-import axios from "axios";
 
 export default function Page({ params, searchParams }) {
-    const { protocolId, postId } = params;
+    const { forumId, postId } = params;
     const { username, chatid, from } = searchParams;
     const router = useRouter();
     const [protocolForum, setProtocolForum] = useState(null);
@@ -27,19 +27,11 @@ export default function Page({ params, searchParams }) {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const protocolInfo = await axios.get(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/forum/protocol?protocolId=${protocolId}`,
-                );
-                const postInfo = await axios.get(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/forum/protocol/post?postIds=${postId}`,
-                );
+                const protocolForum = await fetchForumById(forumId);
+                setProtocolForum(protocolForum);
 
-                if (protocolInfo) {
-                    setProtocolForum(protocolInfo.data[0]);
-                }
-                if (postInfo) {
-                    setProtocolForumPost(postInfo.data[0]);
-                }
+                const postInfo = await fetchForumPostById(postId);
+                setProtocolForumPost(postInfo);
 
                 setLoading(false);
             } catch (err) {
@@ -48,7 +40,11 @@ export default function Page({ params, searchParams }) {
             setLoading(false);
         };
         fetchData();
-    }, [protocolId, postId]);
+    }, [forumId, postId]);
+
+    if (!protocolForumPost) {
+        return null;
+    }
 
     return (
         <PageLoader
@@ -87,7 +83,7 @@ export default function Page({ params, searchParams }) {
                                 <button
                                     onClick={() => {
                                         router.push(
-                                            `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${protocolId}?username=${username}&chatid=${chatid}&from=${from}`,
+                                            `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}?username=${username}&chatid=${chatid}&from=${from}`,
                                         );
                                     }}
                                     style={{

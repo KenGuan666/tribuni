@@ -2,18 +2,18 @@
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
+import { fetchForumById, fetchForumPostsByIds } from "@/components/db/forum";
 import { PageLoader, Spinner } from "@/components/loaders";
 import { ProtocolIcon } from "@/components/page/ProtocolIcon";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import Masonry from "react-masonry-css";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { foraInfo } from "@/constants/foraInfo";
 import ViewsIcon from "@/public/assets/views.png";
 import axios from "axios";
 
 export default function Page({ params, searchParams }) {
-    const { protocolId } = params;
+    const { forumId } = params;
     const { username, chatid, from } = searchParams;
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
@@ -27,20 +27,13 @@ export default function Page({ params, searchParams }) {
     useEffect(() => {
         const getProtocolInfo = async () => {
             try {
-                const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/forum/protocol?protocolId=${protocolId}`,
-                );
+                const forumData = await fetchForumById(forumId);
+                setProtocolForum(forumData);
 
-                const trendingPostsResponse = await axios.get(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/forum/protocol/post?postIds=${response.data[0].forumTrendingPosts.slice(0, 10)}`,
+                const trendingPosts = await fetchForumPostsByIds(
+                    forumData.forumTrendingPosts.slice(0, 10),
                 );
-
-                const latestPostsResponse = await axios.get(
-                    `${process.env.NEXT_PUBLIC_SERVER_URL}/api/v4/forum/protocol/post?postIds=${response.data[0].forumLatestPosts.slice(0, 10)}`,
-                );
-
-                setProtocolForum(response.data[0]);
-                setTrendingPosts(trendingPostsResponse.data);
+                setTrendingPosts(trendingPosts);
                 // setTrendingPostTags(
                 //     trendingPostsResponse.data.map((post) =>
                 //         foraInfo[protocolForum.protocolId].tags.filter((t) =>
@@ -48,7 +41,11 @@ export default function Page({ params, searchParams }) {
                 //         ),
                 //     ),
                 // );
-                setLatestPosts(latestPostsResponse.data);
+
+                const latestPostsResponse = await fetchForumPostsByIds(
+                    forumData.forumLatestPosts.slice(0, 10),
+                );
+                setLatestPosts(latestPostsResponse);
                 // setLatestPostTags(
                 //     latestPostsResponse.data.map((post) =>
                 //         foraInfo[protocolForum.protocolId].tags.filter((t) =>
@@ -64,7 +61,6 @@ export default function Page({ params, searchParams }) {
             }
         };
         getProtocolInfo();
-        setIsLoading(false);
     }, []);
 
     return isLoading ||
@@ -455,7 +451,7 @@ export default function Page({ params, searchParams }) {
                                             <button
                                                 onClick={() =>
                                                     router.push(
-                                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${protocolId}/${post.id}?username=${username}&chatid=${chatid}&from=${from}`,
+                                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}/${post.id}?username=${username}&chatid=${chatid}&from=${from}`,
                                                     )
                                                 }
                                                 style={{
@@ -582,7 +578,7 @@ export default function Page({ params, searchParams }) {
                                             <button
                                                 onClick={() =>
                                                     router.push(
-                                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${protocolId}/${post.id}?username=${username}&chatid=${chatid}&from=${from}`,
+                                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}/${post.id}?username=${username}&chatid=${chatid}&from=${from}`,
                                                     )
                                                 }
                                                 style={{
