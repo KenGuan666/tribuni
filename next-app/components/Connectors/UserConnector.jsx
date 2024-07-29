@@ -7,7 +7,7 @@ import { usePathname } from "next/navigation";
 import { useStore } from "@/store";
 import { BASE_USER, MAX_WIDTH } from "../constants";
 import { NavBookmarks, NavHome, NavSettings } from "../ios";
-import { OpIcon } from "./opIcon";
+import { OpIcon } from "./OpIcon";
 
 export const UserConnector = () => {
     const router = useRouter();
