@@ -15,17 +15,15 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import CommentsIcon from "@/public/assets/comments.png";
 import ViewsIcon from "@/public/assets/views.png";
-import axios from "axios";
 
 export default function Page({ params, searchParams }) {
     const { forumId } = params;
     const { username, chatid, from } = searchParams;
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
-    const [protocolForum, setProtocolForum] = useState({});
+    const [protocolForum, setProtocolForum] = useState(null);
     const [activeDisplay, setActiveDisplay] = useState("trending");
-    const [trendingPosts, setTrendingPosts] = useState([]);
-    const [latestPosts, setLatestPosts] = useState([]);
+    const [trendingPosts, setTrendingPosts] = useState(null);
+    const [latestPosts, setLatestPosts] = useState(null);
     const [trendingPostTags, setTrendingPostTags] = useState([]);
     const [latestPostTags, setLatestPostTags] = useState([]);
 
@@ -59,37 +57,26 @@ export default function Page({ params, searchParams }) {
                 //         ),
                 //     ),
                 // );
-
-                setIsLoading(false);
             } catch (error) {
                 console.error(error);
-                setIsLoading(false);
             }
         };
         getProtocolInfo();
     }, []);
 
-    return isLoading ||
-        !protocolForum ||
-        protocolForum == {} ||
-        !trendingPostTags ||
-        trendingPostTags == [] ||
-        !latestPostTags ||
-        latestPostTags == [] ||
-        !trendingPosts ||
-        trendingPosts == [] ||
-        !latestPosts ||
-        latestPosts == [] ? (
-        <Spinner />
-    ) : (
+    if (!protocolForum || !trendingPosts || !latestPosts) {
+        return <Spinner />
+    }
+
+    return (
         <>
-            <PageLoader
+            <React.Fragment
                 title="Protocol"
                 children={
                     // Set screen width to be consistent with other pages
                     <div
                         className={clsx(
-                            "flex flex-col w-full items-center p-4 grow bg-isSystemLightSecondary overflow-scroll",
+                            "flex flex-col w-full items-center p-4 grow bg-isSystemLightSecondary overflow-scroll hide-scrollbar",
                             MAX_WIDTH,
                         )}
                         // hide scrollbar
@@ -111,7 +98,7 @@ export default function Page({ params, searchParams }) {
                             <button
                                 onClick={() => {
                                     router.push(
-                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/forum?username=${username}&chatid=${chatid}&from=${from}`,
+                                        `${process.env.NEXT_PUBLIC_SERVER_URL}/protocols?username=${username}&chatid=${chatid}&from=${from}`,
                                     );
                                 }}
                                 style={{

@@ -61,7 +61,7 @@ export default function Page({ params, searchParams }) {
                     >
                         <div
                             className={clsx(
-                                "flex flex-col w-full items-center p-4 grow bg-isSystemLightSecondary overflow-scroll",
+                                "flex flex-col w-full items-center p-4 grow bg-isSystemLightSecondary overflow-scroll hide-scrollbar",
                                 MAX_WIDTH,
                             )}
                             // hide scrollbar
