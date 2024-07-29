@@ -112,7 +112,7 @@ export default function Page({ searchParams }) {
                     {/* Allow proposal header to be hidden by scrolling down */}
                     <div
                         className={clsx(
-                            "w-full overflow-y-auto grow !space-y-2 text-md hide-scrollbar mt-5 pb-20",
+                            "w-full overflow-y-auto grow !space-y-2 text-md hide-scrollbar mt-5",
                             ANIMATE,
                             MAX_WIDTH,
                         )}

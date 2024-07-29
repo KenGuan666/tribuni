@@ -22,7 +22,7 @@ export const UserConnector = () => {
             {user.id !== null && (
                 <div
                     className={clsx(
-                        "h-20 pb-4 w-full bg-[#F9F9F9] fixed bottom-0 grid grid-cols-3 items-center place-content-center",
+                        "h-16 w-full bg-[#F9F9F9] fixed bottom-0 grid grid-cols-3 items-center place-content-center",
                         MAX_WIDTH,
                     )}
                 >

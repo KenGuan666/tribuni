@@ -74,7 +74,7 @@ export default function Page({ searchParams }) {
             children={
                 <div
                     className={clsx(
-                        "flex flex-col items-center w-full grow overflow-hidden pb-24",
+                        "flex flex-col items-center w-full grow overflow-hidden pb-16",
                         MAX_WIDTH,
                     )}
                 >
