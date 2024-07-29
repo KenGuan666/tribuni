@@ -117,14 +117,14 @@ export async function POST() {
 
             const updatedPost = {
                 updated_at: new Date(),
-                protocolId: protocolId,
+                protocol_id: protocolId,
                 title: post.topic_title,
                 // TODO: for OP forum, extract "category" from Discourse API as tag
                 tags: [],
-                postURL: `${foraURL}/t/${post.topic_slug}/${post.topic_id}`,
-                numViews: post.reads,
-                numComments: post.reply_count,
-                numQuotes: post.quote_count,
+                post_url: `${foraURL}/t/${post.topic_slug}/${post.topic_id}`,
+                num_views: post.reads,
+                num_comments: post.reply_count,
+                num_quotes: post.quote_count,
                 summary: postSummary,
                 insights: postInsights,
                 date: new Date(post.created_at).toLocaleDateString("en-US", {
@@ -132,12 +132,12 @@ export async function POST() {
                     month: "long",
                     day: "numeric",
                 }),
-                consensusSentimentPercent: consensusPercent,
-                consensusSentimentMajority: consensusValue,
-                communityFeedback: communityFeedback.filter(
+                consensus_sentiment_percent: consensusPercent,
+                consensus_sentiment_majority: consensusValue,
+                community_feedback: communityFeedback.filter(
                     (comment) => comment.length > 0,
                 ),
-                popularVoice:
+                popular_voice:
                     replies.length > 0
                         ? {
                               author: mostPopularReply.username,
@@ -145,7 +145,7 @@ export async function POST() {
                               numViews: mostPopularReply.reads,
                           }
                         : null,
-                nativeId: post.id,
+                native_id: post.id,
             };
             const postInsertionResponse = await db
                 .from("forum_posts")
@@ -189,16 +189,16 @@ export async function POST() {
             updated_at: new Date(),
             name: protocolInfo.name,
             icon: protocolInfo.icon,
-            primaryColor: foraInfo[protocolId].primaryColor,
-            backgroundColor: foraInfo[protocolId].backgroundColor,
-            forumURL: foraURL,
-            forumIcon: foraInfo[protocolId].icon,
-            forumTitle: foraInfo[protocolId].name,
-            forumWeeklySummary: forumWeeklySummary,
-            forumNumReplies: numReplies,
-            forumNumNewPosts: numNewPosts,
-            forumNumTrendingTopics: parseInt(forumNumTrendingTopics),
-            protocolId: protocolId,
+            primary_color: foraInfo[protocolId].primary_color,
+            background_color: foraInfo[protocolId].background_color,
+            forum_url: foraURL,
+            forum_icon: foraInfo[protocolId].icon,
+            forum_title: foraInfo[protocolId].name,
+            forum_weekly_summary: forumWeeklySummary,
+            forum_num_replies: numReplies,
+            forum_num_new_posts: numNewPosts,
+            forum_num_trending_topics: parseInt(forumNumTrendingTopics),
+            protocol_id: protocolId,
         };
 
         const forumInsertionResponse = await db

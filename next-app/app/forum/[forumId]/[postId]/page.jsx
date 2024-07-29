@@ -96,7 +96,7 @@ export default function Page({ params, searchParams }) {
                                         flexDirection: "row",
                                         alignItems: "center",
                                         fontSize: "13px",
-                                        color: protocolForum?.primaryColor,
+                                        color: protocolForum?.primary_color,
                                     }}
                                 >
                                     <svg
@@ -106,10 +106,10 @@ export default function Page({ params, searchParams }) {
                                         className={clsx("w-6 h-6", ANIMATE)}
                                         style={{
                                             fill:
-                                                protocolForum?.primaryColor ||
+                                                protocolForum?.primary_color ||
                                                 "var(--isBlueLight)",
                                             stroke:
-                                                protocolForum?.primaryColor ||
+                                                protocolForum?.primary_color ||
                                                 "var(--isBlueLight)",
                                         }}
                                     >
@@ -122,7 +122,7 @@ export default function Page({ params, searchParams }) {
                                     {protocolForum?.name}
                                 </button>
                                 <Link
-                                    href={`${protocolForumPost?.postURL}`}
+                                    href={`${protocolForumPost?.post_url}`}
                                     target="_blank"
                                     style={{
                                         padding: "4px 8px",
@@ -132,9 +132,9 @@ export default function Page({ params, searchParams }) {
                                         flexDirection: "row",
                                         alignItems: "center",
                                         fontSize: "13px",
-                                        color: protocolForum?.primaryColor,
+                                        color: protocolForum?.primary_color,
                                         backgroundColor:
-                                            protocolForum?.backgroundColor,
+                                            protocolForum?.background_color,
                                     }}
                                 >
                                     {protocolForum && (
@@ -209,7 +209,7 @@ export default function Page({ params, searchParams }) {
                                             marginRight: "5px",
                                         }}
                                     />
-                                    {protocolForumPost?.numLikes}
+                                    {protocolForumPost?.num_likes}
                                 </p> */}
                                 <p
                                     style={{
@@ -284,7 +284,7 @@ export default function Page({ params, searchParams }) {
                                                     ? "15px"
                                                     : "0px",
                                             backgroundColor:
-                                                protocolForum?.primaryColor,
+                                                protocolForum?.primary_color,
                                             marginTop: "2px",
                                             transition: "all 0.3s ease",
                                         }}
@@ -322,7 +322,7 @@ export default function Page({ params, searchParams }) {
                                                     ? "15px"
                                                     : "0px",
                                             backgroundColor:
-                                                protocolForum?.primaryColor,
+                                                protocolForum?.primary_color,
                                             marginTop: "2px",
                                             transition: "all 0.3s ease",
                                         }}
@@ -393,8 +393,8 @@ export default function Page({ params, searchParams }) {
                                             flexGrow: 1,
                                         }}
                                     >
-                                        {protocolForumPost?.consensusSentimentPercent &&
-                                            protocolForumPost?.consensusSentimentPercent !==
+                                        {protocolForumPost?.consensus_sentiment_percent &&
+                                            protocolForumPost?.consensus_sentiment_percent !==
                                                 null && (
                                                 <>
                                                     <h1
@@ -440,12 +440,12 @@ export default function Page({ params, searchParams }) {
                                                                 }}
                                                             >
                                                                 {
-                                                                    protocolForumPost?.consensusSentimentPercent
+                                                                    protocolForumPost?.consensus_sentiment_percent
                                                                 }
                                                                 %
                                                             </span>
                                                             of replies{" "}
-                                                            {protocolForumPost?.consensusSentimentMajority ===
+                                                            {protocolForumPost?.consensus_sentiment_majority ===
                                                             "yes"
                                                                 ? "support or have favorable feelings toward"
                                                                 : "do not support or have unfavorable feelings toward"}{" "}
@@ -488,8 +488,8 @@ export default function Page({ params, searchParams }) {
                                                                 left: 0,
                                                                 top: 0,
                                                                 backgroundColor:
-                                                                    protocolForum?.primaryColor,
-                                                                width: `calc(${protocolForumPost?.consensusSentimentPercent}%)`,
+                                                                    protocolForum?.primary_color,
+                                                                width: `calc(${protocolForumPost?.consensus_sentiment_percent}%)`,
                                                                 height: "15px",
                                                                 borderRadius:
                                                                     "25px",
@@ -520,8 +520,8 @@ export default function Page({ params, searchParams }) {
                                                 padding: "0px 30px",
                                             }}
                                         >
-                                            {protocolForumPost?.communityFeedback &&
-                                            protocolForumPost?.communityFeedback
+                                            {protocolForumPost?.community_feedback &&
+                                            protocolForumPost?.community_feedback
                                                 .length > 0 ? (
                                                 <ul
                                                     style={{
@@ -534,7 +534,7 @@ export default function Page({ params, searchParams }) {
                                                         // paddingLeft: "px",
                                                     }}
                                                 >
-                                                    {protocolForumPost?.communityFeedback.map(
+                                                    {protocolForumPost?.community_feedback.map(
                                                         (feedback, index) => (
                                                             <li
                                                                 key={index}
@@ -572,9 +572,9 @@ export default function Page({ params, searchParams }) {
                                                 </p>
                                             )}
                                         </div>
-                                        {protocolForumPost?.popularVoice &&
+                                        {protocolForumPost?.popular_voice &&
                                             Object.keys(
-                                                protocolForumPost.popularVoice,
+                                                protocolForumPost.popular_voice,
                                             ).length > 0 && (
                                                 <>
                                                     <h1
@@ -693,11 +693,11 @@ export default function Page({ params, searchParams }) {
                                 alignItems: "center",
                                 padding: "10px",
                                 borderRadius: "10px",
-                                backgroundColor: protocolForum?.backgroundColor,
+                                backgroundColor: protocolForum?.background_color,
                             }}
                         >
                             <BookmarkIcon
-                                fillColor={protocolForum?.primaryColor}
+                                fillColor={protocolForum?.primary_color}
                                 strokeWidth={3}
                                 height="20px"
                                 width="20px"
@@ -707,7 +707,7 @@ export default function Page({ params, searchParams }) {
                             style={{
                                 fontSize: "12px",
                                 color: "#fff",
-                                backgroundColor: protocolForum?.primaryColor,
+                                backgroundColor: protocolForum?.primary_color,
                                 width: "90%",
                                 borderRadius: "10px",
                                 display: "flex",
@@ -715,8 +715,8 @@ export default function Page({ params, searchParams }) {
                                 alignItems: "center",
                             }}
                             href={
-                                protocolForumPost?.postURL
-                                    ? protocolForumPost?.postURL
+                                protocolForumPost?.post_url
+                                    ? protocolForumPost?.post_url
                                     : ""
                             }
                             target="_blank"

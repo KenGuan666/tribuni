@@ -124,7 +124,7 @@ export default function Page({ params, searchParams }) {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     fontSize: "13px",
-                                    color: protocolForum?.primaryColor,
+                                    color: protocolForum?.primary_color,
                                 }}
                             >
                                 <svg
@@ -134,10 +134,10 @@ export default function Page({ params, searchParams }) {
                                     className={clsx("w-6 h-6", ANIMATE)}
                                     style={{
                                         fill:
-                                            protocolForum?.primaryColor ||
+                                            protocolForum?.primary_color ||
                                             "var(--isBlueLight)",
                                         stroke:
-                                            protocolForum?.primaryColor ||
+                                            protocolForum?.primary_color ||
                                             "var(--isBlueLight)",
                                     }}
                                 >
@@ -150,7 +150,7 @@ export default function Page({ params, searchParams }) {
                                 Protocols
                             </button>
                             <Link
-                                href={`${protocolForum?.forumURL}`}
+                                href={`${protocolForum?.forum_url}`}
                                 target="_blank"
                                 style={{
                                     padding: "4px 8px",
@@ -160,9 +160,9 @@ export default function Page({ params, searchParams }) {
                                     flexDirection: "row",
                                     alignItems: "center",
                                     fontSize: "13px",
-                                    color: protocolForum?.primaryColor,
+                                    color: protocolForum?.primary_color,
                                     backgroundColor:
-                                        protocolForum?.backgroundColor,
+                                        protocolForum?.background_color,
                                 }}
                             >
                                 {protocolForum && (
@@ -200,14 +200,14 @@ export default function Page({ params, searchParams }) {
                             }}
                         >
                             <img
-                                src={protocolForum?.forumIcon}
+                                src={protocolForum?.forum_icon}
                                 style={{
                                     width: "58px",
                                     height: "58px",
                                     borderRadius: "50%",
                                     objectFit: "cover",
                                     backgroundColor:
-                                        protocolForum?.backgroundColor,
+                                        protocolForum?.background_color,
                                 }}
                             />
                             <div
@@ -226,7 +226,7 @@ export default function Page({ params, searchParams }) {
                                         color: "#000",
                                     }}
                                 >
-                                    {protocolForum?.forumTitle}
+                                    {protocolForum?.forum_title}
                                 </h1>
                                 <p
                                     style={{
@@ -234,10 +234,10 @@ export default function Page({ params, searchParams }) {
                                         color: "#000",
                                     }}
                                 >
-                                    {protocolForum?.forumWeeklySummary &&
-                                        protocolForum?.forumWeeklySummary
+                                    {protocolForum?.forum_weekly_summary &&
+                                        protocolForum?.forum_weekly_summary
                                             .length > 0 &&
-                                        protocolForum?.forumWeeklySummary
+                                        protocolForum?.forum_weekly_summary
                                             .split(". ")
                                             .slice(0, 1)
                                             .join(". ")}
@@ -277,7 +277,7 @@ export default function Page({ params, searchParams }) {
                                         color: "#000",
                                     }}
                                 >
-                                    {protocolForum?.forumNumReplies}
+                                    {protocolForum?.forum_num_replies}
                                 </h1>
                                 <p
                                     style={{
@@ -310,7 +310,7 @@ export default function Page({ params, searchParams }) {
                                         color: "#000",
                                     }}
                                 >
-                                    {protocolForum?.forumNumNewPosts}
+                                    {protocolForum?.forum_num_new_posts}
                                 </h1>
                                 <p
                                     style={{
@@ -342,7 +342,7 @@ export default function Page({ params, searchParams }) {
                                         color: "#000",
                                     }}
                                 >
-                                    {protocolForum?.forumNumTrendingTopics}
+                                    {protocolForum?.forum_num_trending_topics}
                                 </h1>
                                 <p
                                     style={{
@@ -395,7 +395,7 @@ export default function Page({ params, searchParams }) {
                                                 ? "15px"
                                                 : "0px",
                                         backgroundColor:
-                                            protocolForum?.primaryColor,
+                                            protocolForum?.primary_color,
                                         marginTop: "2px",
                                         transition: "all 0.3s ease",
                                     }}
@@ -431,7 +431,7 @@ export default function Page({ params, searchParams }) {
                                                 ? "15px"
                                                 : "0px",
                                         backgroundColor:
-                                            protocolForum?.primaryColor,
+                                            protocolForum?.primary_color,
                                         marginTop: "2px",
                                         transition: "all 0.3s ease",
                                     }}
@@ -507,7 +507,7 @@ export default function Page({ params, searchParams }) {
                                                                 style={{
                                                                     fontSize:
                                                                         "10px",
-                                                                    color: tag.primaryColor,
+                                                                    color: tag.primary_color,
                                                                     padding:
                                                                         "3px 6px",
                                                                     borderRadius:
@@ -517,7 +517,7 @@ export default function Page({ params, searchParams }) {
                                                                     marginBottom:
                                                                         "5px",
                                                                     backgroundColor:
-                                                                        tag.backgroundColor,
+                                                                        tag.background_color,
                                                                 }}
                                                             >
                                                                 {tag.emoji}{" "}
@@ -675,7 +675,7 @@ export default function Page({ params, searchParams }) {
                                                                 style={{
                                                                     fontSize:
                                                                         "10px",
-                                                                    color: tag.primaryColor,
+                                                                    color: tag.primary_color,
                                                                     padding:
                                                                         "3px 6px",
                                                                     borderRadius:
@@ -685,7 +685,7 @@ export default function Page({ params, searchParams }) {
                                                                     marginBottom:
                                                                         "5px",
                                                                     backgroundColor:
-                                                                        tag.backgroundColor,
+                                                                        tag.background_color,
                                                                 }}
                                                             >
                                                                 {tag.emoji}{" "}
