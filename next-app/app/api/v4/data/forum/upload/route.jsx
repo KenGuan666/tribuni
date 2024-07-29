@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
 import { foraInfo } from "@/constants/foraInfo";
+import { getSupabase } from "@/components/db/supabase";
 import axios from "axios";
 import { htmlToPlaintext } from "@/utils/htmlToPlaintext";
 import {
@@ -8,17 +8,14 @@ import {
     getPostInsights,
     getPostSentiment,
     getPostCommunityFeedback,
-    extractDeadline,
     getForumWeeklySummary,
     getForumNumTrendingTopics,
 } from "@/components/ai/forum";
 import { cookies } from "next/headers";
+
 export async function POST() {
     const _cookies = cookies();
-    const db = createClient(
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY,
-    );
+    const db = getSupabase();
 
     for (const protocolId of Object.keys(foraInfo)) {
         // uncomment to skip proposals that have been updated in the past week
@@ -139,16 +136,6 @@ export async function POST() {
                       )
                     : [];
             await new Promise((r) => setTimeout(r, 2000));
-            const deadline = await extractDeadline(post.raw);
-            const deadlineDate = new Date(
-                `${deadline}/${new Date().getFullYear()}`,
-            );
-
-            const progress = (
-                ((deadlineDate - now) /
-                    (deadlineDate - new Date(post.created_at))) *
-                100
-            ).toFixed(0);
 
             const updatedPost = {
                 updated_at: new Date(),
@@ -177,18 +164,6 @@ export async function POST() {
                               author: mostPopularReply.username,
                               text: mostPopularReply.text,
                               numViews: mostPopularReply.reads,
-                          }
-                        : null,
-                timeline:
-                    deadline !== "none"
-                        ? {
-                              // format dates as Month/Day (numeric)
-                              start: `${new Date(post.created_at).getMonth() + 1}/${new Date(post.created_at).getDate()}`,
-                              end: deadline,
-                              percentProgress: parseInt(progress),
-                              primaryColor: foraInfo[protocolId].primaryColor,
-                              secondaryColor:
-                                  foraInfo[protocolId].backgroundColor,
                           }
                         : null,
                 nativeId: post.id,
@@ -279,44 +254,6 @@ export async function POST() {
 
     // return 201 with 'successfully fetched protocol fora'
     return new Response("successfully populated protocol fora", {
-        status: 201,
-    });
-}
-
-export async function DELETE() {
-    // clear all posts that are older than 7 days
-
-    const db = createClient(
-        process.env.SUPABASE_URL,
-        process.env.SUPABASE_SERVICE_ROLE_KEY,
-    );
-
-    const { data, error } = await db.from("forum_posts").select("*");
-    if (error) {
-        // deal with this
-    }
-
-    const now = new Date();
-    const oldPosts = data.filter((post) => {
-        const postDate = new Date(post.created_at);
-        const diff = now - postDate;
-        const diffInDays = diff / (1000 * 60 * 60 * 24);
-        return diffInDays > 7;
-    });
-
-    // use "id" field to delete
-    const ids = oldPosts.map((post) => post.id);
-    const deletionResponse = await db
-        .from("forum_posts")
-        .delete()
-        .in("id", ids);
-
-    if (deletionResponse.error) {
-        // deal with this
-    }
-
-    // return 201 with 'successfully deleted old posts'
-    return new Response("successfully deleted old posts", {
         status: 201,
     });
 }

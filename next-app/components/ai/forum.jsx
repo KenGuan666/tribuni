@@ -153,22 +153,3 @@ export async function getForumNumTrendingTopics(posts) {
     // console.log("num trending topics", completion.choices[0].message.content);
     return completion.choices[0].message.content;
 }
-
-export async function extractDeadline(post) {
-    const completion = await openai.chat.completions.create({
-        messages: [
-            {
-                role: "system",
-                content:
-                    "You are a blockchain governance expert and you are tasked with identifying the deadline mentioned in an online forum post. You should provide the deadline mentioned in the post. If no deadline is mentioned, respond with 'none'. Limit your response to less than 300 characters. Do not use Markdown, only use plain text. Only respond with the month and date of the deadline with no additional text in the format of 'MM/DD'. Do not include leading zeros if the month or date is a single digit.",
-            },
-            {
-                role: "user",
-                content: `Here is the post: ${post}`,
-            },
-        ],
-        model: process.env.LLM,
-    });
-    // console.log("deadline", completion.choices[0].message.content);
-    return completion.choices[0].message.content.toLowerCase();
-}
