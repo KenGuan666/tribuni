@@ -2,21 +2,6 @@ import OpenAI from "openai";
 
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-export async function getPostTags(text, tagOptions) {
-    const completion = await openai.chat.completions.create({
-        messages: [
-            {
-                role: "system",
-                content: `You are a blockchain governance expert and you are tasked with providing a identifying which of the following tags best characterize the text of an online forum post (the input you will be given by the user). Deliver a list of comma-separated (without space after the commas) tags that best describe the post. Do not use Markdown, only use plain text. Only respond with the comma-separated list of tags and no additional text. Here is a comma-separated list of valid tags: ${tagOptions.join(", ")}`,
-            },
-            { role: "user", content: `Here is the forum post: ${text}` },
-        ],
-        model: process.env.LLM,
-    });
-    // console.log("tags", completion.choices[0].message.content.split(","));
-    return completion.choices[0].message.content.split(",");
-}
-
 export async function getPostSummary(text) {
     const completion = await openai.chat.completions.create({
         messages: [

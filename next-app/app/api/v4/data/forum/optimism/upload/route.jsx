@@ -3,7 +3,6 @@ import { getSupabase } from "@/components/db/supabase";
 import axios from "axios";
 import { htmlToPlaintext } from "@/utils/htmlToPlaintext";
 import {
-    getPostTags,
     getPostSummary,
     getPostInsights,
     getPostSentiment,
@@ -13,33 +12,16 @@ import {
 } from "@/components/ai/forum";
 import { cookies } from "next/headers";
 
+/*
+    /api/v4/data/forum/upload is responsible for 2 tasks:
+    1. For each tracked forum, fetch new forum posts, and generate summaries and analysis for each
+    2. For each tracked forum, update existing active posts, and regenerate analysis if applicable
+*/
 export async function POST() {
     const _cookies = cookies();
     const db = getSupabase();
 
     for (const protocolId of Object.keys(foraInfo)) {
-        // uncomment to skip proposals that have been updated in the past week
-        // const updatedAtResponse = await db
-        //     .from("fora")
-        //     .select("updated_at")
-        //     .eq("name", protocolId);
-
-        // if (updatedAtResponse.error) {
-        //     // deal with this
-        // } else {
-        //     if (updatedAtResponse.data.length > 0) {
-        //         const updatedAt = new Date(
-        //             updatedAtResponse.data[0].updated_at,
-        //         );
-        //         const now = new Date();
-        //         const diff = now - updatedAt;
-        //         const diffInDays = diff / (1000 * 60 * 60 * 24);
-        //         if (diffInDays < 7) {
-        //             continue;
-        //         }
-        //     }
-        // }
-
         const foraURL = foraInfo[protocolId].url;
         const protocolInfoResponse = await db
             .from("protocols")
@@ -111,10 +93,6 @@ export async function POST() {
                 { score: 0, reply: replies[0] },
             );
 
-            const postTags = await getPostTags(
-                post.raw,
-                Object.keys(foraInfo[protocolId].tags),
-            );
             await new Promise((r) => setTimeout(r, 2000));
             const postSummary = await getPostSummary(post.raw);
             await new Promise((r) => setTimeout(r, 2000));
@@ -141,7 +119,8 @@ export async function POST() {
                 updated_at: new Date(),
                 protocolId: protocolId,
                 title: post.topic_title,
-                tags: postTags,
+                // TODO: for OP forum, extract "category" from Discourse API as tag
+                tag: "Work in Progress",
                 postURL: `${foraURL}/t/${post.topic_slug}/${post.topic_id}`,
                 numViews: post.reads,
                 numComments: post.reply_count,
