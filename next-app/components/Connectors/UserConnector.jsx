@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/store";
 import { BASE_USER, MAX_WIDTH } from "../constants";
-import { NavBookmarks, NavHome, NavSettings, NavSocial } from "../ios";
+import { NavBookmarks, NavHome, NavSettings } from "../ios";
+import { OpIcon } from "./opIcon";
 
 export const UserConnector = () => {
     const router = useRouter();
     const pathname = usePathname();
-    const { user, setPageLoading } = useStore();
+    const { user } = useStore();
 
     if (user == BASE_USER) {
         return null;
@@ -28,22 +29,22 @@ export const UserConnector = () => {
                 >
                     {[
                         {
-                            key: "home",
+                            key: "Home",
                             icon: NavHome,
                             path: "/protocols",
                         },
                         {
-                            key: "bookmarks",
+                            key: "Bookmarks",
                             icon: NavBookmarks,
                             path: "/bookmarks",
                         },
                         {
-                            key: "social",
-                            icon: NavSocial,
-                            path: "/forum",
+                            key: "OP Forum",
+                            icon: OpIcon,
+                            path: "/forum/1",
                         },
                         {
-                            key: "settings",
+                            key: "Settings",
                             icon: NavSettings,
                             path: "/settings",
                         },
