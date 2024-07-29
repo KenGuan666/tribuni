@@ -198,20 +198,6 @@ export async function POST() {
             forumNumReplies: numReplies,
             forumNumNewPosts: numNewPosts,
             forumNumTrendingTopics: parseInt(forumNumTrendingTopics),
-            forumTrendingPosts: relevantPosts
-                .sort((a, b) => {
-                    const scoreA =
-                        (a.numComments + a.numQuotes) / a.numViews || 0;
-                    const scoreB =
-                        (b.numComments + b.numQuotes) / b.numViews || 0;
-                    return scoreB - scoreA;
-                })
-                .map((post) => post.id)
-                .slice(0, 10),
-            forumLatestPosts: relevantPosts
-                .sort((a, b) => new Date(b.date) - new Date(a.date))
-                .map((post) => post.id)
-                .slice(0, 10),
             protocolId: protocolId,
         };
 

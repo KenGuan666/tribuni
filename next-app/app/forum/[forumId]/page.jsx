@@ -2,13 +2,18 @@
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { fetchForumById, fetchForumPostsByIds } from "@/components/db/forum";
+import {
+    fetchForumById,
+    fetchLatestPostsByForumId,
+    fetchTrendingPostsByForumId,
+} from "@/components/db/forum";
 import { PageLoader, Spinner } from "@/components/loaders";
 import { ProtocolIcon } from "@/components/page/ProtocolIcon";
 import IosShareIcon from "@mui/icons-material/IosShare";
 import Masonry from "react-masonry-css";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CommentsIcon from "@/public/assets/comments.png";
 import ViewsIcon from "@/public/assets/views.png";
 import axios from "axios";
 
@@ -30,24 +35,25 @@ export default function Page({ params, searchParams }) {
                 const forumData = await fetchForumById(forumId);
                 setProtocolForum(forumData);
 
-                const trendingPosts = await fetchForumPostsByIds(
-                    forumData.forumTrendingPosts.slice(0, 10),
-                );
-                setTrendingPosts(trendingPosts);
-                // setTrendingPostTags(
-                //     trendingPostsResponse.data.map((post) =>
+                // TODO: implement as infinite-scroll
+                const latestPosts = await fetchLatestPostsByForumId(forumId);
+                setLatestPosts(latestPosts);
+                // setLatestPostTags(
+                //     latestPostsResponse.data.map((post) =>
                 //         foraInfo[protocolForum.protocolId].tags.filter((t) =>
                 //             post.tags.includes(t.name),
                 //         ),
                 //     ),
                 // );
 
-                const latestPostsResponse = await fetchForumPostsByIds(
-                    forumData.forumLatestPosts.slice(0, 10),
-                );
-                setLatestPosts(latestPostsResponse);
-                // setLatestPostTags(
-                //     latestPostsResponse.data.map((post) =>
+                // TODO: implement as infinite-scroll
+                const trendingPosts =
+                    await fetchTrendingPostsByForumId(forumId);
+                setTrendingPosts(trendingPosts);
+
+                console.log(latestPosts.map((p) => p.created_at));
+                // setTrendingPostTags(
+                //     trendingPostsResponse.data.map((post) =>
                 //         foraInfo[protocolForum.protocolId].tags.filter((t) =>
                 //             post.tags.includes(t.name),
                 //         ),
@@ -540,16 +546,60 @@ export default function Page({ params, searchParams }) {
                                                         color: "#A2A2AE",
                                                         fontSize: "13px",
                                                         marginBottom: "10px",
+                                                        marginRight: "10px",
                                                     }}
                                                 >
-                                                    <img
-                                                        src={ViewsIcon.src}
+                                                    <p
                                                         style={{
-                                                            height: "10px",
-                                                            marginRight: "5px",
+                                                            display: "flex",
+                                                            flexDirection:
+                                                                "row",
+                                                            fontSize: "13px",
+                                                            color: "#A2A2AE",
+                                                            justifyContent:
+                                                                "center",
+                                                            alignItems:
+                                                                "center",
+                                                            marginRight: "10px",
                                                         }}
-                                                    />
-                                                    {post.numViews}
+                                                    >
+                                                        <img
+                                                            src={ViewsIcon.src}
+                                                            style={{
+                                                                height: "10px",
+                                                                marginRight:
+                                                                    "5px",
+                                                            }}
+                                                        />
+                                                        {post.num_views}
+                                                    </p>
+
+                                                    <p
+                                                        style={{
+                                                            display: "flex",
+                                                            flexDirection:
+                                                                "row",
+                                                            fontSize: "13px",
+                                                            color: "#A2A2AE",
+                                                            justifyContent:
+                                                                "center",
+                                                            alignItems:
+                                                                "center",
+                                                            marginRight: "10px",
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={
+                                                                CommentsIcon.src
+                                                            }
+                                                            style={{
+                                                                height: "10px",
+                                                                marginRight:
+                                                                    "5px",
+                                                            }}
+                                                        />
+                                                        {post.num_comments}
+                                                    </p>
                                                 </div>
                                             </button>
                                         ))}
@@ -666,14 +716,57 @@ export default function Page({ params, searchParams }) {
                                                         marginBottom: "10px",
                                                     }}
                                                 >
-                                                    <img
-                                                        src={ViewsIcon.src}
+                                                    <p
                                                         style={{
-                                                            height: "10px",
-                                                            marginRight: "5px",
+                                                            display: "flex",
+                                                            flexDirection:
+                                                                "row",
+                                                            fontSize: "13px",
+                                                            color: "#A2A2AE",
+                                                            justifyContent:
+                                                                "center",
+                                                            alignItems:
+                                                                "center",
+                                                            marginRight: "10px",
                                                         }}
-                                                    />
-                                                    {post.numViews}
+                                                    >
+                                                        <img
+                                                            src={ViewsIcon.src}
+                                                            style={{
+                                                                height: "10px",
+                                                                marginRight:
+                                                                    "5px",
+                                                            }}
+                                                        />
+                                                        {post.num_views}
+                                                    </p>
+
+                                                    <p
+                                                        style={{
+                                                            display: "flex",
+                                                            flexDirection:
+                                                                "row",
+                                                            fontSize: "13px",
+                                                            color: "#A2A2AE",
+                                                            justifyContent:
+                                                                "center",
+                                                            alignItems:
+                                                                "center",
+                                                            marginRight: "10px",
+                                                        }}
+                                                    >
+                                                        <img
+                                                            src={
+                                                                CommentsIcon.src
+                                                            }
+                                                            style={{
+                                                                height: "10px",
+                                                                marginRight:
+                                                                    "5px",
+                                                            }}
+                                                        />
+                                                        {post.num_comments}
+                                                    </p>
                                                 </div>
                                             </button>
                                         ))}

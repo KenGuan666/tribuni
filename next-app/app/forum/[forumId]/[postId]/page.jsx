@@ -189,7 +189,7 @@ export default function Page({ params, searchParams }) {
                                             marginRight: "5px",
                                         }}
                                     />
-                                    {protocolForumPost?.numViews}
+                                    {protocolForumPost?.num_views}
                                 </p>
                                 {/* <p
                                     style={{
@@ -228,7 +228,7 @@ export default function Page({ params, searchParams }) {
                                             marginRight: "5px",
                                         }}
                                     />
-                                    {protocolForumPost?.numComments}
+                                    {protocolForumPost?.num_comments}
                                 </p>
                             </div>
 
@@ -660,7 +660,7 @@ export default function Page({ params, searchParams }) {
                                                                 {
                                                                     protocolForumPost // change to numViews
                                                                         ?.popularVoice
-                                                                        .numViews
+                                                                        .num_views
                                                                 }
                                                             </p>
                                                         </div>
