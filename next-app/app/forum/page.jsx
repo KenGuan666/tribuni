@@ -54,7 +54,7 @@ export default function Page({ searchParams }) {
                     )}
                 >
                     <div className="flex flex-col grow overflow-y-scroll hide-scrollbar">
-                        <Title text="Social" />
+                        <Title text="Forum" />
 
                         {protocolForums.length > 0 && (
                             <SearchBar

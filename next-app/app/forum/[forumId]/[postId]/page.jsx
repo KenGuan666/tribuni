@@ -18,7 +18,7 @@ import QuoteIcon from "@/public/assets/quote.jsx";
 
 export default function Page({ params, searchParams }) {
     const { forumId, postId } = params;
-    const { username, chatid, from } = searchParams;
+    const { username, chatid } = searchParams;
     const router = useRouter();
     const [protocolForum, setProtocolForum] = useState(null);
     const [protocolForumPost, setProtocolForumPost] = useState(null);
@@ -83,7 +83,7 @@ export default function Page({ params, searchParams }) {
                                 <button
                                     onClick={() => {
                                         router.push(
-                                            `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}?username=${username}&chatid=${chatid}&from=${from}`,
+                                            `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}?username=${username}&chatid=${chatid}`,
                                         );
                                     }}
                                     style={{
@@ -521,8 +521,9 @@ export default function Page({ params, searchParams }) {
                                             }}
                                         >
                                             {protocolForumPost?.community_feedback &&
-                                            protocolForumPost?.community_feedback
-                                                .length > 0 ? (
+                                            protocolForumPost
+                                                ?.community_feedback.length >
+                                                0 ? (
                                                 <ul
                                                     style={{
                                                         padding: 0,
