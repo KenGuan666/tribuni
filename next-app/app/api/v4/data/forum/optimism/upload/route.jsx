@@ -120,7 +120,7 @@ export async function POST() {
                 protocolId: protocolId,
                 title: post.topic_title,
                 // TODO: for OP forum, extract "category" from Discourse API as tag
-                tag: "Work in Progress",
+                tags: [],
                 postURL: `${foraURL}/t/${post.topic_slug}/${post.topic_id}`,
                 numViews: post.reads,
                 numComments: post.reply_count,
