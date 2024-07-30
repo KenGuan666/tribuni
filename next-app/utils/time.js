@@ -36,3 +36,11 @@ export function timestampNow() {
 export function secondsFromNow(timestamp) {
     return timestamp - timestampNow();
 }
+
+export function dateStringFromTimestamptz(timestamptz) {
+    return new Date(timestamptz).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+}

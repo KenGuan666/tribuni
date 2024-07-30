@@ -1,342 +1,106 @@
 "use client";
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { fetchForumById, fetchForumPostById } from "@/components/db/forum";
-import { PageLoader, Spinner } from "@/components/loaders";
-import { ProtocolIcon } from "@/components/page/ProtocolIcon";
-import IosShareIcon from "@mui/icons-material/IosShare";
-import Masonry from "react-masonry-css";
-import { useRouter } from "next/navigation";
-import Link from "next/link";
-import ViewsIcon from "@/public/assets/views.png";
-import LikesIcon from "@/public/assets/likes.png";
-import LikesRedIcon from "@/public/assets/likes_red.png";
-import CommentsIcon from "@/public/assets/comments.png";
-import BookmarkIcon from "@/public/assets/bookmark.jsx";
 import QuoteIcon from "@/public/assets/quote.jsx";
+import { ForumNavigator } from "../ForumNavigator";
+import { PostStats } from "../PostStats";
+import { Tabs } from "../Tabs";
 
 export default function Page({ params, searchParams }) {
     const { forumId, postId } = params;
     const { username, chatid } = searchParams;
-    const router = useRouter();
-    const [protocolForum, setProtocolForum] = useState(null);
-    const [protocolForumPost, setProtocolForumPost] = useState(null);
+    const [forum, setForum] = useState(null);
+    const [post, setPost] = useState(null);
     const [activeDisplay, setActiveDisplay] = useState("tldr");
-    const [loading, setLoading] = useState(true);
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const protocolForum = await fetchForumById(forumId);
-                setProtocolForum(protocolForum);
+                const forum = await fetchForumById(forumId);
+                setForum(forum);
 
                 const postInfo = await fetchForumPostById(postId);
-                setProtocolForumPost(postInfo);
-
-                setLoading(false);
+                setPost(postInfo);
             } catch (err) {
                 console.log(err);
             }
-            setLoading(false);
         };
         fetchData();
     }, [forumId, postId]);
 
-    if (!protocolForumPost) {
+    if (!post) {
         return null;
     }
 
     return (
-        <PageLoader
+        <React.Fragment
             title="Post"
             children={
                 <>
                     <div
-                        style={{
-                            display: "flex",
-                            flexDirection: "column",
-                            minHeight: "100vh",
-                            backgroundColor: "#F9F9F9",
-                        }}
+                        className={clsx(
+                            "flex flex-col w-full items-center p-4 bg-isSystemLightSecondary grow overflow-hidden",
+                            MAX_WIDTH,
+                        )}
                     >
+                        <ForumNavigator
+                            backUrl={`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}/?username=${username}&chatid=${chatid}`}
+                            forum={forum}
+                            backText={`${forum.name} Forum`}
+                            buttonText="Original Post"
+                        />
                         <div
                             className={clsx(
-                                "flex flex-col w-full items-center p-4 grow bg-isSystemLightSecondary overflow-scroll hide-scrollbar",
+                                "flex flex-col w-full items-center p-2 grow bg-isSystemLightSecondary overflow-scroll hide-scrollbar mb-[50px]",
                                 MAX_WIDTH,
                             )}
-                            // hide scrollbar
-                            style={{
-                                scrollbarWidth: "none",
-                                msOverflowStyle: "none",
-                                paddingBottom: "40px",
-                            }}
                         >
                             <div
                                 style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
+                                    padding: "0px 0px 5px 0px",
                                     width: "100%",
-                                }}
-                            >
-                                <button
-                                    onClick={() => {
-                                        router.push(
-                                            `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}?username=${username}&chatid=${chatid}`,
-                                        );
-                                    }}
-                                    style={{
-                                        position: "relative",
-                                        padding: "2px 0px",
-                                        borderRadius: "33px",
-                                        maxWidth: "150px",
-                                        display: "flex",
-                                        justifyContent: "space-evenly",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        fontSize: "13px",
-                                        color: protocolForum?.primary_color,
-                                    }}
-                                >
-                                    <svg
-                                        xmlns="http://www.w3.org/2000/svg"
-                                        viewBox="0 0 24 24"
-                                        fill="currentColor"
-                                        className={clsx("w-6 h-6", ANIMATE)}
-                                        style={{
-                                            fill:
-                                                protocolForum?.primary_color ||
-                                                "var(--isBlueLight)",
-                                            stroke:
-                                                protocolForum?.primary_color ||
-                                                "var(--isBlueLight)",
-                                        }}
-                                    >
-                                        <path
-                                            fillRule="evenodd"
-                                            d="M7.72 12.53a.75.75 0 010-1.06l7.5-7.5a.75.75 0 111.06 1.06L9.31 12l6.97 6.97a.75.75 0 11-1.06 1.06l-7.5-7.5z"
-                                            clipRule="evenodd"
-                                        />
-                                    </svg>
-                                    {protocolForum?.name}
-                                </button>
-                                <Link
-                                    href={`${protocolForumPost?.post_url}`}
-                                    target="_blank"
-                                    style={{
-                                        padding: "4px 8px",
-                                        borderRadius: "33px",
-                                        display: "flex",
-                                        justifyContent: "space-evenly",
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        fontSize: "13px",
-                                        color: protocolForum?.primary_color,
-                                        backgroundColor:
-                                            protocolForum?.background_color,
-                                    }}
-                                >
-                                    {protocolForum && (
-                                        <ProtocolIcon
-                                            protocol={protocolForum}
-                                            fill={false}
-                                            size={16}
-                                        />
-                                    )}{" "}
-                                    <p
-                                        style={{
-                                            marginLeft: "5px",
-                                            marginRight: "5px",
-                                        }}
-                                    >
-                                        Original Post
-                                    </p>
-                                    <IosShareIcon
-                                        style={{
-                                            height: "16px",
-                                            width: "16px",
-                                        }}
-                                    />
-                                </Link>
-                            </div>
-
-                            <div
-                                style={{
                                     display: "flex",
-                                    flexDirection: "row",
-                                    width: "90%",
+                                    flexDirection: "column",
+                                    textAlign: "left",
                                     justifyContent: "flex-start",
-                                    alignItems: "center",
-                                    marginTop: "30px",
+                                    alignItems: "flex-start",
                                 }}
                             >
-                                <p
+                                <PostStats post={post} />
+
+                                <h1
                                     style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        fontSize: "13px",
-                                        color: "#A2A2AE",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        marginRight: "10px",
+                                        fontSize: "18px",
+                                        fontWeight: "600",
+                                        color: "#000",
                                     }}
                                 >
-                                    <img
-                                        src={ViewsIcon.src}
-                                        style={{
-                                            height: "10px",
-                                            marginRight: "5px",
-                                        }}
-                                    />
-                                    {protocolForumPost?.num_views}
-                                </p>
-                                {/* <p
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        fontSize: "13px",
-                                        color: "#A2A2AE",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        marginRight: "10px",
-                                    }}
-                                >
-                                    <img
-                                        src={LikesIcon.src}
-                                        style={{
-                                            height: "10px",
-                                            marginRight: "5px",
-                                        }}
-                                    />
-                                    {protocolForumPost?.num_likes}
-                                </p> */}
-                                <p
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "row",
-                                        fontSize: "13px",
-                                        color: "#A2A2AE",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <img
-                                        src={CommentsIcon.src}
-                                        style={{
-                                            height: "10px",
-                                            marginRight: "5px",
-                                        }}
-                                    />
-                                    {protocolForumPost?.num_comments}
-                                </p>
+                                    {post?.title}
+                                </h1>
+
+                                <Tabs
+                                    activeDisplay={activeDisplay}
+                                    setActiveDisplay={setActiveDisplay}
+                                    primary_color={forum.primary_color}
+                                    options={[
+                                        { text: "TLDR", state: "tldr" },
+                                        {
+                                            text: "Community",
+                                            state: "community",
+                                        },
+                                    ]}
+                                />
                             </div>
 
-                            <h1
-                                style={{
-                                    fontSize: "18px",
-                                    fontWeight: "600",
-                                    color: "#000",
-                                    width: "90%",
-                                    marginTop: "12px",
-                                }}
-                            >
-                                {protocolForumPost?.title}
-                            </h1>
-
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "flex-start",
-                                    alignItems: "center",
-                                    width: "100%",
-                                    padding: "12px 0px",
-                                }}
-                            >
-                                <button
-                                    onClick={() => setActiveDisplay("tldr")}
-                                    style={{
-                                        padding: "8px 16px",
-                                        color:
-                                            activeDisplay === "tldr"
-                                                ? "#000"
-                                                : "rgba(0, 0, 0, 0.5)",
-                                        fontSize: "15px",
-                                        fontWeight:
-                                            activeDisplay === "tldr"
-                                                ? "600"
-                                                : "400",
-                                        marginRight: "10px",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        flexDirection: "column",
-                                        transition: "all 0.3s ease",
-                                    }}
-                                >
-                                    TLDR
-                                    <div
-                                        style={{
-                                            height: "3px",
-                                            width:
-                                                activeDisplay === "tldr"
-                                                    ? "15px"
-                                                    : "0px",
-                                            backgroundColor:
-                                                protocolForum?.primary_color,
-                                            marginTop: "2px",
-                                            transition: "all 0.3s ease",
-                                        }}
-                                    />
-                                </button>
-                                <button
-                                    onClick={() =>
-                                        setActiveDisplay("community")
-                                    }
-                                    style={{
-                                        padding: "8px 16px",
-                                        color:
-                                            activeDisplay === "community"
-                                                ? "#000"
-                                                : "rgba(0, 0, 0, 0.5)",
-                                        fontSize: "15px",
-                                        fontWeight:
-                                            activeDisplay === "community"
-                                                ? "600"
-                                                : "400",
-                                        marginRight: "10px",
-                                        display: "flex",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                        flexDirection: "column",
-                                        transition: "all 0.3s ease",
-                                    }}
-                                >
-                                    Community
-                                    <div
-                                        style={{
-                                            height: "3px",
-                                            width:
-                                                activeDisplay === "community"
-                                                    ? "15px"
-                                                    : "0px",
-                                            backgroundColor:
-                                                protocolForum?.primary_color,
-                                            marginTop: "2px",
-                                            transition: "all 0.3s ease",
-                                        }}
-                                    />
-                                </button>
-                            </div>
-
-                            {protocolForumPost && activeDisplay === "tldr" && (
+                            {post && activeDisplay === "tldr" && (
                                 <div
                                     style={{
-                                        width: "calc(100% + 32px)",
+                                        width: "calc(100% + 8px)",
                                         marginLeft: "-16px",
                                         marginRight: "-16px",
-                                        borderRadius: "10px 10px 0px 0px",
+                                        borderRadius: "10px",
                                         backgroundColor: "#fff",
                                         padding: "20px",
                                         flexGrow: 1,
@@ -357,7 +121,7 @@ export default function Page({ params, searchParams }) {
                                             color: "#A2A2AE",
                                         }}
                                     >
-                                        {protocolForumPost?.summary}
+                                        {post?.summary}
                                     </p>
                                     <h1
                                         style={{
@@ -375,301 +139,284 @@ export default function Page({ params, searchParams }) {
                                             color: "#A2A2AE",
                                         }}
                                     >
-                                        {protocolForumPost?.insights}
+                                        {post?.insights}
                                     </p>
                                 </div>
                             )}
 
-                            {protocolForumPost &&
-                                activeDisplay === "community" && (
-                                    <div
-                                        style={{
-                                            width: "calc(100% + 32px)",
-                                            marginLeft: "-16px",
-                                            marginRight: "-16px",
-                                            borderRadius: "10px 10px 0px 0px",
-                                            backgroundColor: "#fff",
-                                            padding: "20px",
-                                            flexGrow: 1,
-                                        }}
-                                    >
-                                        {protocolForumPost?.consensus_sentiment_percent &&
-                                            protocolForumPost?.consensus_sentiment_percent !==
-                                                null && (
-                                                <>
-                                                    <h1
-                                                        style={{
-                                                            fontSize: "16px",
-                                                            fontWeight: 600,
-                                                            marginBottom:
-                                                                "20px",
-                                                        }}
-                                                    >
-                                                        Consensus
-                                                    </h1>
-                                                    <div
-                                                        style={{
-                                                            width: "100%",
-                                                            display: "flex",
-                                                            flexDirection:
-                                                                "row",
-                                                            justifyContent:
-                                                                "flex-start",
-                                                            alignItems:
-                                                                "center",
-                                                        }}
-                                                    >
-                                                        <p
-                                                            style={{
-                                                                color: "#A2A2AE",
-                                                                fontSize:
-                                                                    "13px",
-                                                                marginLeft:
-                                                                    "20px",
-                                                                width: "80%",
-                                                            }}
-                                                        >
-                                                            <span
-                                                                style={{
-                                                                    color: "#000",
-                                                                    fontWeight: 600,
-                                                                    fontSize:
-                                                                        "16px",
-                                                                    marginRight:
-                                                                        "8px",
-                                                                }}
-                                                            >
-                                                                {
-                                                                    protocolForumPost?.consensus_sentiment_percent
-                                                                }
-                                                                %
-                                                            </span>
-                                                            of replies{" "}
-                                                            {protocolForumPost?.consensus_sentiment_majority ===
-                                                            "yes"
-                                                                ? "support or have favorable feelings toward"
-                                                                : "do not support or have unfavorable feelings toward"}{" "}
-                                                            this post
-                                                        </p>
-                                                    </div>
-
-                                                    <div
-                                                        style={{
-                                                            marginTop: "20px",
-                                                            width: "100%",
-                                                            alignItems:
-                                                                "center",
-                                                            padding: "0px 10px",
-                                                            position:
-                                                                "relative",
-                                                            marginBottom:
-                                                                "60px",
-                                                        }}
-                                                    >
-                                                        <div
-                                                            style={{
-                                                                position:
-                                                                    "absolute",
-                                                                left: 0,
-                                                                top: 0,
-                                                                backgroundColor:
-                                                                    "#E1E2E8",
-                                                                width: "100%",
-                                                                height: "15px",
-                                                                borderRadius:
-                                                                    "25px",
-                                                                zIndex: 1,
-                                                            }}
-                                                        />
-                                                        <div
-                                                            style={{
-                                                                position:
-                                                                    "absolute",
-                                                                left: 0,
-                                                                top: 0,
-                                                                backgroundColor:
-                                                                    protocolForum?.primary_color,
-                                                                width: `calc(${protocolForumPost?.consensus_sentiment_percent}%)`,
-                                                                height: "15px",
-                                                                borderRadius:
-                                                                    "25px",
-                                                                zIndex: 2,
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </>
-                                            )}
-                                        <h1
-                                            style={{
-                                                fontSize: "16px",
-                                                fontWeight: 600,
-                                                marginBottom: "4px",
-                                            }}
-                                        >
-                                            Community Feedback
-                                        </h1>
-                                        <div
-                                            style={{
-                                                width: "100%",
-                                                textAlign: "left",
-                                                display: "flex",
-                                                flexDirection: "column",
-                                                justifyContent: "center",
-                                                alignItems: "center",
-                                                marginTop: "4px",
-                                                padding: "0px 30px",
-                                            }}
-                                        >
-                                            {protocolForumPost?.community_feedback &&
-                                            protocolForumPost
-                                                ?.community_feedback.length >
-                                                0 ? (
-                                                <ul
+                            {post && activeDisplay === "community" && (
+                                <div
+                                    style={{
+                                        width: "calc(100% + 8px)",
+                                        marginLeft: "-16px",
+                                        marginRight: "-16px",
+                                        borderRadius: "10px",
+                                        backgroundColor: "#fff",
+                                        padding: "20px",
+                                        flexGrow: 1,
+                                    }}
+                                >
+                                    {post?.consensus_sentiment_percent &&
+                                        post?.consensus_sentiment_percent !==
+                                            null && (
+                                            <>
+                                                <h1
                                                     style={{
-                                                        padding: 0,
-                                                        margin: 0,
-                                                        listStyleType: "disc",
-                                                        listStylePosition:
-                                                            "outside",
-                                                        color: "#A2A2AE",
-                                                        // paddingLeft: "px",
+                                                        fontSize: "16px",
+                                                        fontWeight: 600,
+                                                        marginBottom: "20px",
                                                     }}
                                                 >
-                                                    {protocolForumPost?.community_feedback.map(
-                                                        (feedback, index) => (
-                                                            <li
-                                                                key={index}
+                                                    Consensus
+                                                </h1>
+                                                <div
+                                                    style={{
+                                                        width: "100%",
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                        justifyContent:
+                                                            "flex-start",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <p
+                                                        style={{
+                                                            color: "#A2A2AE",
+                                                            fontSize: "13px",
+                                                            marginLeft: "20px",
+                                                            width: "80%",
+                                                        }}
+                                                    >
+                                                        <span
+                                                            style={{
+                                                                color: "#000",
+                                                                fontWeight: 600,
+                                                                fontSize:
+                                                                    "16px",
+                                                                marginRight:
+                                                                    "8px",
+                                                            }}
+                                                        >
+                                                            {
+                                                                post?.consensus_sentiment_percent
+                                                            }
+                                                            %
+                                                        </span>
+                                                        of replies{" "}
+                                                        {post?.consensus_sentiment_majority ===
+                                                        "yes"
+                                                            ? "support or have favorable feelings toward"
+                                                            : "do not support or have unfavorable feelings toward"}{" "}
+                                                        this post
+                                                    </p>
+                                                </div>
+
+                                                <div
+                                                    style={{
+                                                        marginTop: "20px",
+                                                        width: "100%",
+                                                        alignItems: "center",
+                                                        padding: "0px 10px",
+                                                        position: "relative",
+                                                        marginBottom: "60px",
+                                                    }}
+                                                >
+                                                    <div
+                                                        style={{
+                                                            position:
+                                                                "absolute",
+                                                            left: 0,
+                                                            top: 0,
+                                                            backgroundColor:
+                                                                "#E1E2E8",
+                                                            width: "100%",
+                                                            height: "15px",
+                                                            borderRadius:
+                                                                "25px",
+                                                            zIndex: 1,
+                                                        }}
+                                                    />
+                                                    <div
+                                                        style={{
+                                                            position:
+                                                                "absolute",
+                                                            left: 0,
+                                                            top: 0,
+                                                            backgroundColor:
+                                                                forum?.primary_color,
+                                                            width: `calc(${post?.consensus_sentiment_percent}%)`,
+                                                            height: "15px",
+                                                            borderRadius:
+                                                                "25px",
+                                                            zIndex: 2,
+                                                        }}
+                                                    />
+                                                </div>
+                                            </>
+                                        )}
+                                    <h1
+                                        style={{
+                                            fontSize: "16px",
+                                            fontWeight: 600,
+                                            marginBottom: "4px",
+                                        }}
+                                    >
+                                        Community Feedback
+                                    </h1>
+                                    <div
+                                        style={{
+                                            width: "100%",
+                                            textAlign: "left",
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            marginTop: "4px",
+                                            padding: "0px 30px",
+                                        }}
+                                    >
+                                        {post?.community_feedback &&
+                                        post?.community_feedback.length > 0 ? (
+                                            <ul
+                                                style={{
+                                                    padding: 0,
+                                                    margin: 0,
+                                                    listStyleType: "disc",
+                                                    listStylePosition:
+                                                        "outside",
+                                                    color: "#A2A2AE",
+                                                    // paddingLeft: "px",
+                                                }}
+                                            >
+                                                {post?.community_feedback.map(
+                                                    (feedback, index) => (
+                                                        <li
+                                                            key={index}
+                                                            style={{
+                                                                marginBottom:
+                                                                    "4px",
+                                                                paddingLeft:
+                                                                    "0px",
+                                                            }}
+                                                        >
+                                                            <p
                                                                 style={{
-                                                                    marginBottom:
-                                                                        "4px",
-                                                                    paddingLeft:
+                                                                    fontSize:
+                                                                        "13px",
+                                                                    color: "#A2A2AE",
+                                                                    margin: 0,
+                                                                    textIndent:
                                                                         "0px",
                                                                 }}
                                                             >
-                                                                <p
-                                                                    style={{
-                                                                        fontSize:
-                                                                            "13px",
-                                                                        color: "#A2A2AE",
-                                                                        margin: 0,
-                                                                        textIndent:
-                                                                            "0px",
-                                                                    }}
-                                                                >
-                                                                    {feedback}
-                                                                </p>
-                                                            </li>
-                                                        ),
-                                                    )}
-                                                </ul>
-                                            ) : (
-                                                <p
+                                                                {feedback}
+                                                            </p>
+                                                        </li>
+                                                    ),
+                                                )}
+                                            </ul>
+                                        ) : (
+                                            <p
+                                                style={{
+                                                    fontSize: "13px",
+                                                    marginTop: "50px",
+                                                }}
+                                            >
+                                                No community feedback found.
+                                            </p>
+                                        )}
+                                    </div>
+                                    {post?.popular_voice &&
+                                        Object.keys(post.popular_voice).length >
+                                            0 && (
+                                            <>
+                                                <h1
                                                     style={{
-                                                        fontSize: "13px",
+                                                        fontSize: "16px",
+                                                        fontWeight: 600,
+                                                        marginTop: "20px",
+                                                        marginBottom: "4px",
+                                                    }}
+                                                >
+                                                    Popular Voice
+                                                </h1>
+                                                <div
+                                                    style={{
+                                                        width: "100%",
+                                                        display: "flex",
+                                                        flexDirection: "row",
+                                                        justifyContent:
+                                                            "flex-start",
+                                                        alignItems:
+                                                            "flex-start",
                                                         marginTop: "10px",
                                                     }}
                                                 >
-                                                    No community feedback found.
-                                                </p>
-                                            )}
-                                        </div>
-                                        {protocolForumPost?.popular_voice &&
-                                            Object.keys(
-                                                protocolForumPost.popular_voice,
-                                            ).length > 0 && (
-                                                <>
-                                                    <h1
+                                                    <p
                                                         style={{
-                                                            fontSize: "16px",
-                                                            fontWeight: 600,
-                                                            marginTop: "20px",
-                                                            marginBottom: "4px",
+                                                            color: "#A2A2AE",
+                                                            fontSize: "13px",
+                                                            width: "90%",
+                                                            marginRight: "20px",
                                                         }}
                                                     >
-                                                        Popular Voice
-                                                    </h1>
+                                                        <span
+                                                            style={{
+                                                                fontWeight:
+                                                                    "600",
+                                                                color: "#737373",
+                                                            }}
+                                                        >
+                                                            {
+                                                                post
+                                                                    ?.popularVoice
+                                                                    .author
+                                                            }
+                                                            :
+                                                        </span>{" "}
+                                                        {
+                                                            post?.popularVoice
+                                                                .text
+                                                        }
+                                                    </p>
                                                     <div
                                                         style={{
-                                                            width: "100%",
                                                             display: "flex",
                                                             flexDirection:
-                                                                "row",
+                                                                "column",
                                                             justifyContent:
                                                                 "flex-start",
                                                             alignItems:
-                                                                "flex-start",
+                                                                "center",
                                                             marginTop: "10px",
                                                         }}
                                                     >
+                                                        <QuoteIcon
+                                                            fillColor={
+                                                                "#A2A2AE"
+                                                            }
+                                                            height={"100px"}
+                                                            width={"100px"}
+                                                        />
                                                         <p
                                                             style={{
-                                                                color: "#A2A2AE",
+                                                                color: "rgba(234, 47, 47, 0.6)",
                                                                 fontSize:
                                                                     "13px",
-                                                                width: "90%",
-                                                                marginRight:
-                                                                    "20px",
                                                             }}
                                                         >
-                                                            <span
-                                                                style={{
-                                                                    fontWeight:
-                                                                        "600",
-                                                                    color: "#737373",
-                                                                }}
-                                                            >
-                                                                {
-                                                                    protocolForumPost
-                                                                        ?.popularVoice
-                                                                        .author
-                                                                }
-                                                                :
-                                                            </span>{" "}
                                                             {
-                                                                protocolForumPost
+                                                                post // change to numViews
                                                                     ?.popularVoice
-                                                                    .text
+                                                                    .num_views
                                                             }
                                                         </p>
-                                                        <div
-                                                            style={{
-                                                                display: "flex",
-                                                                flexDirection:
-                                                                    "column",
-                                                                justifyContent:
-                                                                    "flex-start",
-                                                                alignItems:
-                                                                    "center",
-                                                                marginTop:
-                                                                    "10px",
-                                                            }}
-                                                        >
-                                                            <QuoteIcon
-                                                                fillColor={
-                                                                    "#A2A2AE"
-                                                                }
-                                                                height={"100px"}
-                                                                width={"100px"}
-                                                            />
-                                                            <p
-                                                                style={{
-                                                                    color: "rgba(234, 47, 47, 0.6)",
-                                                                    fontSize:
-                                                                        "13px",
-                                                                }}
-                                                            >
-                                                                {
-                                                                    protocolForumPost // change to numViews
-                                                                        ?.popularVoice
-                                                                        .num_views
-                                                                }
-                                                            </p>
-                                                        </div>
                                                     </div>
-                                                </>
-                                            )}
-                                    </div>
-                                )}
+                                                </div>
+                                            </>
+                                        )}
+                                </div>
+                            )}
                         </div>
                     </div>
 
@@ -680,8 +427,7 @@ export default function Page({ params, searchParams }) {
                             justifyContent: "space-evenly",
                             position: "fixed",
                             backgroundColor: "#F9F9F9",
-                            padding: "10px",
-                            height: "60px",
+                            height: "50px",
                             bottom: 0,
                             left: 0,
                         }}
@@ -694,11 +440,11 @@ export default function Page({ params, searchParams }) {
                                 alignItems: "center",
                                 padding: "10px",
                                 borderRadius: "10px",
-                                backgroundColor: protocolForum?.background_color,
+                                backgroundColor: forum?.background_color,
                             }}
                         >
                             <BookmarkIcon
-                                fillColor={protocolForum?.primary_color}
+                                fillColor={forum?.primary_color}
                                 strokeWidth={3}
                                 height="20px"
                                 width="20px"
@@ -708,18 +454,14 @@ export default function Page({ params, searchParams }) {
                             style={{
                                 fontSize: "12px",
                                 color: "#fff",
-                                backgroundColor: protocolForum?.primary_color,
+                                backgroundColor: forum?.primary_color,
                                 width: "90%",
                                 borderRadius: "10px",
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",
                             }}
-                            href={
-                                protocolForumPost?.post_url
-                                    ? protocolForumPost?.post_url
-                                    : ""
-                            }
+                            href={post?.post_url ? post?.post_url : ""}
                             target="_blank"
                         >
                             Visit Now

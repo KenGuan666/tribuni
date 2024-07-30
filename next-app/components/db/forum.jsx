@@ -28,7 +28,7 @@ export async function fetchLatestPostsByForumId(forumId) {
         SELECT *
         FROM forum_posts
         WHERE forum_id = ${forumId}
-        ORDER BY date DESC;
+        ORDER BY post_created_at DESC;
     `;
     return await sql.unsafe(query);
 }
