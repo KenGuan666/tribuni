@@ -6,7 +6,7 @@ import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { fetchForumById, fetchForumPostById } from "@/components/db/forum";
 import QuoteIcon from "@/public/assets/quote.jsx";
 import { ForumNavigator } from "../ForumNavigator";
-import { PostStats } from "../PostStats";
+import { Author } from "./Author";
 import { Tabs } from "../Tabs";
 
 export default function Page({ params, searchParams }) {
@@ -53,7 +53,7 @@ export default function Page({ params, searchParams }) {
                         />
                         <div
                             className={clsx(
-                                "flex flex-col w-full items-center p-2 grow bg-isSystemLightSecondary overflow-scroll hide-scrollbar mb-[50px]",
+                                "flex flex-col w-full items-center p-2 grow bg-isSystemLightSecondary overflow-scroll hide-scrollbar mt-5 mb-[50px]",
                                 MAX_WIDTH,
                             )}
                         >
@@ -68,17 +68,23 @@ export default function Page({ params, searchParams }) {
                                     alignItems: "flex-start",
                                 }}
                             >
-                                <PostStats post={post} />
-
                                 <h1
                                     style={{
-                                        fontSize: "18px",
+                                        fontSize: "22px",
                                         fontWeight: "600",
                                         color: "#000",
                                     }}
                                 >
                                     {post?.title}
                                 </h1>
+
+                                <div
+                                    style={{
+                                        padding: "20px 0px 0px 4px",
+                                    }}
+                                >
+                                    <Author post={post} />
+                                </div>
 
                                 <Tabs
                                     activeDisplay={activeDisplay}
@@ -94,7 +100,7 @@ export default function Page({ params, searchParams }) {
                                 />
                             </div>
 
-                            {post && activeDisplay === "tldr" && (
+                            {activeDisplay === "tldr" && (
                                 <div
                                     style={{
                                         width: "calc(100% + 8px)",

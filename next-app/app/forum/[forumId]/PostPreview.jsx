@@ -1,6 +1,7 @@
 import { dateStringFromTimestamptz } from "@/utils/time";
 import { useRouter } from "next/navigation";
 import { PostStats } from "./PostStats";
+import Image from "next/image";
 
 export const PostPreview = ({ forum, post, username, chatid }) => {
     const router = useRouter();
@@ -21,18 +22,39 @@ export const PostPreview = ({ forum, post, username, chatid }) => {
                 maxWidth: "175px",
             }}
         >
-            <p
-                style={{
-                    fontSize: "12px",
-                    color: "#A2A2AE",
-                    marginTop: "10px",
-                }}
-            >
-                {dateStringFromTimestamptz(post.post_created_at)}
-            </p>
             <div
                 style={{
-                    marginTop: "10px",
+                    display: "flex",
+                    flexDirection: "row",
+                }}
+            >
+                <p
+                    style={{
+                        fontSize: "12px",
+                        color: "#A2A2AE",
+                        marginTop: "10px",
+                    }}
+                >
+                    {dateStringFromTimestamptz(post.post_created_at)}
+                </p>
+                <Image
+                    src={post.author_avatar}
+                    height="36"
+                    width="36"
+                    layout="fixed"
+                    style={{
+                        marginTop: "2px",
+                        marginLeft: "24px",
+                        borderRadius: "50%",
+                        height: "32px",
+                        width: "32px",
+                        alignItems: "flex-end",
+                    }}
+                />
+            </div>
+            <div
+                style={{
+                    // marginTop: "10px",
                     display: "flex",
                     flexDirection: "row",
                     flexWrap: "wrap",

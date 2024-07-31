@@ -11,7 +11,7 @@ export const PostStats = ({ post }) => {
                 alignItems: "center",
                 marginTop: "10px",
                 color: "#A2A2AE",
-                fontSize: "13px",
+                fontSize: "12px",
                 marginBottom: "10px",
                 marginRight: "10px",
             }}
@@ -20,7 +20,6 @@ export const PostStats = ({ post }) => {
                 style={{
                     display: "flex",
                     flexDirection: "row",
-                    fontSize: "13px",
                     color: "#A2A2AE",
                     justifyContent: "center",
                     alignItems: "center",
@@ -41,7 +40,6 @@ export const PostStats = ({ post }) => {
                 style={{
                     display: "flex",
                     flexDirection: "row",
-                    fontSize: "13px",
                     color: "#A2A2AE",
                     justifyContent: "center",
                     alignItems: "center",
