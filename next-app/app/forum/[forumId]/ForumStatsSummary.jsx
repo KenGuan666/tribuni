@@ -1,5 +1,7 @@
 import { secondsFromNow } from "@/utils/time";
 import clsx from "clsx";
+import Image from "next/image";
+import OpStar from "@/public/assets/op_star.png";
 
 export const ForumStatsSummary = ({ pastNDays, posts, classes }) => {
     const oneDay = 24 * 60 * 60;
@@ -19,7 +21,7 @@ export const ForumStatsSummary = ({ pastNDays, posts, classes }) => {
     });
 
     return (
-        <div className={classes}>
+        <div className={clsx(classes, "relative")}>
             <ForumStatsSummaryBlock
                 number={numPosts}
                 text="new posts"
@@ -37,6 +39,10 @@ export const ForumStatsSummary = ({ pastNDays, posts, classes }) => {
                 text="likes"
                 width="27%"
                 gradientColor="#F2ADB1"
+            />
+            <Image
+                src={OpStar}
+                className="absolute w-[40px] h-[40px] bottom-[-18px] right-[-1px] transform rotate-4 z-20"
             />
         </div>
     );
