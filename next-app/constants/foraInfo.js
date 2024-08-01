@@ -1,3 +1,5 @@
+import { colors } from "./tagColors";
+
 export const foraInfo = {
     optimism: {
         url: "https://gov.optimism.io",
@@ -9,87 +11,64 @@ export const foraInfo = {
             {
                 name: "Get Started",
                 emoji: "🗳️",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Mission Grants",
                 emoji: "🎯",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Delegates",
                 emoji: "👥",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Retro Funding",
                 emoji: "💸",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Citizens",
                 emoji: "👩‍👦",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Elected Representatives",
                 emoji: "👩‍💼",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Technical Proposals",
                 emoji: "🔧",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Policies and Templates",
                 emoji: "📜",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Collective Strategy",
                 emoji: "🎯",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Updates and Announcements",
                 emoji: "📢",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Governance Design",
                 emoji: "🏛️",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Feedback",
                 emoji: "📝",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "Accountability",
                 emoji: "🔍",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
             {
                 name: "General Discussions",
                 emoji: "🗣️",
-                primaryColor: "rbga(255, 0, 0, 1)",
-                backgroundColor: "rbga(255, 0, 0, 0.1)",
             },
-        ],
+        ].map((tag, idx) => {
+            const color = colors[idx % colors.length];
+            tag.primaryColor = color;
+            tag.backgroundColor = `${color}1A`;
+            return tag;
+        }),
     },
 };

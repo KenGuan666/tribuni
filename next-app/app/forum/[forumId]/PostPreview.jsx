@@ -1,18 +1,20 @@
+"use client";
+import clsx from "clsx";
 import { dateStringFromTimestamptz } from "@/utils/time";
 import { useRouter } from "next/navigation";
 import { PostStats } from "./PostStats";
-import Image from "next/image";
 
-export const PostPreview = ({ forum, post, username, chatid }) => {
+export const PostPreview = ({ forum, tags, post, username, chatid }) => {
     const router = useRouter();
     const clickUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forum.id}/${post.id}?username=${username}&chatid=${chatid}`;
+    const displayedTags = tags.filter((t) => post.tags.includes(t.name));
     return (
         <button
             onClick={() => router.push(clickUrl)}
             style={{
                 backgroundColor: "#fff",
                 borderRadius: "10px",
-                padding: "10px 11px 4px 18px",
+                padding: "2px 12px 4px 16px",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "center",
@@ -22,51 +24,40 @@ export const PostPreview = ({ forum, post, username, chatid }) => {
                 maxWidth: "175px",
             }}
         >
-            <div
+            <p
                 style={{
-                    display: "flex",
-                    flexDirection: "row",
+                    fontSize: "12px",
+                    color: "#A2A2AE",
+                    marginTop: "10px",
+                    marginBottom: "8px",
                 }}
             >
-                <p
+                {dateStringFromTimestamptz(post.post_created_at)}
+            </p>
+            {displayedTags.map((tag) => (
+                <div
+                    className={clsx(
+                        "px-2 mr-2 py-[0.5] font-medium tabular-nums",
+                    )}
                     style={{
+                        background: tag.backgroundColor,
                         fontSize: "12px",
-                        color: "#A2A2AE",
-                        marginTop: "10px",
+                        color: tag.primaryColor,
+                        textAlign: "center",
+                        justifyContent: "center",
+                        borderRadius: "20px",
+                        display: "flex",
+                        flexDirection: "row",
                     }}
                 >
-                    {dateStringFromTimestamptz(post.post_created_at)}
-                </p>
-                <Image
-                    src={post.author_avatar}
-                    height="36"
-                    width="36"
-                    layout="fixed"
-                    style={{
-                        marginTop: "2px",
-                        marginLeft: "24px",
-                        borderRadius: "50%",
-                        height: "32px",
-                        width: "32px",
-                        alignItems: "flex-end",
-                    }}
-                />
-            </div>
-            <div
-                style={{
-                    // marginTop: "10px",
-                    display: "flex",
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    justifyContent: "flex-start",
-                }}
-            >
-                {" "}
-            </div>
+                    {tag.emoji}
+                    {tag.name}
+                </div>
+            ))}
             <h1
                 style={{
                     fontSize: "16px",
-                    fontWeight: "600",
+                    fontWeight: "700",
                     color: "#000",
                     marginTop: "6px",
                 }}

@@ -8,6 +8,7 @@ import {
     fetchTrendingPostsByForumId,
 } from "@/components/db/forum";
 import { ForumNavigator } from "./ForumNavigator";
+import { foraInfo } from "@/constants/foraInfo";
 import { Spinner } from "@/components/loaders";
 import Masonry from "react-masonry-css";
 import { ForumStatsSummary } from "./ForumStatsSummary";
@@ -17,43 +18,28 @@ import { Tabs } from "./Tabs";
 export default function Page({ params, searchParams }) {
     const { forumId } = params;
     const { username, chatid, from } = searchParams;
-    const [protocolForum, setProtocolForum] = useState(null);
+    const [forum, setForum] = useState(null);
     const [trendingPosts, setTrendingPosts] = useState(null);
     const [activeDisplay, setActiveDisplay] = useState("latest");
     const [latestPosts, setLatestPosts] = useState(null);
-    const [trendingPostTags, setTrendingPostTags] = useState([]);
-    const [latestPostTags, setLatestPostTags] = useState([]);
 
     let postsToShow = null;
+    let forumMetadata = null;
 
     useEffect(() => {
         const getProtocolInfo = async () => {
             try {
-                const forumData = await fetchForumById(forumId);
-                setProtocolForum(forumData);
+                const forum = await fetchForumById(forumId);
+                setForum(forum);
 
                 // TODO: implement as infinite-scroll
                 const latestPosts = await fetchLatestPostsByForumId(forumId);
                 setLatestPosts(latestPosts);
-                // setLatestPostTags(
-                //     latestPostsResponse.data.map((post) =>
-                //         foraInfo[protocolForum.protocolId].tags.filter((t) =>
-                //             post.tags.includes(t.name),
-                //         ),
-                //     ),
-                // );
 
                 // TODO: implement as infinite-scroll
                 const trendingPosts =
                     await fetchTrendingPostsByForumId(forumId);
                 setTrendingPosts(trendingPosts);
-                // setTrendingPostTags(
-                //     trendingPostsResponse.data.map((post) =>
-                //         foraInfo[protocolForum.protocolId].tags.filter((t) =>
-                //             post.tags.includes(t.name),
-                //         ),
-                //     ),
-                // );
             } catch (error) {
                 console.error(error);
             }
@@ -61,13 +47,14 @@ export default function Page({ params, searchParams }) {
         getProtocolInfo();
     }, []);
 
-    if (!protocolForum || !trendingPosts || !latestPosts) {
+    if (!forum || !trendingPosts || !latestPosts) {
         return <Spinner />;
     }
 
     // Ignore "from" parameter for now, and always send user back to protocols page
     const backUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/protocols?username=${username}&chatid=${chatid}`;
     postsToShow = activeDisplay === "latest" ? latestPosts : trendingPosts;
+    forumMetadata = foraInfo[forum.protocol_id];
 
     return (
         <>
@@ -82,7 +69,7 @@ export default function Page({ params, searchParams }) {
                     >
                         <ForumNavigator
                             backUrl={backUrl}
-                            forum={protocolForum}
+                            forum={forum}
                             backText="Protocols"
                             buttonText="Go to Forum"
                         />
@@ -104,14 +91,13 @@ export default function Page({ params, searchParams }) {
                             >
                                 {/* Forum Icon */}
                                 <img
-                                    src={protocolForum?.forum_icon}
+                                    src={forum.forum_icon}
                                     style={{
                                         width: "58px",
                                         height: "58px",
                                         borderRadius: "50%",
                                         objectFit: "cover",
-                                        backgroundColor:
-                                            protocolForum.background_color,
+                                        backgroundColor: forum.background_color,
                                     }}
                                 />
                                 {/* Forum title and weekly summary text */}
@@ -131,7 +117,7 @@ export default function Page({ params, searchParams }) {
                                             color: "#000",
                                         }}
                                     >
-                                        {protocolForum.forum_title}
+                                        {forum.forum_title}
                                     </h1>
                                     <p
                                         style={{
@@ -139,8 +125,8 @@ export default function Page({ params, searchParams }) {
                                             color: "#000",
                                         }}
                                     >
-                                        {protocolForum.forum_weekly_summary &&
-                                            protocolForum.forum_weekly_summary
+                                        {forum.forum_weekly_summary &&
+                                            forum.forum_weekly_summary
                                                 .split(". ")
                                                 .slice(0, 1) + "."}
                                     </p>
@@ -157,7 +143,7 @@ export default function Page({ params, searchParams }) {
                                 <Tabs
                                     activeDisplay={activeDisplay}
                                     setActiveDisplay={setActiveDisplay}
-                                    primary_color={protocolForum.primary_color}
+                                    primary_color={forum.primary_color}
                                     options={[
                                         { text: "Latest", state: "latest" },
                                         { text: "Trending", state: "trending" },
@@ -181,7 +167,8 @@ export default function Page({ params, searchParams }) {
                                         >
                                             {postsToShow.map((post) => (
                                                 <PostPreview
-                                                    forum={protocolForum}
+                                                    forum={forum}
+                                                    tags={forumMetadata.tags}
                                                     post={post}
                                                     username={username}
                                                     chatid={chatid}
