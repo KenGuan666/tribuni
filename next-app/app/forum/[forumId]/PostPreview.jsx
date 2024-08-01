@@ -29,7 +29,7 @@ export const PostPreview = ({ forum, tags, post, username, chatid }) => {
                     fontSize: "12px",
                     color: "#A2A2AE",
                     marginTop: "10px",
-                    marginBottom: "8px",
+                    marginBottom: "10px",
                 }}
             >
                 {dateStringFromTimestamptz(post.post_created_at)}
@@ -41,7 +41,7 @@ export const PostPreview = ({ forum, tags, post, username, chatid }) => {
                     )}
                     style={{
                         background: tag.backgroundColor,
-                        fontSize: "12px",
+                        fontSize: "11px",
                         color: tag.primaryColor,
                         textAlign: "center",
                         justifyContent: "center",
@@ -57,9 +57,9 @@ export const PostPreview = ({ forum, tags, post, username, chatid }) => {
             <h1
                 style={{
                     fontSize: "16px",
-                    fontWeight: "700",
+                    fontWeight: "600",
                     color: "#000",
-                    marginTop: "6px",
+                    marginTop: "8px",
                 }}
             >
                 {post.title}

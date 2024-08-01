@@ -35,7 +35,7 @@ export async function fetchLatestPostsByForumId(forumId) {
 
 // Note: definition to "trending" is subject to change
 export async function fetchTrendingPostsByForumId(forumId) {
-    const trendingCriteria = "num_comments * 50 + num_views";
+    const trendingCriteria = "num_comments * 30 + num_likes * 15 + num_views";
     const query = `
         SELECT *
         FROM forum_posts
