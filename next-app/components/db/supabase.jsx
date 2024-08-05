@@ -94,3 +94,43 @@ async function upsertProposalDataBatch(supabase, proposalsData) {
         },
     );
 }
+
+export async function upsertOpForumTopics(supabase, topics) {
+    const batchSize = 20;
+    for (let i = 0; i < topics.length; i += batchSize) {
+        let { err } = upsertOpForumTopicsBatch(
+            supabase,
+            topics.slice(i, i + batchSize),
+        );
+        if (err) {
+            return err;
+        }
+    }
+}
+
+async function upsertOpForumTopicsBatch(supabase, topics) {
+    return await supabase.from("op_forum_topics").upsert(topics, {
+        onConflict: "id",
+        ignoreDuplicates: false,
+    });
+}
+
+export async function upsertOpForumPosts(supabase, posts) {
+    const batchSize = 20;
+    for (let i = 0; i < posts.length; i += batchSize) {
+        let { err } = upsertOpForumPostsBatch(
+            supabase,
+            posts.slice(i, i + batchSize),
+        );
+        if (err) {
+            return err;
+        }
+    }
+}
+
+async function upsertOpForumPostsBatch(supabase, posts) {
+    return await supabase.from("op_forum_posts").upsert(posts, {
+        onConflict: "id",
+        ignoreDuplicates: false,
+    });
+}

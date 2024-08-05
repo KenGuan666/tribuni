@@ -1,224 +1,119 @@
-import { foraInfo } from "@/constants/foraInfo";
-import { getSupabase } from "@/components/db/supabase";
-import axios from "axios";
-import { htmlToPlaintext } from "@/utils/htmlToPlaintext";
+import { fetchExistingTopics } from "@/components/db/op_forum";
+import {
+    getTopicPostsFromDiscourse,
+    getTopicsFromDiscourse,
+} from "./discourse";
+import {
+    getSupabase,
+    upsertOpForumPosts,
+    upsertOpForumTopics,
+} from "@/components/db/supabase";
 import {
     getPostSummary,
     getPostInsights,
     getPostSentiment,
     getPostCommunityFeedback,
-    getForumWeeklySummary,
-    getForumNumTrendingTopics,
 } from "@/components/ai/forum";
-import { cookies } from "next/headers";
+
+const baseURL = "https://gov.optimism.io";
 
 /*
-    /api/v4/data/forum/upload is responsible for 2 tasks:
-    1. For each tracked forum, fetch new forum posts, and generate summaries and analysis for each
-    2. For each tracked forum, update existing active posts, and regenerate analysis if applicable
+    /api/v4/data/forum/upload responsible for:
+    - Update each existing topic that has had a new post or like in past 14 days
+    - Fetch new topics
 */
-export async function POST() {
-    const _cookies = cookies();
-    const db = getSupabase();
+export async function POST(req) {
+    const existingTopics = await fetchExistingTopics();
+    const existingIds = new Set(existingTopics.map((t) => t.id));
 
-    for (const protocolId of Object.keys(foraInfo)) {
-        const foraURL = foraInfo[protocolId].url;
-        const protocolInfoResponse = await db
-            .from("protocols")
-            .select("*")
-            .eq("id", protocolId);
-        if (protocolInfoResponse.error) {
-            // deal with this
-        }
-        const protocolInfo = protocolInfoResponse.data[0];
+    const topicsRes = await getTopicsFromDiscourse();
+    const topics = topicsRes.topic_list.topics;
 
-        const latestPostsResponse = await axios.get(
-            `${foraURL}/posts.json?Api-Key=${process.env.DISCOURSE_API_KEY}&Api-Username=${process.env.DISCOURSE_API_USERNAME}`,
-        );
-        const latestPosts = latestPostsResponse.data.latest_posts;
-        // filter out posts whose created_at field is older than 7 days
-        const now = new Date();
-        const thisWeekPosts = latestPosts.filter((post) => {
-            const postDate = new Date(post.created_at);
-            const diff = now - postDate;
-            const diffInDays = diff / (1000 * 60 * 60 * 24);
-            return diffInDays < 7;
+    const newTopics = topics.filter((topic) => !existingIds.has(topic.id));
+    const topicsAwaitingUpdate = topics.filter((topic) =>
+        existingIds.has(topic.id),
+    );
+
+    const supabase = getSupabase();
+    // We'll start by getting existing topics
+    // all AI-heavy work are done sequentially to avoid hitting OpenAI rate limit
+    for (const topic of newTopics) {
+        let newTopicDbObjects = [];
+        let newPostDbObjects = [];
+        const topicPostsRes = await getTopicPostsFromDiscourse(topic.id);
+        const topicPosts = topicPostsRes.post_stream.posts;
+        const firstPost = topicPosts[0];
+        const replies = topicPosts.slice(1);
+        const repliesHTML = replies.map((r) => r.cooked);
+        newPostDbObjects.push({
+            id: firstPost.id,
+            topic_id: topic.id,
+            post_number: 1,
+            created_at: firstPost.created_at,
+            author_username: firstPost.display_username,
+            author_avatar: avatarFromTemplate(firstPost.avatar_template),
+            url: url(topic, 1),
         });
 
-        let postsToFetch = [];
-        let insertedPosts = [];
-        for (let i = 0; i < thisWeekPosts.length; i++) {
-            const post = thisWeekPosts[i];
-            console.log(`fetching post ${i + 1} of ${thisWeekPosts.length}`);
-            // check if post already exists in db
-            const currentPostResponse = await db
-                .from("forum_posts")
-                .select("*")
-                .eq("nativeId", post.id)
-                .eq("protocolId", protocolId);
+        const summary = await getPostSummary(firstPost.cooked);
+        await sleep(2.5);
+        const insight = await getPostInsights(firstPost.cooked, summary);
 
-            if (currentPostResponse.error) {
-                // deal with this
-            } else {
-                if (currentPostResponse.data.length !== 0) {
-                    console.log(`post ${i + 1} already exists in db`);
-                    for (const existingPost of currentPostResponse.data)
-                        postsToFetch.push(existingPost.id);
-                    continue;
-                }
-            }
-
-            const repliesResponse = await axios.get(
-                `${foraURL}/posts/${post.id}/replies.json?Api-Key=${process.env.DISCOURSE_API_KEY}&Api-Username=${process.env.DISCOURSE_API_USERNAME}`,
-            );
-            const replies = repliesResponse.data.map((reply) => {
-                const text = htmlToPlaintext(reply.cooked); // clean text and remove unused fields
-                return {
-                    username: reply.username,
-                    text,
-                    reads: reply.reads,
-                    reply_count: reply.reply_count,
-                    quote_count: reply.quote_count,
-                };
-            });
-            // most popular reply has highest sum of (reply_count + quote_count) / reads or first if all are zero
-            const mostPopularReply = replies.reduce(
-                (acc, reply) => {
-                    const score =
-                        (reply.reply_count + reply.quote_count) / reply.reads;
-                    if (score > acc.score) {
-                        return { score, reply };
-                    } else return acc;
-                },
-                { score: 0, reply: replies[0] },
-            );
-
-            await new Promise((r) => setTimeout(r, 2000));
-            const postSummary = await getPostSummary(post.raw);
-            await new Promise((r) => setTimeout(r, 2000));
-            const postInsights = await getPostInsights(post.raw, postSummary);
-            await new Promise((r) => setTimeout(r, 2000));
-            const { consensusPercent, consensusValue } =
-                replies.length > 0
-                    ? await getPostSentiment(
-                          post.raw,
-                          replies.map((reply) => reply.text),
-                      )
-                    : { consensusPercent: null, consensusValue: null };
-            await new Promise((r) => setTimeout(r, 2000));
-            const communityFeedback =
-                replies.length > 0
-                    ? await getPostCommunityFeedback(
-                          post.raw,
-                          replies.map((reply) => reply.text),
-                      )
-                    : [];
-            await new Promise((r) => setTimeout(r, 2000));
-
-            const updatedPost = {
-                updated_at: new Date(),
-                protocol_id: protocolId,
-                title: post.topic_title,
-                // TODO: for OP forum, extract "category" from Discourse API as tag
-                tags: [],
-                post_url: `${foraURL}/t/${post.topic_slug}/${post.topic_id}`,
-                num_views: post.reads,
-                num_comments: post.reply_count,
-                num_quotes: post.quote_count,
-                summary: postSummary,
-                insights: postInsights,
-                date: new Date(post.created_at).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                }),
-                consensus_sentiment_percent: consensusPercent,
-                consensus_sentiment_majority: consensusValue,
-                community_feedback: communityFeedback.filter(
-                    (comment) => comment.length > 0,
-                ),
-                popular_voice:
-                    replies.length > 0
-                        ? {
-                              author: mostPopularReply.username,
-                              text: mostPopularReply.text,
-                              numViews: mostPopularReply.reads,
-                          }
-                        : null,
-                native_id: post.id,
-            };
-            const postInsertionResponse = await db
-                .from("forum_posts")
-                .upsert([updatedPost])
-                .select();
-            if (postInsertionResponse.error) {
-                // deal with this
-            }
-            insertedPosts.push(postInsertionResponse.data[0]);
-        }
-
-        let relevantPosts = [];
-        for (const post of insertedPosts) relevantPosts.push(post);
-
-        const existingPostsResponse = await db
-            .from("forum_posts")
-            .select("*")
-            .in("id", postsToFetch);
-
-        if (existingPostsResponse.error) {
-            // deal with this
-        }
-
-        for (const post of existingPostsResponse.data) relevantPosts.push(post);
-
-        const numReplies = relevantPosts.reduce(
-            (acc, post) => acc + post.numComments,
-            0,
-        );
-        const numNewPosts = relevantPosts.length;
-
-        const forumWeeklySummary = await getForumWeeklySummary(
-            relevantPosts.map((post) => post.summary),
-        );
-        await new Promise((r) => setTimeout(r, 2000));
-        const forumNumTrendingTopics = await getForumNumTrendingTopics(
-            relevantPosts.map((post) => post.summary),
-        );
-
-        const updatedForum = {
-            updated_at: new Date(),
-            name: protocolInfo.name,
-            icon: protocolInfo.icon,
-            primary_color: foraInfo[protocolId].primary_color,
-            background_color: foraInfo[protocolId].background_color,
-            forum_url: foraURL,
-            forum_icon: foraInfo[protocolId].icon,
-            forum_title: foraInfo[protocolId].name,
-            forum_weekly_summary: forumWeeklySummary,
-            forum_num_replies: numReplies,
-            forum_num_new_posts: numNewPosts,
-            forum_num_trending_topics: parseInt(forumNumTrendingTopics),
-            protocol_id: protocolId,
+        let topicDb = {
+            id: topic.id,
+            category_id: topic.category_id,
+            created_at: topic.created_at,
+            last_posted_at: topic.last_posted_at,
+            updated_at: new Date().toISOString(),
+            title: topic.title,
+            post_count: topic.posts_count,
+            like_count: topic.like_count,
+            author_username: firstPost.display_username,
+            summary,
+            insight,
+            author_avatar: avatarFromTemplate(firstPost.avatar_template),
+            first_post_url: `${baseURL}/t/${topic.slug}/${topic.id}/1`,
         };
-
-        const forumInsertionResponse = await db
-            .from("fora")
-            .upsert([updatedForum])
-            .select();
-
-        if (forumInsertionResponse.error) {
-            // deal with this
-        } else
-            console.log(
-                "successfully updated forum for",
-                protocolId,
-                "with id",
-                forumInsertionResponse.data[0].id,
+        if (replies.length > 0) {
+            await sleep(2.5);
+            const feedbackSummary = await getPostCommunityFeedback(
+                firstPost.cooked,
+                repliesHTML,
             );
+            topicDb.community_summary = feedbackSummary;
+            for (const r of replies) {
+                await sleep(2.5);
+                const sentiment = await getPostSentiment(summary, r.cooked);
+                newPostDbObjects.push({
+                    id: r.id,
+                    topic_id: topic.id,
+                    post_number: r.post_number,
+                    created_at: r.created_at,
+                    author_username: r.display_username,
+                    author_avatar: avatarFromTemplate(r.avatar_template),
+                    url: url(topic, r.post_number),
+                    is_sentiment_positive: sentiment,
+                    content: r.cooked,
+                });
+            }
+        }
+        newTopicDbObjects.push(topicDb);
+        await upsertOpForumTopics(supabase, newTopicDbObjects);
+        await upsertOpForumPosts(supabase, newPostDbObjects);
+        console.log("Uploaded new topic", topic.id);
     }
 
-    // return 201 with 'successfully fetched protocol fora'
-    return new Response("successfully populated protocol fora", {
-        status: 201,
-    });
+    return Response.json({ message: "success" }, { status: 201 });
+}
+
+function avatarFromTemplate(template) {
+    return `${baseURL}/${template.replace("{size}", 64)}`;
+}
+
+function url(topic, postNumber) {
+    return `${baseURL}/t/${topic.slug}/${topic.id}/${postNumber}`;
+}
+
+function sleep(s) {
+    return new Promise((resolve) => setTimeout(resolve, s * 1000));
 }
