@@ -144,7 +144,19 @@ module.exports = {
                 isSeparatorLight: "rgba(198, 198, 200, 1)",
                 isSeparatorLightTransparent: "rgba(60, 60, 67, 0.29)",
             },
+            touchAction: {
+                "pan-y": "pan-y",
+            },
         },
     },
-    plugins: [require("@tailwindcss/typography")],
+    plugins: [
+        require("@tailwindcss/typography"),
+        function ({ addUtilities }) {
+            addUtilities({
+                ".touch-pan-y": {
+                    touchAction: "pan-y",
+                },
+            });
+        },
+    ],
 };

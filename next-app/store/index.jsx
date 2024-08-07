@@ -72,4 +72,25 @@ export const useStore = create((set, get) => ({
                 cachedProposals: newProposalMap,
             };
         }),
+
+    cachedOPForumTopics: new Map(),
+    getCachedTopic: (topicId) => get().cachedOPForumTopics.get(topicId),
+    getCachedTopics: () => get().cachedOPForumTopics,
+    cacheTopic: (topic) =>
+        set((state) => {
+            const newMap = new Map(state.cachedOPForumTopics);
+            newMap.set(topic.id, topic);
+            return { cachedOPForumTopics: newMap };
+        }),
+    cacheTopics: (topics) =>
+        set((state) => {
+            const newMap = new Map(state.cachedOPForumTopics);
+            topics.forEach((topic) => newMap.set(topic.id, topic));
+            return { cachedOPForumTopics: newMap };
+        }),
+
+    OPForum: null,
+    setOPForum: (OPForum) => set({ OPForum }),
+    OPForumCategories: null,
+    setOPForumCategories: (OPForumCategories) => set({ OPForumCategories }),
 }));

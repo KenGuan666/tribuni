@@ -9,6 +9,7 @@ import {
     fetchOPPostsByTopicId,
 } from "@/components/db/op_forum";
 import QuoteIcon from "@/public/assets/quote.jsx";
+import { useStore } from "@/store";
 import { ForumNavigator } from "../ForumNavigator";
 import { Author } from "./Author";
 import { Tabs } from "../Tabs";
@@ -16,19 +17,28 @@ import { Tabs } from "../Tabs";
 export default function Page({ params, searchParams }) {
     const { topicId } = params;
     const { username, chatid } = searchParams;
-    const [forum, setForum] = useState(null);
-    const [topic, setTopic] = useState(null);
+
+    let { getCachedTopic, cacheTopic, OPForum, setOPForum } = useStore();
+
+    const [topic, setTopic] = useState(getCachedTopic(topicId));
+    const [forum, setForum] = useState(OPForum);
     const [activeDisplay, setActiveDisplay] = useState("tldr");
+
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const forum = await fetchForumById(1);
-                setForum(forum);
-
-                let latestTopicsDb = await fetchOPTopicById(topicId);
-                const postsDb = await fetchOPPostsByTopicId(topicId);
-                latestTopicsDb.posts = postsDb;
-                setTopic(latestTopicsDb);
+                if (!forum) {
+                    const forum = await fetchForumById(1);
+                    setForum(forum);
+                    setOPForum(forum);
+                }
+                if (!topic) {
+                    let topicDb = await fetchOPTopicById(topicId);
+                    const postsDb = await fetchOPPostsByTopicId(topicId);
+                    topicDb.posts = postsDb;
+                    setTopic(topicDb);
+                    cacheTopic(topicDb);
+                }
             } catch (err) {
                 console.log(err);
             }
@@ -60,6 +70,7 @@ export default function Page({ params, searchParams }) {
                         <div
                             className={clsx(
                                 "flex flex-col w-full items-center p-2 grow bg-isSystemLightSecondary overflow-scroll hide-scrollbar mt-5 mb-[50px]",
+                                "touch-pan-y",
                                 MAX_WIDTH,
                             )}
                         >
@@ -130,7 +141,7 @@ export default function Page({ params, searchParams }) {
                                     <p
                                         style={{
                                             fontSize: "13px",
-                                            color: "#A2A2AE",
+                                            color: "#8E8E8E",
                                         }}
                                     >
                                         {topic.summary}
@@ -148,7 +159,7 @@ export default function Page({ params, searchParams }) {
                                     <p
                                         style={{
                                             fontSize: "13px",
-                                            color: "#A2A2AE",
+                                            color: "#8E8E8E",
                                             whiteSpace: "pre-line",
                                         }}
                                     >
@@ -466,7 +477,7 @@ export default function Page({ params, searchParams }) {
                         </div> */}
                         <Link
                             style={{
-                                fontSize: "12px",
+                                fontSize: "16px",
                                 color: "#fff",
                                 backgroundColor: forum?.primary_color,
                                 width: "90%",

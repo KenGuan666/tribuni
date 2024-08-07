@@ -4,11 +4,9 @@ import { dateStringFromTimestamptz } from "@/utils/time";
 import { useRouter } from "next/navigation";
 import { TopicStats } from "./TopicStats";
 
-export const TopicPreview = ({ categories, topic, username, chatid }) => {
+export const TopicPreview = ({ category, topic, username, chatid }) => {
     const router = useRouter();
-    console.log(topic.category_id);
     const clickUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/optimism/${topic.id}?username=${username}&chatid=${chatid}`;
-    const category = categories[topic.category_id];
     return (
         <button
             onClick={() => router.push(clickUrl)}

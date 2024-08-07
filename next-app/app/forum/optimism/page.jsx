@@ -9,8 +9,8 @@ import {
     fetchOPPosts,
 } from "@/components/db/op_forum";
 import { ForumNavigator } from "./ForumNavigator";
-import { foraInfo } from "@/constants/foraInfo";
 import { Spinner } from "@/components/loaders";
+import { useStore } from "@/store";
 import Masonry from "react-masonry-css";
 import { ForumStatsSummary } from "./ForumStatsSummary";
 import { TopicPreview } from "./TopicPreview";
@@ -20,29 +20,62 @@ const forumId = 1;
 
 export default function Page({ searchParams }) {
     const { username, chatid, from } = searchParams;
-    const [forum, setForum] = useState(null);
+
+    let {
+        getCachedTopics,
+        cacheTopics,
+        OPForum,
+        setOPForum,
+        OPForumCategories,
+        setOPForumCategories,
+    } = useStore();
+
+    const [forum, setForum] = useState(OPForum);
+    const [categories, setCategories] = useState(OPForumCategories);
     const [trendingTopics, setTrendingTopics] = useState(null);
-    const [activeDisplay, setActiveDisplay] = useState("latest");
     const [latestTopics, setLatestTopics] = useState(null);
-    const [categories, setCategories] = useState(null);
+    const [activeDisplay, setActiveDisplay] = useState("latest");
 
     let topicsToShow = null;
 
     useEffect(() => {
         const getProtocolInfo = async () => {
             try {
-                const forum = await fetchForumById(forumId);
-                setForum(forum);
+                if (!forum) {
+                    const forum = await fetchForumById(forumId);
+                    setForum(forum);
+                    setOPForum(forum);
+                }
+
+                if (!categories) {
+                    const categories = await fetchOPForumCategories();
+                    const categoriesById = categories.reduce((m, c) => {
+                        m[c.id] = c;
+                        return m;
+                    }, {});
+                    setCategories(categoriesById);
+                    setOPForumCategories(categoriesById);
+                }
 
                 // TODO: implement as infinite-scroll
+                const cachedTopics = getCachedTopics();
+                if (cachedTopics.size > 5) {
+                    let topics = Array.from(cachedTopics.values());
+                    setLatestTopics(
+                        topics.sort((a, b) =>
+                            b.last_posted_at > a.last_posted_at ? 1 : -1,
+                        ),
+                    );
+                    setTrendingTopics(
+                        topics.sort(
+                            (a, b) => trendingMetric(b) - trendingMetric(a),
+                        ),
+                    );
+                    return;
+                }
+
                 const latestTopicsDb = await fetchLatestOPTopics();
                 const postsDb = await fetchOPPosts();
-                const categories = await fetchOPForumCategories();
-                const categoriesById = categories.reduce((m, c) => {
-                    m[c.id] = c;
-                    return m;
-                }, {});
-                setCategories(categoriesById);
 
                 // create topic.posts field for each topic
                 const postsByTopicId = postsDb.reduce((map, post) => {
@@ -67,6 +100,7 @@ export default function Page({ searchParams }) {
                 );
                 // TODO: implement as infinite-scroll
                 setTrendingTopics(trendingTopics);
+                cacheTopics(trendingTopics);
             } catch (error) {
                 console.error(error);
             }
@@ -101,7 +135,8 @@ export default function Page({ searchParams }) {
                         />
                         <div
                             className={clsx(
-                                "w-full overflow-y-auto grow !space-y-2 text-md hide-scrollbar mt-4",
+                                "w-full overflow-y-auto !space-y-2 text-md hide-scrollbar mt-4",
+                                "touch-pan-y",
                                 ANIMATE,
                                 MAX_WIDTH,
                             )}
@@ -193,7 +228,11 @@ export default function Page({ searchParams }) {
                                         >
                                             {topicsToShow.map((topic) => (
                                                 <TopicPreview
-                                                    categories={categories}
+                                                    category={
+                                                        categories[
+                                                            topic.category_id
+                                                        ]
+                                                    }
                                                     topic={topic}
                                                     username={username}
                                                     chatid={chatid}

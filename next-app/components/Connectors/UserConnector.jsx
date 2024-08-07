@@ -41,7 +41,7 @@ export const UserConnector = () => {
                         {
                             key: "OP Forum",
                             icon: OpIcon,
-                            path: "/forum/1",
+                            path: "/forum/optimism",
                         },
                         {
                             key: "Settings",
