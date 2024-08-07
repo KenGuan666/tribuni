@@ -28,13 +28,14 @@ export default function Page({ searchParams }) {
         setOPForum,
         OPForumCategories,
         setOPForumCategories,
+        OPForumTab,
+        setOPForumTab,
     } = useStore();
 
     const [forum, setForum] = useState(OPForum);
     const [categories, setCategories] = useState(OPForumCategories);
     const [trendingTopics, setTrendingTopics] = useState(null);
     const [latestTopics, setLatestTopics] = useState(null);
-    const [activeDisplay, setActiveDisplay] = useState("latest");
 
     let topicsToShow = null;
 
@@ -60,17 +61,15 @@ export default function Page({ searchParams }) {
                 // TODO: implement as infinite-scroll
                 const cachedTopics = getCachedTopics();
                 if (cachedTopics.size > 5) {
-                    let topics = Array.from(cachedTopics.values());
-                    setLatestTopics(
-                        topics.sort((a, b) =>
-                            b.last_posted_at > a.last_posted_at ? 1 : -1,
-                        ),
+                    let latestTopics = Array.from(cachedTopics.values());
+                    setLatestTopics(latestTopics);
+
+                    let trendingTopics = [...latestTopics];
+                    trendingTopics.sort(
+                        (a, b) => trendingMetric(b) - trendingMetric(a),
                     );
-                    setTrendingTopics(
-                        topics.sort(
-                            (a, b) => trendingMetric(b) - trendingMetric(a),
-                        ),
-                    );
+                    // TODO: implement as infinite-scroll
+                    setTrendingTopics(trendingTopics);
                     return;
                 }
 
@@ -93,6 +92,7 @@ export default function Page({ searchParams }) {
                     return t;
                 });
                 setLatestTopics(latestTopics);
+                cacheTopics(latestTopics);
 
                 let trendingTopics = [...latestTopics];
                 trendingTopics.sort(
@@ -100,7 +100,6 @@ export default function Page({ searchParams }) {
                 );
                 // TODO: implement as infinite-scroll
                 setTrendingTopics(trendingTopics);
-                cacheTopics(trendingTopics);
             } catch (error) {
                 console.error(error);
             }
@@ -114,7 +113,7 @@ export default function Page({ searchParams }) {
 
     // Ignore "from" parameter for now, and always send user back to protocols page
     const backUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/protocols?username=${username}&chatid=${chatid}`;
-    topicsToShow = activeDisplay === "latest" ? latestTopics : trendingTopics;
+    topicsToShow = OPForumTab === "latest" ? latestTopics : trendingTopics;
 
     return (
         <>
@@ -202,8 +201,8 @@ export default function Page({ searchParams }) {
 
                             <div style={{ padding: "0px 0px 0px 10px" }}>
                                 <Tabs
-                                    activeDisplay={activeDisplay}
-                                    setActiveDisplay={setActiveDisplay}
+                                    activeDisplay={OPForumTab}
+                                    setActiveDisplay={setOPForumTab}
                                     primary_color={forum.primary_color}
                                     options={[
                                         { text: "Latest", state: "latest" },

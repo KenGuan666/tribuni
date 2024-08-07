@@ -93,4 +93,7 @@ export const useStore = create((set, get) => ({
     setOPForum: (OPForum) => set({ OPForum }),
     OPForumCategories: null,
     setOPForumCategories: (OPForumCategories) => set({ OPForumCategories }),
+
+    OPForumTab: "latest",
+    setOPForumTab: (OPForumTab) => set({ OPForumTab }),
 }));
