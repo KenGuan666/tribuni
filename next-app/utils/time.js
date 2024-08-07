@@ -44,3 +44,10 @@ export function dateStringFromTimestamptz(timestamptz) {
         day: "numeric",
     });
 }
+
+export function isLessThanNDaysAgo(timestamptz, N) {
+    const timestampDate = new Date(timestamptz);
+    const now = new Date();
+    const fourteenDaysAgo = new Date(now.setDate(now.getDate() - N));
+    return timestampDate > fourteenDaysAgo;
+}
