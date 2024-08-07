@@ -134,3 +134,10 @@ async function upsertOpForumPostsBatch(supabase, posts) {
         ignoreDuplicates: false,
     });
 }
+
+export async function updateOpForumWeeklySummary(supabase, summary) {
+    return await supabase
+        .from("fora")
+        .update({ forum_weekly_summary: summary })
+        .eq("id", 1);
+}

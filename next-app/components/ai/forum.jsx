@@ -78,40 +78,20 @@ export async function getPostCommunityFeedback(post, replies) {
     return completion.choices[0].message.content.split("||");
 }
 
-export async function getForumWeeklySummary(posts) {
+export async function getForumWeeklySummary(titles) {
     const completion = await openai.chat.completions.create({
         messages: [
             {
                 role: "system",
                 content:
-                    "You are a blockchain governance expert and you are tasked with providing a short summary of a week of activity on an online forum by analyzing the posts on that forum. You should provide a summary of the most important topics discussed during the week. Limit your response to less than 300 characters. Do not start your response with 'Summary' or 'Weekly Summary.' Only return the text of the summary. Do not use Markdown, only use plain text. Ensure that your summary sounds as human-like as possible.",
+                    "You are a blockchain governance expert and you are tasked with providing a short summary of a week of activity on an online forum by analyzing the post titles on that forum. You should provide a summary of the most important topics discussed during the week. Limit your response to less than 300 characters. Do not start your response with 'Summary' or 'Weekly Summary.' Only return the text of the summary. Do not use Markdown, only use plain text. Ensure that your summary sounds as human-like as possible.",
             },
             {
                 role: "user",
-                content: `Here is a ||-separated list of posts: ${posts.join("||")}`,
+                content: `Here is a ||-separated list of titles: ${titles.join("||")}`,
             },
         ],
         model: process.env.LLM,
     });
-    // console.log("weekly summary", completion.choices[0].message.content);
-    return completion.choices[0].message.content;
-}
-
-export async function getForumNumTrendingTopics(posts) {
-    const completion = await openai.chat.completions.create({
-        messages: [
-            {
-                role: "system",
-                content:
-                    "You are a blockchain governance expert and you are tasked with counting the number of distinct topics discussed across a set of forum posts. You should provide the number of distinct topics discussed in the posts. Your response should only contain an integer number. Do not use Markdown, only use plain text. Ensure that your response sounds as human-like as possible.",
-            },
-            {
-                role: "user",
-                content: `Here is a ||-separated list of posts: ${posts.join("||")}`,
-            },
-        ],
-        model: process.env.LLM,
-    });
-    // console.log("num trending topics", completion.choices[0].message.content);
     return completion.choices[0].message.content;
 }

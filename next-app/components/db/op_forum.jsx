@@ -9,3 +9,12 @@ export async function fetchExistingTopics() {
     `;
     return await sql.unsafe(query);
 }
+
+export async function fetchWeeklyNewTopics() {
+    const query = `
+        SELECT title
+        FROM op_forum_topics
+        WHERE created_at >= NOW() - INTERVAL '7 days';
+    `;
+    return await sql.unsafe(query);
+}

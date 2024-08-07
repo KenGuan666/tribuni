@@ -5,14 +5,17 @@ import {
 } from "./discourse";
 import {
     getSupabase,
+    updateOpForumWeeklySummary,
     upsertOpForumPosts,
     upsertOpForumTopics,
 } from "@/components/db/supabase";
+import { fetchWeeklyNewTopics } from "@/components/db/op_forum";
 import {
     getPostSummary,
     getPostInsights,
     getPostSentiment,
     getPostCommunityFeedback,
+    getForumWeeklySummary,
 } from "@/components/ai/forum";
 import { isLessThanNDaysAgo } from "@/utils/time";
 
@@ -170,6 +173,15 @@ export async function POST(req) {
         }
     }
 
+    // TODO: Implement a cost-effective strategy to update topics older than 30 days
+
+    // Finally, create a 1-sentence weekly summary
+    const weeklyTitles = await fetchWeeklyNewTopics();
+    const weeklySummary = await getForumWeeklySummary(
+        weeklyTitles.map((r) => r.title),
+    );
+    console.log(`Writing weekly summary: ${weeklySummary}`);
+    await updateOpForumWeeklySummary(supabase, weeklySummary);
     return Response.json({ message: "success" }, { status: 201 });
 }
 
