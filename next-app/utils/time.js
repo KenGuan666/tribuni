@@ -36,3 +36,18 @@ export function timestampNow() {
 export function secondsFromNow(timestamp) {
     return timestamp - timestampNow();
 }
+
+export function dateStringFromTimestamptz(timestamptz) {
+    return new Date(timestamptz).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+}
+
+export function isLessThanNDaysAgo(timestamptz, N) {
+    const timestampDate = new Date(timestamptz);
+    const now = new Date();
+    const fourteenDaysAgo = new Date(now.setDate(now.getDate() - N));
+    return timestampDate > fourteenDaysAgo;
+}

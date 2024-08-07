@@ -40,7 +40,7 @@ export const ProtocolPage = ({ protocols }) => {
                 list={["all", "subscribed", "active"]}
                 setter={setProtocolFilter}
                 active={protocolFilter}
-                classes={clsx("pt-8")}
+                classes={clsx("pt-4")}
             />
 
             <ProtocolList
