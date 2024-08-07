@@ -135,9 +135,25 @@ async function upsertOpForumPostsBatch(supabase, posts) {
     });
 }
 
+export async function upsertOPForumCategories(supabase, categories) {
+    categories = categories.map(({ id, name, color, text_color }) => ({
+        id,
+        name,
+        color,
+        text_color,
+    }));
+    return await supabase.from("op_forum_categories").upsert(categories, {
+        onConflict: "id",
+        ignoreDuplicates: false,
+    });
+}
+
 export async function updateOpForumWeeklySummary(supabase, summary) {
     return await supabase
         .from("fora")
-        .update({ forum_weekly_summary: summary })
+        .update({
+            forum_weekly_summary: summary,
+            updated_at: new Date().toISOString(),
+        })
         .eq("id", 1);
 }

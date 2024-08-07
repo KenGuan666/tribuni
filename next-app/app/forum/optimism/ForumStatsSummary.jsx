@@ -1,36 +1,33 @@
-import { secondsFromNow } from "@/utils/time";
+import { isLessThanNDaysAgo } from "@/utils/time";
 import clsx from "clsx";
 import Image from "next/image";
 import OpStar from "@/public/assets/op_star.png";
 
-export const ForumStatsSummary = ({ pastNDays, posts, classes }) => {
-    const oneDay = 24 * 60 * 60;
-    const isRecentFn = (post) =>
-        secondsFromNow(new Date(post.post_created_at).getTime() / 1000) >
-        -oneDay * pastNDays;
-
-    let numPosts = 0,
-        numComments = 0,
-        numLikes = 0;
-    posts.forEach((post) => {
-        if (isRecentFn(post)) {
-            numPosts += 1;
-            numComments += post.num_comments;
-            numLikes += post.num_likes;
-        }
-    });
+export const ForumStatsSummary = ({ pastNDays, topics, classes }) => {
+    const newTopics = topics.filter((t) =>
+        isLessThanNDaysAgo(t.created_at, pastNDays),
+    );
+    const numTopics = newTopics.length;
+    const numLikes = topics.reduce((s, t) => s + t.like_count, 0);
+    const numPosts = topics.reduce(
+        (s, t) =>
+            s +
+            t.posts.filter((p) => isLessThanNDaysAgo(p.created_at, pastNDays))
+                .length,
+        0,
+    );
 
     return (
         <div className={clsx(classes, "relative")}>
             <ForumStatsSummaryBlock
-                number={numPosts}
-                text="new posts"
+                number={numTopics}
+                text="new topics"
                 width="34%"
                 gradientColor="#F9F1E9"
             />
             <ForumStatsSummaryBlock
-                number={numComments}
-                text="replies"
+                number={numPosts - numTopics}
+                text="new replies"
                 width="32%"
                 gradientColor="#E9F0F9"
             />

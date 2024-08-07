@@ -2,29 +2,31 @@
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
+import { fetchForumById } from "@/components/db/forum";
 import {
-    fetchForumById,
-    fetchLatestPostsByForumId,
-    fetchTrendingPostsByForumId,
-} from "@/components/db/forum";
+    fetchLatestOPTopics,
+    fetchOPForumCategories,
+    fetchOPPosts,
+} from "@/components/db/op_forum";
 import { ForumNavigator } from "./ForumNavigator";
 import { foraInfo } from "@/constants/foraInfo";
 import { Spinner } from "@/components/loaders";
 import Masonry from "react-masonry-css";
 import { ForumStatsSummary } from "./ForumStatsSummary";
-import { PostPreview } from "./PostPreview";
+import { TopicPreview } from "./TopicPreview";
 import { Tabs } from "./Tabs";
 
-export default function Page({ params, searchParams }) {
-    const { forumId } = params;
+const forumId = 1;
+
+export default function Page({ searchParams }) {
     const { username, chatid, from } = searchParams;
     const [forum, setForum] = useState(null);
-    const [trendingPosts, setTrendingPosts] = useState(null);
+    const [trendingTopics, setTrendingTopics] = useState(null);
     const [activeDisplay, setActiveDisplay] = useState("latest");
-    const [latestPosts, setLatestPosts] = useState(null);
+    const [latestTopics, setLatestTopics] = useState(null);
+    const [categories, setCategories] = useState(null);
 
-    let postsToShow = null;
-    let forumMetadata = null;
+    let topicsToShow = null;
 
     useEffect(() => {
         const getProtocolInfo = async () => {
@@ -33,13 +35,38 @@ export default function Page({ params, searchParams }) {
                 setForum(forum);
 
                 // TODO: implement as infinite-scroll
-                const latestPosts = await fetchLatestPostsByForumId(forumId);
-                setLatestPosts(latestPosts);
+                const latestTopicsDb = await fetchLatestOPTopics();
+                const postsDb = await fetchOPPosts();
+                const categories = await fetchOPForumCategories();
+                const categoriesById = categories.reduce((m, c) => {
+                    m[c.id] = c;
+                    return m;
+                }, {});
+                setCategories(categoriesById);
 
+                // create topic.posts field for each topic
+                const postsByTopicId = postsDb.reduce((map, post) => {
+                    if (!map[post.topic_id]) {
+                        map[post.topic_id] = [];
+                    }
+                    map[post.topic_id].push(post);
+                    return map;
+                }, {});
+                const latestTopics = latestTopicsDb.map((t) => {
+                    const posts = postsByTopicId[t.id];
+                    t.posts = posts
+                        ? posts.sort((a, b) => a.post_number - b.post_number)
+                        : [];
+                    return t;
+                });
+                setLatestTopics(latestTopics);
+
+                let trendingTopics = [...latestTopics];
+                trendingTopics.sort(
+                    (a, b) => trendingMetric(b) - trendingMetric(a),
+                );
                 // TODO: implement as infinite-scroll
-                const trendingPosts =
-                    await fetchTrendingPostsByForumId(forumId);
-                setTrendingPosts(trendingPosts);
+                setTrendingTopics(trendingTopics);
             } catch (error) {
                 console.error(error);
             }
@@ -47,14 +74,13 @@ export default function Page({ params, searchParams }) {
         getProtocolInfo();
     }, []);
 
-    if (!forum || !trendingPosts || !latestPosts) {
+    if (!forum || !trendingTopics || !trendingTopics || !categories) {
         return <Spinner />;
     }
 
     // Ignore "from" parameter for now, and always send user back to protocols page
     const backUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/protocols?username=${username}&chatid=${chatid}`;
-    postsToShow = activeDisplay === "latest" ? latestPosts : trendingPosts;
-    forumMetadata = foraInfo[forum.protocol_id];
+    topicsToShow = activeDisplay === "latest" ? latestTopics : trendingTopics;
 
     return (
         <>
@@ -135,7 +161,7 @@ export default function Page({ params, searchParams }) {
 
                             <ForumStatsSummary
                                 pastNDays={7}
-                                posts={latestPosts}
+                                topics={latestTopics}
                                 classes="flex flex-row w-9/10 justify-center items-center pt-[24px]"
                             />
 
@@ -157,7 +183,7 @@ export default function Page({ params, searchParams }) {
                                         padding: "0px 6px 0px 6px",
                                     }}
                                 >
-                                    {postsToShow.length > 0 ? (
+                                    {topicsToShow.length > 0 ? (
                                         <Masonry
                                             breakpointCols={{
                                                 default: 2,
@@ -165,11 +191,10 @@ export default function Page({ params, searchParams }) {
                                             className="my-masonry-grid"
                                             columnClassName="my-masonry-grid_column"
                                         >
-                                            {postsToShow.map((post) => (
-                                                <PostPreview
-                                                    forum={forum}
-                                                    tags={forumMetadata.tags}
-                                                    post={post}
+                                            {topicsToShow.map((topic) => (
+                                                <TopicPreview
+                                                    categories={categories}
+                                                    topic={topic}
                                                     username={username}
                                                     chatid={chatid}
                                                 />
@@ -212,4 +237,8 @@ export default function Page({ params, searchParams }) {
             </style>
         </>
     );
+}
+
+function trendingMetric(topic) {
+    return 5 * topic.post_count + 2 * topic.like_count;
 }

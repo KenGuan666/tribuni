@@ -23,28 +23,6 @@ export async function fetchForumById(forumId) {
     return {};
 }
 
-export async function fetchLatestPostsByForumId(forumId) {
-    const query = `
-        SELECT *
-        FROM forum_posts
-        WHERE forum_id = ${forumId}
-        ORDER BY post_created_at DESC;
-    `;
-    return await sql.unsafe(query);
-}
-
-// Note: definition to "trending" is subject to change
-export async function fetchTrendingPostsByForumId(forumId) {
-    const trendingCriteria = "num_comments * 30 + num_likes * 15 + num_views";
-    const query = `
-        SELECT *
-        FROM forum_posts
-        WHERE forum_id = ${forumId}
-        ORDER BY ${trendingCriteria} DESC;
-    `;
-    return await sql.unsafe(query);
-}
-
 export async function fetchActivePostsByForumId(forumId) {
     const activeCriteria =
         "updated_at >= CURRENT_TIMESTAMP - INTERVAL '14 days'";
@@ -55,30 +33,4 @@ export async function fetchActivePostsByForumId(forumId) {
         AND ${activeCriteria};
     `;
     return await sql.unsafe(query);
-}
-
-export async function fetchForumPostById(postId) {
-    const query = `
-        SELECT *
-        FROM forum_posts
-        WHERE id = ${postId}
-        LIMIT 1;
-    `;
-    const posts = await sql.unsafe(query);
-    if (posts.length) {
-        return posts[0];
-    }
-    return {};
-}
-
-export async function fetchForumPostsByIds(postIds) {
-    if (!postIds.length) {
-        return [];
-    }
-    const query = `
-        SELECT *
-        FROM forum_posts
-        WHERE id = ANY($1);
-    `;
-    return await sql.unsafe(query, [postIds]);
 }

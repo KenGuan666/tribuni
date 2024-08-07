@@ -84,7 +84,7 @@ export const DefaultReply = async ({ bot, body }) => {
             },
             {
                 text: "Explore OP Forum",
-                path: "forum/1",
+                path: "forum/optimism",
             },
             {
                 text: "Edit Settings",

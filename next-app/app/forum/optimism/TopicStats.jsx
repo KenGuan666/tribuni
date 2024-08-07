@@ -26,12 +26,13 @@ const IconAndCount = ({ icon, count }) => {
     );
 };
 
-export const PostStats = ({ post }) => {
-    const views = <IconAndCount icon={ViewsIcon.src} count={post.num_views} />;
+export const TopicStats = ({ topic }) => {
     const comments = (
-        <IconAndCount icon={CommentsIcon.src} count={post.num_comments} />
+        <IconAndCount icon={CommentsIcon.src} count={topic.post_count} />
     );
-    const likes = <IconAndCount icon={LikesIcon.src} count={post.num_likes} />;
+    const likes = (
+        <IconAndCount icon={LikesIcon.src} count={topic.like_count} />
+    );
 
     return (
         <div

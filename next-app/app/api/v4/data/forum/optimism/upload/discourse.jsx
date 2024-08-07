@@ -16,6 +16,13 @@ export async function getTopicPostsFromDiscourse(topicId) {
     return await res.json();
 }
 
+export async function getCategory(categoryId) {
+    const url = discourseURL(`c/${categoryId}/show.json`, []);
+    const res = await fetch(url, getOptions);
+    const resJson = await res.json();
+    return resJson.category;
+}
+
 function discourseURL(path, params) {
     return `${baseURL}/${path}?${params.map((p) => `${p}&`).join("")}Api-Key=${process.env.DISCOURSE_API_KEY}&Api-Username=system`;
 }

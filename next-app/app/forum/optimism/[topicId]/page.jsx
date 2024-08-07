@@ -3,34 +3,40 @@ import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { fetchForumById, fetchForumPostById } from "@/components/db/forum";
+import { fetchForumById } from "@/components/db/forum";
+import {
+    fetchOPTopicById,
+    fetchOPPostsByTopicId,
+} from "@/components/db/op_forum";
 import QuoteIcon from "@/public/assets/quote.jsx";
 import { ForumNavigator } from "../ForumNavigator";
 import { Author } from "./Author";
 import { Tabs } from "../Tabs";
 
 export default function Page({ params, searchParams }) {
-    const { forumId, postId } = params;
+    const { topicId } = params;
     const { username, chatid } = searchParams;
     const [forum, setForum] = useState(null);
-    const [post, setPost] = useState(null);
+    const [topic, setTopic] = useState(null);
     const [activeDisplay, setActiveDisplay] = useState("tldr");
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const forum = await fetchForumById(forumId);
+                const forum = await fetchForumById(1);
                 setForum(forum);
 
-                const postInfo = await fetchForumPostById(postId);
-                setPost(postInfo);
+                let latestTopicsDb = await fetchOPTopicById(topicId);
+                const postsDb = await fetchOPPostsByTopicId(topicId);
+                latestTopicsDb.posts = postsDb;
+                setTopic(latestTopicsDb);
             } catch (err) {
                 console.log(err);
             }
         };
         fetchData();
-    }, [forumId, postId]);
+    }, [topicId]);
 
-    if (!post) {
+    if (!topic || !forum) {
         return null;
     }
 
@@ -46,7 +52,7 @@ export default function Page({ params, searchParams }) {
                         )}
                     >
                         <ForumNavigator
-                            backUrl={`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${forumId}/?username=${username}&chatid=${chatid}`}
+                            backUrl={`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/optimism/?username=${username}&chatid=${chatid}`}
                             forum={forum}
                             backText={`${forum.name} Forum`}
                             buttonText="Original Post"
@@ -75,7 +81,7 @@ export default function Page({ params, searchParams }) {
                                         color: "#000",
                                     }}
                                 >
-                                    {post?.title}
+                                    {topic.title}
                                 </h1>
 
                                 <div
@@ -83,7 +89,7 @@ export default function Page({ params, searchParams }) {
                                         padding: "20px 0px 0px 4px",
                                     }}
                                 >
-                                    <Author post={post} />
+                                    <Author topic={topic} />
                                 </div>
 
                                 <Tabs
@@ -127,7 +133,7 @@ export default function Page({ params, searchParams }) {
                                             color: "#A2A2AE",
                                         }}
                                     >
-                                        {post?.summary}
+                                        {topic.summary}
                                     </p>
                                     <h1
                                         style={{
@@ -143,14 +149,15 @@ export default function Page({ params, searchParams }) {
                                         style={{
                                             fontSize: "13px",
                                             color: "#A2A2AE",
+                                            whiteSpace: "pre-line",
                                         }}
                                     >
-                                        {post?.insights}
+                                        {topic.insight}
                                     </p>
                                 </div>
                             )}
 
-                            {post && activeDisplay === "community" && (
+                            {topic && activeDisplay === "community" && (
                                 <div
                                     style={{
                                         width: "calc(100% + 8px)",
@@ -162,7 +169,8 @@ export default function Page({ params, searchParams }) {
                                         flexGrow: 1,
                                     }}
                                 >
-                                    {post?.consensus_sentiment_percent &&
+                                    Coming Soon
+                                    {/* {post?.consensus_sentiment_percent &&
                                         post?.consensus_sentiment_percent !==
                                             null && (
                                             <>
@@ -420,7 +428,7 @@ export default function Page({ params, searchParams }) {
                                                     </div>
                                                 </div>
                                             </>
-                                        )}
+                                        )}*/}
                                 </div>
                             )}
                         </div>
@@ -467,7 +475,7 @@ export default function Page({ params, searchParams }) {
                                 justifyContent: "center",
                                 alignItems: "center",
                             }}
-                            href={post?.post_url ? post?.post_url : ""}
+                            href={topic.first_post_url}
                             target="_blank"
                         >
                             Visit Now

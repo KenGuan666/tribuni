@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { dateStringFromTimestamptz } from "@/utils/time";
 
-export const Author = ({ post }) => {
+export const Author = ({ topic }) => {
     return (
         <div
             style={{
@@ -12,7 +12,7 @@ export const Author = ({ post }) => {
             }}
         >
             <Image
-                src={post.author_avatar}
+                src={topic.author_avatar}
                 height="52"
                 width="52"
                 layout="fixed"
@@ -33,7 +33,7 @@ export const Author = ({ post }) => {
                         color: "#000",
                     }}
                 >
-                    {post.author_username}
+                    {topic.author_username}
                 </p>
                 <p
                     style={{
@@ -45,7 +45,7 @@ export const Author = ({ post }) => {
                         gap: "5px",
                     }}
                 >
-                    {dateStringFromTimestamptz(post.post_created_at)}
+                    {`Created on ${dateStringFromTimestamptz(topic.created_at)}`}
                 </p>
             </div>
         </div>
