@@ -235,6 +235,9 @@ export default function Page({ searchParams }) {
                                                     topic={topic}
                                                     username={username}
                                                     chatid={chatid}
+                                                    showPost={
+                                                        OPForumTab == "latest"
+                                                    }
                                                 />
                                             ))}
                                         </Masonry>

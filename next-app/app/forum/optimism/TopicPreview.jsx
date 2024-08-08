@@ -3,8 +3,15 @@ import clsx from "clsx";
 import { dateStringFromTimestamptz } from "@/utils/time";
 import { useRouter } from "next/navigation";
 import { TopicStats } from "./TopicStats";
+import { LastPostPreview } from "./LastPostPreview";
 
-export const TopicPreview = ({ category, topic, username, chatid }) => {
+export const TopicPreview = ({
+    category,
+    topic,
+    username,
+    chatid,
+    showPost,
+}) => {
     const router = useRouter();
     const clickUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/optimism/${topic.id}?username=${username}&chatid=${chatid}`;
     return (
@@ -50,14 +57,24 @@ export const TopicPreview = ({ category, topic, username, chatid }) => {
             </div>
             <h1
                 style={{
-                    fontSize: "16px",
+                    fontSize: "15px",
                     fontWeight: "600",
                     color: "#000",
                     marginTop: "4px",
+                    wordBreak: "break-word",
+                    overflowWrap: "break-word",
                 }}
             >
                 {topic.title}
             </h1>
+            {showPost && (
+                <div class="mt-2">
+                    <LastPostPreview
+                        topic={topic}
+                        post={topic.posts[topic.posts.length - 1]}
+                    />
+                </div>
+            )}
             <TopicStats topic={topic} />
         </button>
     );
