@@ -84,7 +84,7 @@ export async function getForumWeeklySummary(titles) {
             {
                 role: "system",
                 content:
-                    "You are a blockchain governance expert and you are tasked with providing a short summary of a week of activity on an online forum by analyzing the post titles on that forum. You should provide a summary of the most important topics discussed during the week. Limit your response to less than 300 characters. Do not start your response with 'Summary' or 'Weekly Summary.' Only return the text of the summary. Do not use Markdown, only use plain text. Ensure that your summary sounds as human-like as possible.",
+                    "You are a blockchain governance expert and you are tasked with providing a short summary of a week of activity on an online forum by analyzing the post titles on that forum. You should provide a summary of the most important topics discussed during the week. Limit your response to less than 150 characters. Start with 'This week,' without the quote. Do not start your response with 'Summary' or 'Weekly Summary.' Only return the text of the summary. Do not use Markdown, only use plain text. Ensure that your summary sounds as human-like as possible.",
             },
             {
                 role: "user",

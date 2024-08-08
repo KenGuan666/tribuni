@@ -120,11 +120,18 @@ export async function POST(req) {
                 });
             }
         }
-        await upsertOpForumPosts(supabase, newPostDbObjects);
-        await upsertOpForumTopics(supabase, [topicDb]);
+        let data,
+            err = await upsertOpForumPosts(supabase, newPostDbObjects);
+        if (err) {
+            console.log(err);
+        }
+        data, (err = await upsertOpForumTopics(supabase, [topicDb]));
+        if (err) {
+            console.log(err);
+        }
         console.log(`Uploaded new topic ${topic.id}: ${topic.title}`);
 
-        if (!categoriesById.topic.category_id) {
+        if (!categoriesById[topic.category_id]) {
             const category = getCategory(categoriesById.topic.category_id);
             await upsertOPForumCategories([category]);
             console.log(`Uploaded new category ${category.name}`);
