@@ -1,29 +1,48 @@
 import React from "react";
+import Image from "next/image";
+import OpStar from "@/public/assets/op_star_upright.png";
 
-export const Sentiment = ({ score, color }) => {
+export const Sentiment = ({ topic, color }) => {
+    const sentimentScore = calculateSentimentScore(topic);
     return (
         <React.Fragment>
-            <p
+            <div
                 style={{
-                    color: "#8E8E8E",
-                    fontSize: "13px",
+                    display: "flex",
+                    flexDirection: "row",
                     marginLeft: "20px",
-                    width: "80%",
-                    alignItems: "left",
                 }}
             >
-                <span
+                <div
                     style={{
-                        color: "#000",
-                        fontWeight: 600,
-                        fontSize: "16px",
-                        marginRight: "8px",
+                        marginTop: "2px",
                     }}
                 >
-                    {score}%
-                </span>
-                of replies expressed optimistic feelings towards this post
-            </p>
+                    <Image src={OpStar} className="w-[20px] h-[20px]" />
+                </div>
+                <p
+                    style={{
+                        color: "#8E8E8E",
+                        fontSize: "13px",
+                        width: "80%",
+                        alignItems: "left",
+                        marginLeft: "8px",
+                    }}
+                >
+                    <span
+                        style={{
+                            color: "#000",
+                            fontWeight: 600,
+                            fontSize: "16px",
+                            marginRight: "8px",
+                        }}
+                    >
+                        {sentimentScore}%
+                    </span>
+                    of replies expressed optimistic feelings towards this post
+                </p>
+            </div>
+
             <div
                 style={{
                     display: "flex",
@@ -43,7 +62,7 @@ export const Sentiment = ({ score, color }) => {
                 >
                     <div
                         style={{
-                            width: `${score}%`,
+                            width: `${sentimentScore}%`,
                             backgroundColor: color,
                             height: "100%",
                             borderRadius: "15px 15px 15px 15px",
@@ -55,3 +74,16 @@ export const Sentiment = ({ score, color }) => {
         </React.Fragment>
     );
 };
+
+export function calculateSentimentScore(topic) {
+    const nonAuthorPosts = topic.posts.filter(
+        (p) => p.author_username != topic.author_username,
+    );
+    const positivePostCount = nonAuthorPosts.reduce((s, p) => {
+        if (p.is_sentiment_positive) {
+            s += 1;
+        }
+        return s;
+    }, 0);
+    return ((positivePostCount * 1.0) / nonAuthorPosts.length).toFixed(2) * 100;
+}

@@ -53,17 +53,6 @@ export default function Page({ params, searchParams }) {
         return null;
     }
 
-    const nonAuthorPosts = topic.posts.filter(
-        (p) => p.author_username != topic.author_username,
-    );
-    const positivePostCount = nonAuthorPosts.reduce((s, p) => {
-        if (p.is_sentiment_positive) {
-            s += 1;
-        }
-        return s;
-    }, 0);
-    const sentimentScore =
-        ((positivePostCount * 1.0) / nonAuthorPosts.length).toFixed(2) * 100;
     const replies = topic.posts
         .filter((p) => p.post_number > 1)
         .sort((a, b) => b.post_number - a.post_number);
@@ -192,7 +181,7 @@ export default function Page({ params, searchParams }) {
                                     </div>
                                 )}
                                 {activeDisplay === "community" &&
-                                nonAuthorPosts.length ? (
+                                replies.length ? (
                                     <div>
                                         <h1
                                             style={{
@@ -214,7 +203,7 @@ export default function Page({ params, searchParams }) {
                                             }}
                                         >
                                             <Sentiment
-                                                score={sentimentScore}
+                                                topic={topic}
                                                 color={forum.primary_color}
                                             />
                                             <div
@@ -274,7 +263,7 @@ export default function Page({ params, searchParams }) {
                                     </div>
                                 ) : null}
                                 {activeDisplay === "community" &&
-                                    !nonAuthorPosts.length && (
+                                    !replies.length && (
                                         <p
                                             style={{
                                                 fontSize: "16px",
@@ -291,25 +280,15 @@ export default function Page({ params, searchParams }) {
                         </div>
                     </div>
 
-                    <div
-                        style={{
-                            width: "100%",
-                            display: "flex",
-                            justifyContent: "space-evenly",
-                            position: "fixed",
-                            backgroundColor: "#F9F9F9",
-                            height: "50px",
-                            bottom: 0,
-                            left: 0,
-                        }}
-                    >
+                    <div class="w-full flex justify-evenly fixed bg-isSystemLightSecondary h-[50px] bottom-0 left-0">
                         <Link
                             style={{
                                 fontSize: "16px",
                                 color: "#fff",
-                                backgroundColor: forum?.primary_color,
+                                backgroundColor: forum.primary_color,
                                 width: "90%",
-                                borderRadius: "10px",
+                                height: "90%",
+                                borderRadius: "15px",
                                 display: "flex",
                                 justifyContent: "center",
                                 alignItems: "center",

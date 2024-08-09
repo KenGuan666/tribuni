@@ -1,6 +1,8 @@
 import CommentsIcon from "@/public/assets/comments.png";
-import ViewsIcon from "@/public/assets/views.png";
 import LikesIcon from "@/public/assets/likes.png";
+import OptimisticIcon from "@/public/assets/op_star_upright.png";
+import Image from "next/image";
+import { calculateSentimentScore } from "./[topicId]/Sentiment";
 
 const IconAndCount = ({ icon, count }) => {
     return (
@@ -14,10 +16,13 @@ const IconAndCount = ({ icon, count }) => {
                 marginRight: "10px",
             }}
         >
-            <img
+            <Image
                 src={icon}
+                width={10}
+                height={10}
                 style={{
                     height: "10px",
+                    width: "10px",
                     marginRight: "5px",
                 }}
             />
@@ -28,10 +33,17 @@ const IconAndCount = ({ icon, count }) => {
 
 export const TopicStats = ({ topic }) => {
     const comments = (
-        <IconAndCount icon={CommentsIcon.src} count={topic.post_count} />
+        <IconAndCount icon={CommentsIcon.src} count={topic.post_count - 1} />
     );
     const likes = (
         <IconAndCount icon={LikesIcon.src} count={topic.like_count} />
+    );
+    const sentimentScore = calculateSentimentScore(topic);
+    const sentiments = isNaN(sentimentScore) ? null : (
+        <IconAndCount
+            icon={OptimisticIcon.src}
+            count={`${calculateSentimentScore(topic)}%`}
+        />
     );
 
     return (
@@ -50,7 +62,7 @@ export const TopicStats = ({ topic }) => {
         >
             {likes}
             {comments}
-            {/* {views} */}
+            {sentiments}
         </div>
     );
 };
