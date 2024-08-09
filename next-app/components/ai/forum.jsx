@@ -43,7 +43,7 @@ export async function getPostSentiment(summary, reply) {
             {
                 role: "system",
                 content:
-                    "You are a blockchain governance expert and you are tasked with identifying whether a reply supports or opposes an online forum post. You need to respond only with 'Supports' or 'Opposes'. Do not use Markdown, only use plain text. Only respond with 'Supports' or 'Opposes'.",
+                    "You are a blockchain governance expert and you are tasked with identifying whether a reply supports or opposes an online forum post. You need to respond only with 'Supports' or 'Opposes' without quotes. Do not use Markdown, only use plain text. If the two choices are close, say Supports. Only respond with 'Supports' or 'Opposes'.",
             },
             {
                 role: "user",

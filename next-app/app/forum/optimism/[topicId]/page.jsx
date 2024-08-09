@@ -8,11 +8,14 @@ import {
     fetchOPTopicById,
     fetchOPPostsByTopicId,
 } from "@/components/db/op_forum";
-import QuoteIcon from "@/public/assets/quote.jsx";
+import { Hr } from "@/components/ui/page";
 import { useStore } from "@/store";
+import { sanitizeAIListOutput } from "@/utils/text";
 import { ForumNavigator } from "../ForumNavigator";
 import { Author } from "./Author";
 import { Tabs } from "../Tabs";
+import { Sentiment } from "./Sentiment";
+import { Reply } from "./Reply";
 
 export default function Page({ params, searchParams }) {
     const { topicId } = params;
@@ -50,6 +53,20 @@ export default function Page({ params, searchParams }) {
         return null;
     }
 
+    const nonAuthorPosts = topic.posts.filter(
+        (p) => p.author_username != topic.author_username,
+    );
+    const positivePostCount = nonAuthorPosts.reduce((s, p) => {
+        if (p.is_sentiment_positive) {
+            s += 1;
+        }
+        return s;
+    }, 0);
+    const sentimentScore =
+        ((positivePostCount * 1.0) / nonAuthorPosts.length).toFixed(2) * 100;
+    const replies = topic.posts
+        .filter((p) => p.post_number > 1)
+        .sort((a, b) => b.post_number - a.post_number);
     return (
         <React.Fragment
             title="Post"
@@ -117,331 +134,154 @@ export default function Page({ params, searchParams }) {
                                 />
                             </div>
 
-                            {activeDisplay === "tldr" && (
-                                <div
-                                    style={{
-                                        width: "calc(100% + 8px)",
-                                        marginLeft: "-16px",
-                                        marginRight: "-16px",
-                                        borderRadius: "10px",
-                                        backgroundColor: "#fff",
-                                        padding: "20px",
-                                        flexGrow: 1,
-                                    }}
-                                >
-                                    <h1
-                                        style={{
-                                            fontSize: "16px",
-                                            fontWeight: 600,
-                                            marginBottom: "4px",
-                                        }}
-                                    >
-                                        Summary
-                                    </h1>
-                                    <p
-                                        style={{
-                                            fontSize: "13px",
-                                            color: "#8E8E8E",
-                                        }}
-                                    >
-                                        {topic.summary}
-                                    </p>
-                                    <h1
-                                        style={{
-                                            fontSize: "16px",
-                                            fontWeight: 600,
-                                            marginTop: "20px",
-                                            marginBottom: "4px",
-                                        }}
-                                    >
-                                        Insights
-                                    </h1>
-                                    <p
-                                        style={{
-                                            fontSize: "13px",
-                                            color: "#8E8E8E",
-                                            whiteSpace: "pre-line",
-                                        }}
-                                    >
-                                        {topic.insight}
-                                    </p>
-                                </div>
-                            )}
+                            <div
+                                style={{
+                                    width: "calc(100% + 8px)",
+                                    marginLeft: "-16px",
+                                    marginRight: "-16px",
+                                    borderRadius: "10px",
+                                    backgroundColor: "#fff",
+                                    padding: "20px",
+                                    flexGrow: 1,
+                                }}
+                            >
+                                {activeDisplay === "tldr" && (
+                                    <div>
+                                        <h1
+                                            style={{
+                                                fontSize: "16px",
+                                                fontWeight: 600,
+                                                marginBottom: "4px",
+                                            }}
+                                        >
+                                            Summary
+                                        </h1>
+                                        <p
+                                            style={{
+                                                fontSize: "13px",
+                                                color: "#8E8E8E",
+                                            }}
+                                        >
+                                            {topic.summary}
+                                        </p>
+                                        <h1
+                                            style={{
+                                                fontSize: "16px",
+                                                fontWeight: 600,
+                                                marginTop: "20px",
+                                                marginBottom: "4px",
+                                            }}
+                                        >
+                                            Insights
+                                        </h1>
+                                        <p
+                                            style={{
+                                                fontSize: "13px",
+                                                color: "#8E8E8E",
+                                                whiteSpace: "pre-line",
+                                            }}
+                                        >
+                                            {topic.insight}
+                                        </p>
+                                    </div>
+                                )}
+                                {activeDisplay === "community" &&
+                                nonAuthorPosts.length ? (
+                                    <div>
+                                        <h1
+                                            style={{
+                                                fontSize: "16px",
+                                                fontWeight: 600,
+                                                marginBottom: "4px",
+                                            }}
+                                        >
+                                            Commnity Feedback
+                                        </h1>
 
-                            {topic && activeDisplay === "community" && (
-                                <div
-                                    style={{
-                                        width: "calc(100% + 8px)",
-                                        marginLeft: "-16px",
-                                        marginRight: "-16px",
-                                        borderRadius: "10px",
-                                        backgroundColor: "#fff",
-                                        padding: "20px",
-                                        flexGrow: 1,
-                                    }}
-                                >
-                                    Coming Soon
-                                    {/* {post?.consensus_sentiment_percent &&
-                                        post?.consensus_sentiment_percent !==
-                                            null && (
-                                            <>
-                                                <h1
-                                                    style={{
-                                                        fontSize: "16px",
-                                                        fontWeight: 600,
-                                                        marginBottom: "20px",
-                                                    }}
-                                                >
-                                                    Consensus
-                                                </h1>
-                                                <div
-                                                    style={{
-                                                        width: "100%",
-                                                        display: "flex",
-                                                        flexDirection: "row",
-                                                        justifyContent:
-                                                            "flex-start",
-                                                        alignItems: "center",
-                                                    }}
-                                                >
-                                                    <p
-                                                        style={{
-                                                            color: "#A2A2AE",
-                                                            fontSize: "13px",
-                                                            marginLeft: "20px",
-                                                            width: "80%",
-                                                        }}
-                                                    >
-                                                        <span
-                                                            style={{
-                                                                color: "#000",
-                                                                fontWeight: 600,
-                                                                fontSize:
-                                                                    "16px",
-                                                                marginRight:
-                                                                    "8px",
-                                                            }}
-                                                        >
-                                                            {
-                                                                post?.consensus_sentiment_percent
-                                                            }
-                                                            %
-                                                        </span>
-                                                        of replies{" "}
-                                                        {post?.consensus_sentiment_majority ===
-                                                        "yes"
-                                                            ? "support or have favorable feelings toward"
-                                                            : "do not support or have unfavorable feelings toward"}{" "}
-                                                        this post
-                                                    </p>
-                                                </div>
-
-                                                <div
-                                                    style={{
-                                                        marginTop: "20px",
-                                                        width: "100%",
-                                                        alignItems: "center",
-                                                        padding: "0px 10px",
-                                                        position: "relative",
-                                                        marginBottom: "60px",
-                                                    }}
-                                                >
-                                                    <div
-                                                        style={{
-                                                            position:
-                                                                "absolute",
-                                                            left: 0,
-                                                            top: 0,
-                                                            backgroundColor:
-                                                                "#E1E2E8",
-                                                            width: "100%",
-                                                            height: "15px",
-                                                            borderRadius:
-                                                                "25px",
-                                                            zIndex: 1,
-                                                        }}
-                                                    />
-                                                    <div
-                                                        style={{
-                                                            position:
-                                                                "absolute",
-                                                            left: 0,
-                                                            top: 0,
-                                                            backgroundColor:
-                                                                forum?.primary_color,
-                                                            width: `calc(${post?.consensus_sentiment_percent}%)`,
-                                                            height: "15px",
-                                                            borderRadius:
-                                                                "25px",
-                                                            zIndex: 2,
-                                                        }}
-                                                    />
-                                                </div>
-                                            </>
-                                        )}
-                                    <h1
-                                        style={{
-                                            fontSize: "16px",
-                                            fontWeight: 600,
-                                            marginBottom: "4px",
-                                        }}
-                                    >
-                                        Community Feedback
-                                    </h1>
-                                    <div
-                                        style={{
-                                            width: "100%",
-                                            textAlign: "left",
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            marginTop: "4px",
-                                            padding: "0px 30px",
-                                        }}
-                                    >
-                                        {post?.community_feedback &&
-                                        post?.community_feedback.length > 0 ? (
-                                            <ul
-                                                style={{
-                                                    padding: 0,
-                                                    margin: 0,
-                                                    listStyleType: "disc",
-                                                    listStylePosition:
-                                                        "outside",
-                                                    color: "#A2A2AE",
-                                                    // paddingLeft: "px",
-                                                }}
-                                            >
-                                                {post?.community_feedback.map(
-                                                    (feedback, index) => (
-                                                        <li
-                                                            key={index}
-                                                            style={{
-                                                                marginBottom:
-                                                                    "4px",
-                                                                paddingLeft:
-                                                                    "0px",
-                                                            }}
-                                                        >
-                                                            <p
-                                                                style={{
-                                                                    fontSize:
-                                                                        "13px",
-                                                                    color: "#A2A2AE",
-                                                                    margin: 0,
-                                                                    textIndent:
-                                                                        "0px",
-                                                                }}
-                                                            >
-                                                                {feedback}
-                                                            </p>
-                                                        </li>
-                                                    ),
-                                                )}
-                                            </ul>
-                                        ) : (
-                                            <p
+                                        <div
+                                            style={{
+                                                width: "100%",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "flex-start",
+                                                marginTop: "10px",
+                                            }}
+                                        >
+                                            <Sentiment
+                                                score={sentimentScore}
+                                                color={forum.primary_color}
+                                            />
+                                            <div
                                                 style={{
                                                     fontSize: "13px",
-                                                    marginTop: "50px",
+                                                    color: "#8E8E8E",
+                                                    whiteSpace: "pre-line",
+                                                    marginLeft: "18px",
+                                                    textIndent: "-18px",
+                                                    marginTop: "15px",
                                                 }}
                                             >
-                                                No community feedback found.
-                                            </p>
-                                        )}
-                                    </div>
-                                    {post?.popular_voice &&
-                                        Object.keys(post.popular_voice).length >
-                                            0 && (
-                                            <>
-                                                <h1
-                                                    style={{
-                                                        fontSize: "16px",
-                                                        fontWeight: 600,
-                                                        marginTop: "20px",
-                                                        marginBottom: "4px",
-                                                    }}
-                                                >
-                                                    Popular Voice
-                                                </h1>
+                                                {sanitizeAIListOutput(
+                                                    topic.community_summary,
+                                                ).map((p) => (
+                                                    <li>{p}</li>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <h1
+                                            style={{
+                                                fontSize: "16px",
+                                                fontWeight: 600,
+                                                marginTop: "20px",
+                                                marginBottom: "4px",
+                                            }}
+                                        >
+                                            Latest Conversation
+                                        </h1>
+                                        <div
+                                            style={{
+                                                width: "100%",
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "flex-start",
+                                                marginTop: "10px",
+                                                gap: "15px",
+                                            }}
+                                        >
+                                            {replies.map((post) => (
                                                 <div
                                                     style={{
-                                                        width: "100%",
+                                                        gap: "15px",
                                                         display: "flex",
-                                                        flexDirection: "row",
-                                                        justifyContent:
-                                                            "flex-start",
-                                                        alignItems:
-                                                            "flex-start",
-                                                        marginTop: "10px",
+                                                        flexDirection: "column",
                                                     }}
                                                 >
-                                                    <p
-                                                        style={{
-                                                            color: "#A2A2AE",
-                                                            fontSize: "13px",
-                                                            width: "90%",
-                                                            marginRight: "20px",
-                                                        }}
-                                                    >
-                                                        <span
-                                                            style={{
-                                                                fontWeight:
-                                                                    "600",
-                                                                color: "#737373",
-                                                            }}
-                                                        >
-                                                            {
-                                                                post
-                                                                    ?.popularVoice
-                                                                    .author
-                                                            }
-                                                            :
-                                                        </span>{" "}
-                                                        {
-                                                            post?.popularVoice
-                                                                .text
-                                                        }
-                                                    </p>
-                                                    <div
-                                                        style={{
-                                                            display: "flex",
-                                                            flexDirection:
-                                                                "column",
-                                                            justifyContent:
-                                                                "flex-start",
-                                                            alignItems:
-                                                                "center",
-                                                            marginTop: "10px",
-                                                        }}
-                                                    >
-                                                        <QuoteIcon
-                                                            fillColor={
-                                                                "#A2A2AE"
-                                                            }
-                                                            height={"100px"}
-                                                            width={"100px"}
-                                                        />
-                                                        <p
-                                                            style={{
-                                                                color: "rgba(234, 47, 47, 0.6)",
-                                                                fontSize:
-                                                                    "13px",
-                                                            }}
-                                                        >
-                                                            {
-                                                                post // change to numViews
-                                                                    ?.popularVoice
-                                                                    .num_views
-                                                            }
-                                                        </p>
-                                                    </div>
+                                                    <Reply post={post} />
+                                                    <Hr
+                                                        classes={clsx("!px-3")}
+                                                        useDarkColor={false}
+                                                    />
                                                 </div>
-                                            </>
-                                        )}*/}
-                                </div>
-                            )}
+                                            ))}
+                                        </div>
+                                    </div>
+                                ) : null}
+                                {activeDisplay === "community" &&
+                                    !nonAuthorPosts.length && (
+                                        <p
+                                            style={{
+                                                fontSize: "16px",
+                                                fontWeight: 600,
+                                                display: "flex",
+                                                alignItems: "center",
+                                                justifyContent: "center",
+                                            }}
+                                        >
+                                            No community feedback yet
+                                        </p>
+                                    )}
+                            </div>
                         </div>
                     </div>
 
@@ -457,24 +297,6 @@ export default function Page({ params, searchParams }) {
                             left: 0,
                         }}
                     >
-                        {/* <div
-                            style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                padding: "10px",
-                                borderRadius: "10px",
-                                backgroundColor: forum?.background_color,
-                            }}
-                        >
-                            <BookmarkIcon
-                                fillColor={forum?.primary_color}
-                                strokeWidth={3}
-                                height="20px"
-                                width="20px"
-                            />
-                        </div> */}
                         <Link
                             style={{
                                 fontSize: "16px",

@@ -84,13 +84,17 @@ export default function Page({ searchParams }) {
                     map[post.topic_id].push(post);
                     return map;
                 }, {});
-                const latestTopics = latestTopicsDb.map((t) => {
-                    const posts = postsByTopicId[t.id];
-                    t.posts = posts
-                        ? posts.sort((a, b) => a.post_number - b.post_number)
-                        : [];
-                    return t;
-                });
+                const latestTopics = latestTopicsDb
+                    .map((t) => {
+                        const posts = postsByTopicId[t.id];
+                        t.posts = posts
+                            ? posts.sort(
+                                  (a, b) => a.post_number - b.post_number,
+                              )
+                            : [];
+                        return t;
+                    })
+                    .filter((t) => t.posts);
                 setLatestTopics(latestTopics);
                 cacheTopics(latestTopics);
 

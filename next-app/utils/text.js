@@ -27,9 +27,20 @@ export function htmlToPlaintext(html) {
     return text.trim().replace(/\s+/g, " ");
 }
 
-export function trim(text, length) {
+export function trimLength(text, length) {
     if (text.length < length) {
         return text;
     }
     return text.slice(0, length) + "...";
+}
+
+export function sanitizeAIListOutput(text) {
+    // remove surrounding brackets and quotation marks
+    if ("()[]{}'\"".includes(text[0])) {
+        return sanitizeAIListOutput(text.slice(1));
+    }
+    if ("()[]{}'\"".includes(text[text.length - 1])) {
+        return sanitizeAIListOutput(text.slice(0, -1));
+    }
+    return text.split(/•|\\n|- /).filter((p) => p.trim().length);
 }

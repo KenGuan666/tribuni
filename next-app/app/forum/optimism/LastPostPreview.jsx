@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import { htmlToPlaintext, trim } from "@/utils/text";
+import { htmlToPlaintext, trimLength } from "@/utils/text";
 
 export const LastPostPreview = ({ topic, post }) => {
     const content = post.content ? post.content : topic.summary;
@@ -43,7 +43,7 @@ export const LastPostPreview = ({ topic, post }) => {
                     overflowWrap: "break-word",
                 }}
             >
-                {trim(htmlToPlaintext(content), 90)}
+                {trimLength(htmlToPlaintext(content), 90)}
             </div>
         </React.Fragment>
     );

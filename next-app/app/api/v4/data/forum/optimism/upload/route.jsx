@@ -120,12 +120,12 @@ export async function POST(req) {
                 });
             }
         }
-        let data,
-            err = await upsertOpForumPosts(supabase, newPostDbObjects);
+        let err = await upsertOpForumTopics(supabase, [topicDb]);
         if (err) {
             console.log(err);
         }
-        data, (err = await upsertOpForumTopics(supabase, [topicDb]));
+
+        err = await upsertOpForumPosts(supabase, newPostDbObjects);
         if (err) {
             console.log(err);
         }
@@ -152,7 +152,7 @@ export async function POST(req) {
         const existingPosts = await fetchOPPostsByTopicId(topic.id);
         const existingPostCount = existingPosts.length;
         // if there are new posts, save and run sentiment analysis on them
-        if (existingPostCount != topic.posts_count) {
+        if (existingPostCount < topic.posts_count) {
             hasUpdated = true;
             const topicPostsRes = await getTopicPostsFromDiscourse(topic.id);
             const topicPosts = topicPostsRes.post_stream.posts;
