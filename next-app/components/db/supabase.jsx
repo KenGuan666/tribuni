@@ -141,6 +141,7 @@ export async function upsertOPForumCategories(supabase, categories) {
         name,
         color,
         text_color,
+        font_size: 11,
     }));
     return await supabase.from("op_forum_categories").upsert(categories, {
         onConflict: "id",

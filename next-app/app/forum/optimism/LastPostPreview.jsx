@@ -26,8 +26,8 @@ export const LastPostPreview = ({ topic, post }) => {
                 <p
                     style={{
                         fontSize: "11px",
-                        fontWeight: "350",
-                        color: "#8E8E8E",
+                        fontWeight: "400",
+                        color: "#000",
                     }}
                 >
                     {post.author_username}
@@ -38,7 +38,7 @@ export const LastPostPreview = ({ topic, post }) => {
                     paddingTop: "5px",
                     fontSize: "11px",
                     fontWeight: "350",
-                    color: "#000",
+                    color: "#8E8E8E",
                     wordBreak: "break-word",
                     overflowWrap: "break-word",
                 }}

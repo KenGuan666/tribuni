@@ -184,9 +184,9 @@ export default function Page({ params, searchParams }) {
                                             }}
                                         >
                                             {sanitizeAIListOutput(
-                                                topic.insight
+                                                topic.insight,
                                             ).map((p) => (
-                                                <li class="mb-1" >{p}</li>
+                                                <li class="mb-1">{p}</li>
                                             ))}
                                         </p>
                                     </div>
@@ -230,7 +230,7 @@ export default function Page({ params, searchParams }) {
                                                 {sanitizeAIListOutput(
                                                     topic.community_summary,
                                                 ).map((p) => (
-                                                    <li class="mb-1" >{p}</li>
+                                                    <li class="mb-1">{p}</li>
                                                 ))}
                                             </div>
                                         </div>

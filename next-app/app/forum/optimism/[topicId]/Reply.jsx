@@ -72,9 +72,13 @@ export const Reply = ({ post }) => {
                             wordBreak: "break-word",
                             overflowWrap: "break-word",
                             maxWidth: "100%",
-                            lineHeight: "1.2",
                         }}
-                        dangerouslySetInnerHTML={{ __html: htmlToPlaintext(post.content).replace(/\n/g, "<br />")}}
+                        dangerouslySetInnerHTML={{
+                            __html: htmlToPlaintext(post.content).replace(
+                                /\n/g,
+                                "<span style='display: block; line-height: 0.6em;'>&nbsp;</span>",
+                            ),
+                        }}
                     />
                 </div>
             </div>

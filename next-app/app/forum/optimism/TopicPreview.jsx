@@ -41,10 +41,10 @@ export const TopicPreview = ({
                 {dateStringFromTimestamptz(topic.last_posted_at)}
             </p>
             <div
-                className={clsx("px-2 mr-1 py-[0.6] font-medium tabular-nums")}
+                className={clsx("px-2 mr-1 py-[0.9] font-medium tabular-nums")}
                 style={{
                     background: `#${category.color}1A`,
-                    fontSize: "11px",
+                    fontSize: `${category.font_size}px`,
                     color: `#${category.color}`,
                     textAlign: "center",
                     justifyContent: "center",

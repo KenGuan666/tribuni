@@ -10,6 +10,7 @@ import {
 } from "@/components/db/op_forum";
 import { ForumNavigator } from "./ForumNavigator";
 import { Spinner } from "@/components/loaders";
+import { MemoryScroll } from "@/components/page/MemoryScroll";
 import { useStore } from "@/store";
 import Masonry from "react-masonry-css";
 import { ForumStatsSummary } from "./ForumStatsSummary";
@@ -136,121 +137,142 @@ export default function Page({ searchParams }) {
                             backText="Protocols"
                             buttonText="Go to Forum"
                         />
-                        <div
-                            className={clsx(
-                                "w-full overflow-y-auto !space-y-2 text-md hide-scrollbar mt-4",
-                                "touch-pan-y",
-                                ANIMATE,
-                                MAX_WIDTH,
-                            )}
-                        >
-                            <div
-                                style={{
-                                    display: "flex",
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "center",
-                                    width: "100%",
-                                }}
-                            >
-                                {/* Forum Icon */}
-                                <img
-                                    src={forum.forum_icon}
-                                    style={{
-                                        width: "58px",
-                                        height: "58px",
-                                        borderRadius: "50%",
-                                        objectFit: "cover",
-                                        backgroundColor: forum.background_color,
-                                    }}
-                                />
-                                {/* Forum title and weekly summary text */}
+                        <MemoryScroll
+                            classes="!space-y-2 text-md mt-4 w-full"
+                            uniqueKey="OPForumHomePage"
+                            children={
                                 <div
-                                    style={{
-                                        display: "flex",
-                                        flexDirection: "column",
-                                        justifyContent: "center",
-                                        alignItems: "flex-start",
-                                        marginLeft: "20px",
-                                    }}
-                                >
-                                    <h1
-                                        style={{
-                                            fontSize: "20px",
-                                            fontWeight: "600",
-                                            color: "#000",
-                                        }}
-                                    >
-                                        {forum.forum_title}
-                                    </h1>
-                                    <p
-                                        style={{
-                                            fontSize: "15px",
-                                            color: "#000",
-                                        }}
-                                    >
-                                        {forum.forum_weekly_summary &&
-                                            forum.forum_weekly_summary
-                                                .split(". ")
-                                                .slice(0, 1) + "."}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <ForumStatsSummary
-                                pastNDays={7}
-                                topics={latestTopics}
-                                classes="flex flex-row w-9/10 justify-center items-center pt-[24px]"
-                            />
-
-                            <div style={{ padding: "0px 0px 0px 10px" }}>
-                                <Tabs
-                                    activeDisplay={OPForumTab}
-                                    setActiveDisplay={setOPForumTab}
-                                    primary_color={forum.primary_color}
-                                    options={[
-                                        { text: "Latest", state: "latest" },
-                                        { text: "Trending", state: "trending" },
-                                    ]}
-                                />
-                            </div>
-
-                            <div classes="w-9/10 justify-center items-center">
-                                <div
-                                    style={{
-                                        padding: "0px 6px 0px 6px",
-                                    }}
-                                >
-                                    {topicsToShow.length > 0 ? (
-                                        <Masonry
-                                            breakpointCols={{
-                                                default: 2,
-                                            }}
-                                            className="my-masonry-grid"
-                                            columnClassName="my-masonry-grid_column"
-                                        >
-                                            {topicsToShow.map((topic) => (
-                                                <TopicPreview
-                                                    category={
-                                                        categories[
-                                                            topic.category_id
-                                                        ]
-                                                    }
-                                                    topic={topic}
-                                                    username={username}
-                                                    chatid={chatid}
-                                                    showPost={
-                                                        OPForumTab == "latest"
-                                                    }
-                                                />
-                                            ))}
-                                        </Masonry>
-                                    ) : (
-                                        "No latest posts available."
+                                    className={clsx(
+                                        "w-full overflow-y-auto !space-y-2 text-md hide-scrollbar mt-4",
+                                        "touch-pan-y",
+                                        ANIMATE,
+                                        MAX_WIDTH,
                                     )}
+                                >
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            flexDirection: "row",
+                                            justifyContent: "space-between",
+                                            alignItems: "center",
+                                            width: "100%",
+                                        }}
+                                    >
+                                        {/* Forum Icon */}
+                                        <img
+                                            src={forum.forum_icon}
+                                            style={{
+                                                width: "58px",
+                                                height: "58px",
+                                                borderRadius: "50%",
+                                                objectFit: "cover",
+                                                backgroundColor:
+                                                    forum.background_color,
+                                            }}
+                                        />
+                                        {/* Forum title and weekly summary text */}
+                                        <div
+                                            style={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "center",
+                                                alignItems: "flex-start",
+                                                marginLeft: "20px",
+                                            }}
+                                        >
+                                            <h1
+                                                style={{
+                                                    fontSize: "20px",
+                                                    fontWeight: "600",
+                                                    color: "#000",
+                                                }}
+                                            >
+                                                {forum.forum_title}
+                                            </h1>
+                                            <p
+                                                style={{
+                                                    fontSize: "15px",
+                                                    color: "#000",
+                                                }}
+                                            >
+                                                {forum.forum_weekly_summary &&
+                                                    forum.forum_weekly_summary
+                                                        .split(". ")
+                                                        .slice(0, 1) + "."}
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <ForumStatsSummary
+                                        pastNDays={7}
+                                        topics={latestTopics}
+                                        classes="flex flex-row w-9/10 justify-center items-center pt-[24px]"
+                                    />
+
+                                    <div
+                                        style={{ padding: "0px 0px 0px 10px" }}
+                                    >
+                                        <Tabs
+                                            activeDisplay={OPForumTab}
+                                            setActiveDisplay={setOPForumTab}
+                                            primary_color={forum.primary_color}
+                                            options={[
+                                                {
+                                                    text: "Latest",
+                                                    state: "latest",
+                                                },
+                                                {
+                                                    text: "Trending",
+                                                    state: "trending",
+                                                },
+                                            ]}
+                                        />
+                                    </div>
+
+                                    <div classes="w-9/10 justify-center items-center">
+                                        <div
+                                            style={{
+                                                padding: "0px 6px 0px 6px",
+                                            }}
+                                        >
+                                            {topicsToShow.length > 0 ? (
+                                                <Masonry
+                                                    breakpointCols={{
+                                                        default: 2,
+                                                    }}
+                                                    className="my-masonry-grid"
+                                                    columnClassName="my-masonry-grid_column"
+                                                >
+                                                    {topicsToShow.map(
+                                                        (topic) => (
+                                                            <TopicPreview
+                                                                category={
+                                                                    categories[
+                                                                        topic
+                                                                            .category_id
+                                                                    ]
+                                                                }
+                                                                topic={topic}
+                                                                username={
+                                                                    username
+                                                                }
+                                                                chatid={chatid}
+                                                                showPost={
+                                                                    OPForumTab ==
+                                                                    "latest"
+                                                                }
+                                                            />
+                                                        ),
+                                                    )}
+                                                </Masonry>
+                                            ) : (
+                                                "No latest posts available."
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
+                            }
+                        />
                     </div>
                 }
             />

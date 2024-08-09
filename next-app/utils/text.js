@@ -5,10 +5,21 @@ export function capitalizeFirstLetter(inputString) {
 export function htmlToPlaintext(html) {
     // Replace block-level elements with newline characters
     const blockElements = [
-        "p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "li", "ul", "ol", "br"
+        "p",
+        "div",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "li",
+        "ul",
+        "ol",
+        "br",
     ];
 
-    blockElements.forEach(tag => {
+    blockElements.forEach((tag) => {
         const regex = new RegExp(`<${tag}[^>]*>`, "gi");
         html = html.replace(regex, "\n");
         html = html.replace(new RegExp(`</${tag}>`, "gi"), "\n");
@@ -19,7 +30,10 @@ export function htmlToPlaintext(html) {
 
     // Replace img tags with their alt text or a default
     text = text.replace(/<img\s+[^>]*alt\s*=\s*["']([^"']*)["'][^>]*>/gi, "$1");
-    text = text.replace(/<img\s+[^>]*title\s*=\s*["']([^"']*)["'][^>]*>/gi, "$1");
+    text = text.replace(
+        /<img\s+[^>]*title\s*=\s*["']([^"']*)["'][^>]*>/gi,
+        "$1",
+    );
     text = text.replace(/<img\s*[^>]*>/gi, ":image:");
 
     // Decode HTML entities
