@@ -178,10 +178,16 @@ export default function Page({ params, searchParams }) {
                                             style={{
                                                 fontSize: "13px",
                                                 color: "#8E8E8E",
+                                                marginLeft: "18px",
+                                                textIndent: "-18px",
                                                 whiteSpace: "pre-line",
                                             }}
                                         >
-                                            {topic.insight}
+                                            {sanitizeAIListOutput(
+                                                topic.insight
+                                            ).map((p) => (
+                                                <li class="mb-1" >{p}</li>
+                                            ))}
                                         </p>
                                     </div>
                                 )}
@@ -224,7 +230,7 @@ export default function Page({ params, searchParams }) {
                                                 {sanitizeAIListOutput(
                                                     topic.community_summary,
                                                 ).map((p) => (
-                                                    <li>{p}</li>
+                                                    <li class="mb-1" >{p}</li>
                                                 ))}
                                             </div>
                                         </div>
@@ -233,7 +239,7 @@ export default function Page({ params, searchParams }) {
                                             style={{
                                                 fontSize: "16px",
                                                 fontWeight: 600,
-                                                marginTop: "20px",
+                                                marginTop: "25px",
                                                 marginBottom: "4px",
                                             }}
                                         >

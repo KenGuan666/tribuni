@@ -1,5 +1,7 @@
 import React from "react";
 import Image from "next/image";
+import { htmlToPlaintext } from "@/utils/text";
+import { dateStringFromTimestamptz } from "@/utils/time";
 
 export const Reply = ({ post }) => {
     return (
@@ -26,27 +28,53 @@ export const Reply = ({ post }) => {
                     style={{
                         display: "flex",
                         flexDirection: "column",
+                        width: "100%",
+                        marginRight: "12px",
                     }}
                 >
-                    <p
+                    <div
                         style={{
-                            fontSize: "13px",
-                            fontWeight: "500",
-                            color: "#000",
-                            marginBottom: "2px",
+                            display: "flex",
+                            flexDirection: "row",
+                            marginBottom: "6px",
                         }}
                     >
-                        {post.author_username}
-                    </p>
+                        <p
+                            style={{
+                                fontSize: "14px",
+                                fontWeight: "500",
+                                color: "#000",
+                                display: "flex",
+                                alignItems: "center",
+                            }}
+                        >
+                            {post.author_username}
+                        </p>
+                        <p
+                            style={{
+                                fontSize: "14px",
+                                fontWeight: "350",
+                                color: "#8E8E8E",
+                                display: "flex",
+                                alignItems: "center",
+                                marginLeft: "auto",
+                                whiteSpace: "nowrap",
+                            }}
+                        >
+                            {dateStringFromTimestamptz(post.created_at)}
+                        </p>
+                    </div>
+
                     <p
                         style={{
                             fontSize: "12px",
-                            // fontWeight: "400",
                             color: "#8E8E8E",
                             wordBreak: "break-word",
                             overflowWrap: "break-word",
+                            maxWidth: "100%",
+                            lineHeight: "1.2",
                         }}
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: htmlToPlaintext(post.content).replace(/\n/g, "<br />")}}
                     />
                 </div>
             </div>

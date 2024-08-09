@@ -3,15 +3,23 @@ export function capitalizeFirstLetter(inputString) {
 }
 
 export function htmlToPlaintext(html) {
-    // Remove all HTML tags except for img
+    // Replace block-level elements with newline characters
+    const blockElements = [
+        "p", "div", "h1", "h2", "h3", "h4", "h5", "h6", "li", "ul", "ol", "br"
+    ];
+
+    blockElements.forEach(tag => {
+        const regex = new RegExp(`<${tag}[^>]*>`, "gi");
+        html = html.replace(regex, "\n");
+        html = html.replace(new RegExp(`</${tag}>`, "gi"), "\n");
+    });
+
+    // Remove all remaining HTML tags except for img
     let text = html.replace(/<(?!img\s*\/?)(?:.|[\n\r])*?>/gi, "");
 
     // Replace img tags with their alt text or a default
     text = text.replace(/<img\s+[^>]*alt\s*=\s*["']([^"']*)["'][^>]*>/gi, "$1");
-    text = text.replace(
-        /<img\s+[^>]*title\s*=\s*["']([^"']*)["'][^>]*>/gi,
-        "$1",
-    );
+    text = text.replace(/<img\s+[^>]*title\s*=\s*["']([^"']*)["'][^>]*>/gi, "$1");
     text = text.replace(/<img\s*[^>]*>/gi, ":image:");
 
     // Decode HTML entities
@@ -23,8 +31,10 @@ export function htmlToPlaintext(html) {
         .replace(/&quot;/g, '"')
         .replace(/&#039;/g, "'");
 
-    // Clean up extra whitespace
-    return text.trim().replace(/\s+/g, " ");
+    // Clean up extra whitespace and multiple newlines
+    text = text.replace(/\n\s*\n+/g, "\n\n"); // Collapse multiple newlines into a single one
+    text = text.replace(/[ \t]+\n/g, "\n"); // Remove trailing spaces/tabs before a newline
+    return text.trim();
 }
 
 export function trimLength(text, length) {
