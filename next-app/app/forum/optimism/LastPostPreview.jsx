@@ -25,7 +25,7 @@ export const LastPostPreview = ({ topic, post }) => {
                 />
                 <p
                     style={{
-                        fontSize: "11px",
+                        fontSize: "12px",
                         fontWeight: "400",
                         color: "#000",
                     }}
