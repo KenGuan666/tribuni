@@ -12,6 +12,7 @@ import { ForumNavigator } from "./ForumNavigator";
 import { Spinner } from "@/components/loaders";
 import { MemoryScroll } from "@/components/page/MemoryScroll";
 import { useStore } from "@/store";
+import { isLessThanNDaysAgo } from "@/utils/time";
 import Masonry from "react-masonry-css";
 import { ForumStatsSummary } from "./ForumStatsSummary";
 import { TopicPreview } from "./TopicPreview";
@@ -307,5 +308,6 @@ export default function Page({ searchParams }) {
 }
 
 function trendingMetric(topic) {
-    return 5 * topic.post_count + 2 * topic.like_count;
+    const recentPostCount = topic.posts.filter(p => isLessThanNDaysAgo(p.created_at, 7)).length;
+    return 8 * recentPostCount + 5 * topic.post_count + 2 * topic.like_count;
 }
