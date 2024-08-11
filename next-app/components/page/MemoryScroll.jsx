@@ -1,22 +1,21 @@
 import React, { useEffect, useRef } from "react";
 import clsx from "clsx";
+import { useStore } from "@/store";
 
-export const MemoryScroll = ({ children, uniqueKey, classes }) => {
+export const MemoryScroll = ({ children, classes }) => {
     const containerRef = useRef(null);
+    const { OPForumScroll, setOPForumScroll } = useStore();
 
     // Restore scroll position on mount
     useEffect(() => {
-        const savedScrollPosition = localStorage.getItem(
-            `scrollPosition-${uniqueKey}`,
-        );
+        const savedScrollPosition = OPForumScroll;
         if (savedScrollPosition && containerRef.current) {
             containerRef.current.scrollTop = parseInt(savedScrollPosition, 10);
         }
 
         const handleScroll = () => {
             if (containerRef.current) {
-                localStorage.setItem(
-                    `scrollPosition-${uniqueKey}`,
+                setOPForumScroll(
                     containerRef.current.scrollTop,
                 );
             }
@@ -29,7 +28,7 @@ export const MemoryScroll = ({ children, uniqueKey, classes }) => {
         return () => {
             container.removeEventListener("scroll", handleScroll);
         };
-    }, [uniqueKey]);
+    }, []);
 
     return (
         <div
