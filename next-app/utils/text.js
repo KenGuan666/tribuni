@@ -66,5 +66,5 @@ export function sanitizeAIListOutput(text) {
     if ("()[]{}'\"".includes(text[text.length - 1])) {
         return sanitizeAIListOutput(text.slice(0, -1));
     }
-    return text.split(/•|\\n|- /).filter((p) => p.trim().length);
+    return text.split(/[••●]|\\n|- /).filter((p) => p.trim().length);
 }

@@ -140,7 +140,6 @@ export default function Page({ searchParams }) {
                         />
                         <MemoryScroll
                             classes="!space-y-2 text-md mt-4 w-full"
-                            uniqueKey="OPForumHomePage"
                             children={
                                 <div
                                     className={clsx(

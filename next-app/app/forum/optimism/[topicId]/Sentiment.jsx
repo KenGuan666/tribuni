@@ -4,6 +4,7 @@ import OpStar from "@/public/assets/op_star_upright.png";
 
 export const Sentiment = ({ topic, color }) => {
     const sentimentScore = calculateSentimentScore(topic);
+    if (isNaN(sentimentScore)) return null;
     return (
         <React.Fragment>
             <div
@@ -77,7 +78,7 @@ export const Sentiment = ({ topic, color }) => {
 
 export function calculateSentimentScore(topic) {
     const nonAuthorPosts = topic.posts.filter(
-        (p) => p.author_username != topic.author_username,
+        (p) => p.author_username != topic.author_username && p.content,
     );
     const positivePostCount = nonAuthorPosts.reduce((s, p) => {
         if (p.is_sentiment_positive) {

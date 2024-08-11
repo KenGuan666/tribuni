@@ -11,15 +11,17 @@ export const Author = ({ topic }) => {
                 alignItems: "center",
             }}
         >
-            <Image
-                src={topic.author_avatar}
-                height="52"
-                width="52"
-                layout="fixed"
-                style={{
-                    borderRadius: "50%",
-                }}
-            />
+            {topic.author_avatar && (
+                <Image
+                    src={topic.author_avatar}
+                    height="52"
+                    width="52"
+                    layout="fixed"
+                    style={{
+                        borderRadius: "50%",
+                    }}
+                />
+            )}
             <div
                 style={{
                     display: "flex",

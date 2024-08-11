@@ -15,9 +15,7 @@ export const MemoryScroll = ({ children, classes }) => {
 
         const handleScroll = () => {
             if (containerRef.current) {
-                setOPForumScroll(
-                    containerRef.current.scrollTop,
-                );
+                setOPForumScroll(containerRef.current.scrollTop);
             }
         };
 

@@ -8,7 +8,7 @@ export const ForumStatsSummary = ({ pastNDays, topics, classes }) => {
         isLessThanNDaysAgo(t.created_at, pastNDays),
     );
     const numTopics = newTopics.length;
-    const numLikes = topics.reduce((s, t) => s + t.like_count, 0);
+    const numLikes = newTopics.reduce((s, t) => s + t.like_count, 0);
     const numPosts = topics.reduce(
         (s, t) =>
             s +

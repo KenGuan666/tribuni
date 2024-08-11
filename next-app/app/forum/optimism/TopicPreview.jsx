@@ -71,7 +71,11 @@ export const TopicPreview = ({
                 <div class="mt-2">
                     <LastPostPreview
                         topic={topic}
-                        post={topic.posts[topic.posts.length - 1]}
+                        post={topic.posts.reduce((latest, p) => {
+                            return p.post_number > latest.post_number
+                                ? p
+                                : latest;
+                        }, topic.posts[0])}
                     />
                 </div>
             )}
