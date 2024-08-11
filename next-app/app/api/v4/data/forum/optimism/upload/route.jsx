@@ -51,9 +51,9 @@ export async function POST(req) {
         return m;
     }, {});
     const supabase = getSupabase();
+
     // Start by getting existing topics
     // All AI-heavy work are done sequentially to avoid hitting OpenAI rate limit
-
     // TODO: refactor and reuse
     for (const topic of newTopics) {
         let newPostDbObjects = [];
@@ -143,7 +143,7 @@ export async function POST(req) {
     for (const topic of recentTopics) {
         const existingTopic = existingTopicsById[topic.id];
         let hasUpdated = false;
-        let newCommunitySummary = null;
+        let communitySummary = topic.summary;
         if (existingTopic.like_count != topic.like_count) {
             hasUpdated = true;
         }
@@ -151,12 +151,15 @@ export async function POST(req) {
         // There's a small chance that posts db is not sync'ed with post_count
         const existingPosts = await fetchOPPostsByTopicId(topic.id);
         const existingPostCount = existingPosts.length;
+        let last_posted_at = topic.last_posted_at;
+        // only update if there are new posts
         // if there are new posts, save and run sentiment analysis on them
+        // TODO: handle post deletion better
         if (existingPostCount < topic.posts_count) {
             hasUpdated = true;
             const topicPostsRes = await getTopicPostsFromDiscourse(topic.id);
             const topicPosts = topicPostsRes.post_stream.posts;
-            newCommunitySummary = await getPostCommunityFeedback(
+            communitySummary = await getPostCommunityFeedback(
                 existingTopic.summary,
                 topicPosts.map((p) => p.cooked),
             );
@@ -185,6 +188,10 @@ export async function POST(req) {
                     is_sentiment_positive: sentiment,
                     content: r.cooked,
                 });
+                last_posted_at =
+                    last_posted_at > r.created_at
+                        ? last_posted_at
+                        : r.created_at;
             }
             await upsertOpForumPosts(supabase, newPostDbObjects);
         }
@@ -193,7 +200,7 @@ export async function POST(req) {
                 id: topic.id,
                 category_id: topic.category_id,
                 created_at: topic.created_at,
-                last_posted_at: topic.last_posted_at,
+                last_posted_at,
                 updated_at: new Date().toISOString(),
                 title: topic.title,
                 post_count: topic.posts_count,
@@ -202,8 +209,7 @@ export async function POST(req) {
                 author_avatar: existingTopic.author_avatar,
                 summary: existingTopic.summary,
                 insight: existingTopic.insight,
-                community_summary:
-                    newCommunitySummary || existingTopic.community_summary,
+                community_summary: communitySummary,
                 first_post_url: existingTopic.first_post_url,
             };
             await upsertOpForumTopics(supabase, [newTopicDb]);
@@ -214,6 +220,74 @@ export async function POST(req) {
     }
 
     // TODO: Implement a cost-effective strategy to update topics older than 30 days
+    const processedTopicsId = new Set(topics.map((t) => t.id));
+    const olderTopicsToUpdate = existingTopics.filter(
+        (t) =>
+            !processedTopicsId.has(t) && isLessThanNDaysAgo(t.updated_at, 14),
+    );
+    for (const topic of olderTopicsToUpdate) {
+        const topicPostsRes = await getTopicPostsFromDiscourse(topic.id);
+        const topicPosts = topicPostsRes.post_stream.posts;
+        const existingPosts = await fetchOPPostsByTopicId(topic.id);
+        const existingPostNumbers = new Set(
+            existingPosts.map((p) => p.post_number),
+        );
+        // only update if there are new posts
+        // TODO: handle post deletion better
+        const newPosts = topicPosts.filter(
+            (t) => !existingPostNumbers.has(t.post_number),
+        );
+        let lastPostAt = topic.last_posted_at;
+        let communitySummary = topic.community_summary;
+        if (newPosts.length) {
+            communitySummary = await getPostCommunityFeedback(
+                topic.summary,
+                topicPosts.map((p) => p.cooked),
+            );
+            let newPostDbObjects = [];
+            for (const r of newPosts) {
+                const sentiment = await getPostSentiment(
+                    topic.summary,
+                    r.cooked,
+                );
+                newPostDbObjects.push({
+                    id: r.id,
+                    topic_id: topic.id,
+                    post_number: r.post_number,
+                    created_at: r.created_at,
+                    author_username: r.display_username || r.name || r.username,
+                    author_avatar: avatarFromTemplate(r.avatar_template),
+                    url: url(topic, r.post_number),
+                    is_sentiment_positive: sentiment,
+                    content: r.cooked,
+                });
+                lastPostAt =
+                    lastPostAt > r.created_at ? lastPostAt : r.created_at;
+            }
+            await upsertOpForumPosts(supabase, newPostDbObjects);
+            await upsertOpForumTopics(supabase, [
+                {
+                    id: topic.id,
+                    category_id: topicPostsRes.category_id,
+                    created_at: topic.created_at,
+                    last_posted_at: lastPostAt,
+                    updated_at: new Date().toISOString(),
+                    title: topicPostsRes.title,
+                    post_count: topicPostsRes.posts_count,
+                    like_count: topicPostsRes.like_count,
+                    author_username: topicPostsRes.author_username,
+                    author_avatar: topicPostsRes.author_avatar,
+                    summary: topic.summary,
+                    insight: topic.insight,
+                    community_summary: communitySummary,
+                    first_post_url: topic.first_post_url,
+                },
+            ]);
+            console.log(`Updated old topic ${topic.id}:
+                ${existingPosts.length} -> ${topicPostsRes.posts_count} posts,
+                ${topic.like_count} -> ${topicPostsRes.like_count} likes`);
+        }
+    }
 
     // Finally, create a 1-sentence weekly summary
     const forum = await fetchForumById(1);

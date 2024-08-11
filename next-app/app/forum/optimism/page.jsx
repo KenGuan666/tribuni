@@ -308,6 +308,8 @@ export default function Page({ searchParams }) {
 }
 
 function trendingMetric(topic) {
-    const recentPostCount = topic.posts.filter(p => isLessThanNDaysAgo(p.created_at, 7)).length;
+    const recentPostCount = topic.posts.filter((p) =>
+        isLessThanNDaysAgo(p.created_at, 7),
+    ).length;
     return 8 * recentPostCount + 5 * topic.post_count + 2 * topic.like_count;
 }
