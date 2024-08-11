@@ -22,15 +22,3 @@ export async function fetchForumById(forumId) {
     }
     return {};
 }
-
-export async function fetchActivePostsByForumId(forumId) {
-    const activeCriteria =
-        "updated_at >= CURRENT_TIMESTAMP - INTERVAL '14 days'";
-    const query = `
-        SELECT *
-        FROM forum_posts
-        WHERE forum_id = ${forumId}
-        AND ${activeCriteria};
-    `;
-    return await sql.unsafe(query);
-}
