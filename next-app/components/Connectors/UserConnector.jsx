@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/store";
 import { BASE_USER, MAX_WIDTH } from "../constants";
-import { NavBookmarks, NavHome, NavSettings, NavSocial } from "../ios";
+import { NavBookmarks, NavHome, NavSettings } from "../ios";
+import { OpIcon } from "./OpIcon";
 
 export const UserConnector = () => {
     const router = useRouter();
     const pathname = usePathname();
-    const { user, setPageLoading } = useStore();
+    const { user } = useStore();
 
     if (user == BASE_USER) {
         return null;
@@ -22,28 +23,28 @@ export const UserConnector = () => {
             {user.id !== null && (
                 <div
                     className={clsx(
-                        "h-16 w-full bg-[#F9F9F9] fixed bottom-0 grid grid-cols-3 items-center place-content-center",
+                        "h-16 w-full bg-[#F9F9F9] fixed bottom-0 grid grid-cols-4 items-center place-content-center",
                         MAX_WIDTH,
                     )}
                 >
                     {[
                         {
-                            key: "home",
+                            key: "Home",
                             icon: NavHome,
                             path: "/protocols",
                         },
                         {
-                            key: "bookmarks",
+                            key: "Bookmarks",
                             icon: NavBookmarks,
                             path: "/bookmarks",
                         },
-                        // {
-                        //     key: "social",
-                        //     icon: NavSocial,
-                        //     path: "/directory",
-                        // },
                         {
-                            key: "settings",
+                            key: "OP Forum",
+                            icon: OpIcon,
+                            path: "/forum/optimism",
+                        },
+                        {
+                            key: "Settings",
                             icon: NavSettings,
                             path: "/settings",
                         },

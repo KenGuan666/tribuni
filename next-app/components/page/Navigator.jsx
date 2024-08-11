@@ -4,7 +4,9 @@ import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { Spinner } from "@/components/loaders";
 
-export const Navigator = ({ text, link }) => {
+export const Navigator = ({ text, link, primary_color }) => {
+    const colorStyle = primary_color ? { color: primary_color } : {};
+
     return (
         <div
             className={clsx(
@@ -24,10 +26,11 @@ export const Navigator = ({ text, link }) => {
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                    className={clsx(
-                        "w-6 h-6 fill-isBlueLight stroke-isBlueLight",
-                        ANIMATE,
-                    )}
+                    className={clsx("w-6 h-6", ANIMATE)}
+                    style={{
+                        fill: primary_color || "var(--isBlueLight)",
+                        stroke: primary_color || "var(--isBlueLight)",
+                    }}
                 >
                     <path
                         fillRule="evenodd"
@@ -37,10 +40,10 @@ export const Navigator = ({ text, link }) => {
                 </svg>
 
                 <div
-                    className={clsx(
-                        "text-sm text-isBlueLight font-500",
-                        ANIMATE,
-                    )}
+                    className={clsx("text-sm font-500", ANIMATE)}
+                    style={{
+                        color: primary_color || "var(--isBlueLight)",
+                    }}
                 >
                     {text}
                 </div>
