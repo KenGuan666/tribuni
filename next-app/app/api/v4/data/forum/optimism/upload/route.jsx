@@ -27,6 +27,7 @@ import {
 import { isLessThanNDaysAgo } from "@/utils/time";
 
 const baseURL = "https://gov.optimism.io";
+export const maxDuration = 300;
 
 /*
     /api/v4/data/forum/upload responsible for:
