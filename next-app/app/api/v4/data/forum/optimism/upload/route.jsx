@@ -132,7 +132,7 @@ export async function POST(req) {
         console.log(`Uploaded new topic ${topic.id}: ${topic.title}`);
 
         if (!categoriesById[topic.category_id]) {
-            const category = getCategory(categoriesById.topic.category_id);
+            const category = getCategory(categoriesById[topic.category_id]);
             await upsertOPForumCategories([category]);
             console.log(`Uploaded new category ${category.name}`);
         }
