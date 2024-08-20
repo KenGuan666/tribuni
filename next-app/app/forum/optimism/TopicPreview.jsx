@@ -27,7 +27,7 @@ export const TopicPreview = ({
                 alignItems: "flex-start",
                 textAlign: "left",
                 marginBottom: "8px",
-                maxWidth: "175px",
+                maxWidth: "800px",
             }}
         >
             <p
