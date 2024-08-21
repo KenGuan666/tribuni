@@ -1,4 +1,5 @@
 import { removeBookmarksForUser } from "./bookmarks";
+import { subscribeForUser } from "./subscription";
 import { sendGA4Events } from "@/utils/ga4";
 
 export const HandleCallback = async ({ bot, body }) => {
@@ -10,9 +11,9 @@ export const HandleCallback = async ({ bot, body }) => {
 
     // callback_data always contains query_path and params separated by a space
     const [query_path, query_params] = callback_data.split(" ");
-    if (query_path == "book") {
-        const proposalsToRemove = query_params.split(",");
-        try {
+    try {
+        if (query_path == "book") {
+            const proposalsToRemove = query_params.split(",");
             await removeBookmarksForUser(userId, chatId, proposalsToRemove);
             await bot.sendMessage(
                 chatId,
@@ -29,10 +30,19 @@ export const HandleCallback = async ({ bot, body }) => {
             ]);
 
             await bot.answerCallbackQuery(query.id, {});
-        } catch (err) {
-            bot.answerCallbackQuery(query.id, {
-                text: `Encountered error: ${err.message}. Please contact Tribuni support.`,
-            });
         }
+        if (query_path == "sub") {
+            const protocolsToSubscribe = query_params.split(",");
+            await subscribeForUser(userId, chatId, protocolsToSubscribe);
+            await bot.sendMessage(
+                chatId,
+                `You have subscribed to ${protocolsToSubscribe}.`,
+            )
+            await bot.answerCallbackQuery(query.id, {});
+        }
+    } catch (err) {
+        bot.answerCallbackQuery(query.id, {
+            text: `Encountered error: ${err.message}. Please contact Tribuni support.`,
+        });
     }
 };
