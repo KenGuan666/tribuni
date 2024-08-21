@@ -1,6 +1,6 @@
 import { getBot } from "@/components/bot";
 
-export async function GET() {
+export async function POST() {
     const bot = getBot();
     const userId = "ken12358"
     const chatId = "2114653698"
