@@ -38,13 +38,11 @@ Join our [alpha group](https://t.me/+GQxcYz_80B40ZGMx) for newest product update
             },
         };
 
-        if (userId == "ken12358") {
-            await bot.sendMessage(
-                chatId,
-                forumReleaseText,
-                telegramMessageOptions
-            )
-        }
+        await bot.sendMessage(
+            chatId,
+            forumReleaseText,
+            telegramMessageOptions
+        )
     }
     return Response.json(
         {
