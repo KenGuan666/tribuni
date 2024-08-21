@@ -59,6 +59,7 @@ export function trimLength(text, length) {
 }
 
 export function sanitizeAIListOutput(text) {
+    if (!text) return [];
     // remove surrounding brackets and quotation marks
     if ("()[]{}'\"".includes(text[0])) {
         return sanitizeAIListOutput(text.slice(1));
