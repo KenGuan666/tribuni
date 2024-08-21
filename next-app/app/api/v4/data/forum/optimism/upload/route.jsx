@@ -53,7 +53,7 @@ export async function POST(req) {
     }, {});
     const supabase = getSupabase();
 
-    // Start by getting existing topics
+    // Start by summarizing new topics
     // All AI-heavy work are done sequentially to avoid hitting OpenAI rate limit
     // TODO: refactor and reuse
     for (const topic of newTopics) {
@@ -133,8 +133,8 @@ export async function POST(req) {
         console.log(`Uploaded new topic ${topic.id}: ${topic.title}`);
 
         if (!categoriesById[topic.category_id]) {
-            const category = getCategory(topic.category_id);
-            await upsertOPForumCategories([category]);
+            const category = await getCategory(topic.category_id);
+            await upsertOPForumCategories(supabase, [category]);
             console.log(`Uploaded new category ${category.name}`);
         }
     }
@@ -151,7 +151,7 @@ export async function POST(req) {
 
         // There's a small chance that posts db is not sync'ed with post_count
         const existingPosts = await fetchOPPostsByTopicId(topic.id);
-        const existingPostCount = existingPosts.length;
+        const existingPostCount = existingPosts.reduce((p, c) => p.post_number > c ? p.post_number : c, 0);
         let last_posted_at = topic.last_posted_at;
         // only update if there are new posts
         // if there are new posts, save and run sentiment analysis on them
