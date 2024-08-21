@@ -1,6 +1,8 @@
 import { getBot } from "@/components/bot";
 import { fetchAllUsersData } from "@/components/db/user";
 
+const maxDuration = 300;
+
 export async function POST() {
     const bot = getBot();
     const forumReleaseText = `
