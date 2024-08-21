@@ -40,11 +40,16 @@ Join our [alpha group](https://t.me/+GQxcYz_80B40ZGMx) for newest product update
             },
         };
 
-        await bot.sendMessage(
-            chatId,
-            forumReleaseText,
-            telegramMessageOptions
-        )
+        try {
+            await bot.sendMessage(
+                chatId,
+                forumReleaseText,
+                telegramMessageOptions
+            )
+        } catch (err) {
+            console.log(`could not announce to ${userId}`)
+            console.log(err)
+        }
     }
     return Response.json(
         {
