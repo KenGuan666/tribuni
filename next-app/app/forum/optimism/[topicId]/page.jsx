@@ -70,6 +70,7 @@ export default function Page({ params, searchParams }) {
                         <ForumNavigator
                             backUrl={`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/optimism/?username=${username}&chatid=${chatid}`}
                             forum={forum}
+                            url={topic.first_post_url}
                             backText={`${forum.name} Forum`}
                             buttonText="Original Post"
                         />

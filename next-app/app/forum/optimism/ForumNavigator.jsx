@@ -1,7 +1,7 @@
 import { Navigator } from "@/components/page/Navigator";
 import { ExternalLinkButton } from "./ExternalLinkButton";
 
-export const ForumNavigator = ({ backUrl, forum, backText, buttonText }) => {
+export const ForumNavigator = ({ backUrl, forum, url, backText, buttonText }) => {
     return (
         <div className="flex flex-row justify-between items-center items-start w-full group">
             <Navigator
@@ -10,7 +10,7 @@ export const ForumNavigator = ({ backUrl, forum, backText, buttonText }) => {
                 primary_color={forum.primary_color}
             />
             <ExternalLinkButton
-                url={forum.forum_url}
+                url={url}
                 text={buttonText}
                 protocol={{
                     id: forum.protocol_id,

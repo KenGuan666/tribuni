@@ -135,6 +135,7 @@ export default function Page({ searchParams }) {
                         <ForumNavigator
                             backUrl={backUrl}
                             forum={forum}
+                            url={forum.forum_url}
                             backText="Protocols"
                             buttonText="Go to Forum"
                         />
