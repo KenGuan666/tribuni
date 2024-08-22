@@ -191,7 +191,7 @@ export default function Page({ params, searchParams }) {
                                                 marginBottom: "4px",
                                             }}
                                         >
-                                            Commnity Feedback
+                                            Community Feedback
                                         </h1>
 
                                         <div
