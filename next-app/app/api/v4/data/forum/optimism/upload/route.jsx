@@ -29,12 +29,16 @@ import { isLessThanNDaysAgo } from "@/utils/time";
 const baseURL = "https://gov.optimism.io";
 export const maxDuration = 300;
 
+export async function GET() {
+    return await POST();
+}
+
 /*
     /api/v4/data/forum/upload responsible for:
     - Update each existing topic that has had a new post or like in past 14 days
     - Fetch new topics
 */
-export async function POST(req) {
+export async function POST() {
     const existingTopics = await fetchExistingTopics();
     const existingTopicsById = existingTopics.reduce((m, topic) => {
         m[topic.id] = topic;
