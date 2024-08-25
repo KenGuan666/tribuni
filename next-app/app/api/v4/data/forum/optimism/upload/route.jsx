@@ -109,6 +109,7 @@ export async function POST() {
                 repliesHTML,
             );
             topicDb.community_summary = feedbackSummary;
+
             for (const r of replies) {
                 await sleep(2.5);
                 const sentiment = await getPostSentiment(summary, r.cooked);
@@ -129,7 +130,6 @@ export async function POST() {
         if (err) {
             console.log(err);
         }
-
         err = await upsertOpForumPosts(supabase, newPostDbObjects);
         if (err) {
             console.log(err);
@@ -155,7 +155,10 @@ export async function POST() {
 
         // There's a small chance that posts db is not sync'ed with post_count
         const existingPosts = await fetchOPPostsByTopicId(topic.id);
-        const existingPostCount = existingPosts.reduce((c, p) => p.post_number > c ? p.post_number : c, 0);
+        const existingPostCount = existingPosts.reduce(
+            (c, p) => (p.post_number > c ? p.post_number : c),
+            0,
+        );
         let last_posted_at = topic.last_posted_at;
         // only update if there are new posts
         // if there are new posts, save and run sentiment analysis on them

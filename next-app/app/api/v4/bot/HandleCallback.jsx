@@ -37,7 +37,7 @@ export const HandleCallback = async ({ bot, body }) => {
             await bot.sendMessage(
                 chatId,
                 `You have subscribed to ${protocolsToSubscribe}.`,
-            )
+            );
             await bot.answerCallbackQuery(query.id, {});
         }
     } catch (err) {

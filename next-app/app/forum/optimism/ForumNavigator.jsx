@@ -1,7 +1,13 @@
 import { Navigator } from "@/components/page/Navigator";
 import { ExternalLinkButton } from "./ExternalLinkButton";
 
-export const ForumNavigator = ({ backUrl, forum, url, backText, buttonText }) => {
+export const ForumNavigator = ({
+    backUrl,
+    forum,
+    url,
+    backText,
+    buttonText,
+}) => {
     return (
         <div className="flex flex-row justify-between items-center items-start w-full group">
             <Navigator

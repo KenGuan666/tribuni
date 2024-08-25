@@ -69,3 +69,13 @@ export function sanitizeAIListOutput(text) {
     }
     return text.split(/[••●]|\\n|- /).filter((p) => p.trim().length);
 }
+
+export function dropLastSentence(text) {
+    if (!text) return "";
+    let arr = text
+        .split(".")
+        .map((p) => p.trim())
+        .filter((p) => p.length);
+    arr.pop();
+    return arr.join(". ") + ".";
+}

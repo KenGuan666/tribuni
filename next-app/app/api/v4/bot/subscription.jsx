@@ -1,10 +1,9 @@
-import { fetchUserData, saveUserSubscriptionUpdates } from "@/components/db/user";
+import {
+    fetchUserData,
+    saveUserSubscriptionUpdates,
+} from "@/components/db/user";
 
-export async function subscribeForUser(
-    userId,
-    chatId,
-    protocolsToSubscribe,
-) {
+export async function subscribeForUser(userId, chatId, protocolsToSubscribe) {
     const user = await fetchUserData(userId, chatId);
     let updated = false;
     for (const protocolId of protocolsToSubscribe) {

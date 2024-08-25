@@ -49,6 +49,28 @@ export async function fetchOPPosts() {
     return await sql.unsafe(query);
 }
 
+export async function fetchWeeklyPostCount() {
+    const query = `
+        SELECT count(*)
+        FROM op_forum_posts
+        WHERE created_at >= NOW() - INTERVAL '7 days';
+    `;
+    const res = await sql.unsafe(query);
+    return res[0].count;
+}
+
+export async function fetchWeeklyTrendingTopics() {
+    const query = `
+        SELECT topic_id, count(*)
+        FROM op_forum_posts
+        WHERE created_at >= NOW() - INTERVAL '7 days'
+        GROUP by topic_id
+        ORDER BY count(*) DESC
+        LIMIT 3;
+    `;
+    return await sql.unsafe(query);
+}
+
 export async function fetchOPPostsByTopicId(topicId) {
     const query = `
         SELECT *

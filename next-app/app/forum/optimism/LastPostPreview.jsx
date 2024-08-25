@@ -3,7 +3,9 @@ import Image from "next/image";
 import { htmlToPlaintext, trimLength } from "@/utils/text";
 
 export const LastPostPreview = ({ topic, post }) => {
-    if (!post) { return null; }
+    if (!post) {
+        return null;
+    }
     const content = post.content ? post.content : topic.summary;
     return (
         <React.Fragment>
