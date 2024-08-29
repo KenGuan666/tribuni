@@ -11,8 +11,9 @@ Subscribe to protocols now under \"View All Protocols\" and stay on top of gover
 Join our [alpha group](https://t.me/+GQxcYz_80B40ZGMx) for product updates and technical support.
 `;
     const users = await fetchAllUsersData();
-    const usersWithoutSubscription = users
-        .filter(u => u.subscriptions.length == 0);
+    const usersWithoutSubscription = users.filter(
+        (u) => u.subscriptions.length == 0,
+    );
     for (const user of usersWithoutSubscription) {
         const userId = user.id;
         const chatId = user.chatid;
