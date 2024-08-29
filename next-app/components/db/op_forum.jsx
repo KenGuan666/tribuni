@@ -1,5 +1,4 @@
 "use server";
-import { timestampNow } from "@/utils/time";
 import { sql } from "./sql";
 
 export async function fetchExistingTopics() {
@@ -8,6 +7,15 @@ export async function fetchExistingTopics() {
         FROM op_forum_topics;
     `;
     return await sql.unsafe(query);
+}
+
+export async function fetchExistingTopicsCount() {
+    const query = `
+        SELECT count(*)
+        FROM op_forum_topics;
+    `;
+    const res = await sql.unsafe(query);
+    return res[0].count;
 }
 
 export async function fetchWeeklyNewTopics() {
@@ -54,6 +62,15 @@ export async function fetchWeeklyPostCount() {
         SELECT count(*)
         FROM op_forum_posts
         WHERE created_at >= NOW() - INTERVAL '7 days';
+    `;
+    const res = await sql.unsafe(query);
+    return res[0].count;
+}
+
+export async function fetchPostCount() {
+    const query = `
+        SELECT count(*)
+        FROM op_forum_posts;
     `;
     const res = await sql.unsafe(query);
     return res[0].count;
