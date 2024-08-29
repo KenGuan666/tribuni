@@ -2,10 +2,8 @@
 import clsx from "clsx";
 import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { Spinner } from "@/components/loaders";
 
 export const Navigator = ({ text, link, primary_color }) => {
-    const colorStyle = primary_color ? { color: primary_color } : {};
 
     return (
         <div
@@ -28,8 +26,8 @@ export const Navigator = ({ text, link, primary_color }) => {
                     fill="currentColor"
                     className={clsx("w-6 h-6", ANIMATE)}
                     style={{
-                        fill: primary_color || "var(--isBlueLight)",
-                        stroke: primary_color || "var(--isBlueLight)",
+                        fill: primary_color || "#007BFF",
+                        stroke: primary_color || "#007BFF",
                     }}
                 >
                     <path
@@ -42,7 +40,7 @@ export const Navigator = ({ text, link, primary_color }) => {
                 <div
                     className={clsx("text-sm font-500", ANIMATE)}
                     style={{
-                        color: primary_color || "var(--isBlueLight)",
+                        color: primary_color || "#007BFF",
                     }}
                 >
                     {text}
