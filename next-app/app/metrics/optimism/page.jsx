@@ -31,11 +31,7 @@ export default function Page() {
         fetchData();
     }, []);
 
-    const subscribers = users.filter((u) =>
-        u.subscriptions.includes("optimism"),
-    );
     const delegates = users.filter((u) => u.op_delegate_address);
-
     const totalDelegateVotePower = Array.from(
         votePowerByDelegate.values(),
     ).reduce((s, power) => s + power, 0);

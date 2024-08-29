@@ -13,6 +13,21 @@ export async function getTopicsFromDiscourse() {
 export async function getTopicPostsFromDiscourse(topicId) {
     const url = discourseURL(`t/${topicId}.json`, []);
     const res = await fetch(url, getOptions);
+    const resJson = await res.json();
+
+    let postIds = new Set(resJson.post_stream.posts.map((p) => p.id));
+
+    for (const postId of resJson.post_stream.stream) {
+        if (!postIds.has(postId)) {
+            resJson.post_stream.posts.push(await getPostFromDiscourse(postId));
+        }
+    }
+    return resJson;
+}
+
+export async function getPostFromDiscourse(postId) {
+    const url = discourseURL(`posts/${postId}.json`, []);
+    const res = await fetch(url, getOptions);
     return await res.json();
 }
 
