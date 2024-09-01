@@ -25,6 +25,9 @@ const getSeedFromStr = (str) => {
 };
 
 export const ProtocolIcon = ({ protocol, fill, size }) => {
+    if (!protocol) {
+        return null;
+    }
     if (protocol.icon) {
         if (fill) {
             return (
