@@ -19,8 +19,8 @@ export const RegisterUser = async ({ inviteCode, username, chatid }) => {
 		WHERE id = '${inviteCode}' AND available >= 1
 		RETURNING id, premium
 	)
-	INSERT INTO telegram_users (id, chatid, premium, email, bookmarks, subscriptions, duration, pause_alerts, telegram_alerts, email_alerts, last_telegram_alert, last_email_alert, timestamp)
-	SELECT '${username}', '${chatid}', ${currTime} + (premium * 31 * 24 * 60 * 60), NULL, ARRAY[]::TEXT[], ARRAY[]::TEXT[], 24 * 60 * 60, FALSE, TRUE, FALSE, 0, 0, ${currTime}
+	INSERT INTO telegram_users (id, chatid, premium, email, bookmarks, subscriptions, pause_alerts, telegram_alerts, email_alerts, timestamp)
+	SELECT '${username}', '${chatid}', ${currTime} + (premium * 31 * 24 * 60 * 60), NULL, ARRAY[]::TEXT[], ARRAY[]::TEXT[], FALSE, TRUE, FALSE, ${currTime}
 	FROM UpdatedInvites
 	WHERE NOT EXISTS (SELECT 1 FROM telegram_users WHERE id = '${username}')
 	RETURNING id AS inserted_id;
