@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 
 export const Navigator = ({ text, link, primary_color }) => {
-
     return (
         <div
             className={clsx(

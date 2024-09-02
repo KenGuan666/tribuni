@@ -2,17 +2,11 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { fetchAllUsersData } from "@/components/db/user";
-import {
-    fetchExistingTopicsCount,
-    fetchPostCount,
-} from "@/components/db/op_forum";
-import { getOpVotePower } from "@/components/blockchain/optimism/votePower";
+import { getCompoundVotePower } from "@/components/blockchain/compound/votePower";
 
 export default function Page() {
     const [users, setUsers] = useState([]);
     const [votePowerByDelegate, setVotePowerByDelegate] = useState(new Map());
-    const [topicCount, setTopicCount] = useState(0);
-    const [postCount, setPostCount] = useState(0);
 
     const fetchData = async () => {
         let users = await fetchAllUsersData();
@@ -24,7 +18,7 @@ export default function Page() {
             delegates.map(async (u) =>
                 Promise.all(
                     u.evm_delegate_addresses.map(async (addr) => {
-                        const voteCount = await getOpVotePower(addr);
+                        const voteCount = await getCompoundVotePower(addr);
                         const voteCountNumber = Number(
                             voteCount.toBigInt() / 10n ** 18n,
                         );
@@ -36,11 +30,6 @@ export default function Page() {
             ),
         );
         setVotePowerByDelegate(map);
-
-        const topicCount = await fetchExistingTopicsCount();
-        setTopicCount(topicCount);
-        const postCount = await fetchPostCount();
-        setPostCount(postCount);
     };
 
     useEffect(() => {
@@ -59,7 +48,7 @@ export default function Page() {
     return (
         <div>
             <Head>
-                <title>Optimism Metrics</title>
+                <title>Compound Metrics</title>
             </Head>
             <div
                 style={{
@@ -81,25 +70,9 @@ export default function Page() {
                 >
                     {normalText("Tribuni is supporting", true)}
                     {highlightText(`${delegatesCount}`, true)}
-                    {normalText("OP delegates with", true)}
+                    {normalText("Compound delegates with", true)}
                     {highlightText(`${totalDelegateVotePower}`, true)}
                     {normalText("votes combined!")}
-                </div>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    {normalText("Tribuni has helped", true)}
-                    {highlightText(`${subscribers.length}`, true)}
-                    {normalText("subscribers analyze", true)}
-                    {highlightText(`${postCount}`, true)}
-                    {normalText("posts across", true)}
-                    {highlightText(`${topicCount}`, true)}
-                    {normalText("forum topics", true)}
                 </div>
             </div>
         </div>
@@ -110,7 +83,7 @@ const highlightText = (text, spaceAfter) => (
     <div
         style={{
             marginRight: spaceAfter ? "12px" : "0px",
-            color: "red",
+            color: "#01d396",
             fontSize: 32,
             fontWeight: 1200,
         }}

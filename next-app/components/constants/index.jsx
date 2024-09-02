@@ -59,17 +59,9 @@ export const BASE_USER = {
         "65b246a75e02fdc2031a2c7a16fc617087b54f99",
     ],
     subscriptions: ["aavegotchi", "arbitrum", "lido", "optimism"],
-    duration: 86385,
-    alert_hour: 7,
-    alert_minute: 0,
-    alert_offset: 0,
-    alert_time: 54000,
-    alert_timezone: "America/Los_Angeles",
     pause_alerts: false,
     telegram_alerts: true,
     email_alerts: false,
-    last_telegram_alert: 0,
-    last_email_alert: 0,
 };
 
 export const TOAST_BASE = clsx(

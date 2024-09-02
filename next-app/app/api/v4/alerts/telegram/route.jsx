@@ -67,8 +67,8 @@ export async function POST(req) {
     }, new Set());
     const proposalIds = Array.from(proposalIdsSet);
     const bookmarkedProposals = await fetchProposalsByIds(proposalIds);
-    const proposalsToAlert = bookmarkedProposals.filter((proposal) =>
-        shouldAlertProposal(proposal) || requestBody.test,
+    const proposalsToAlert = bookmarkedProposals.filter(
+        (proposal) => shouldAlertProposal(proposal) || requestBody.test,
     );
 
     if (!proposalsToAlert.length) {
