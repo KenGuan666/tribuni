@@ -6,7 +6,7 @@ export async function POST() {
     const metricsText = `
 ❤️ Thank you for choosing Tribuni!
 
-Since our launch, 25 active OP delegates, including you, have chosen Tribuni as their gateway to governance participation. You represent 27.3M OPs in delegated vote power together. That is *30% of total votable OP supply*, *50%+ of votes in recent proposals*, and *healthily above the OP vote quorum*!
+Since our launch, 26 active OP delegates, including you, have chosen Tribuni as their gateway to governance participation. You represent 27.5M OPs in delegated vote power together. That is *30% of total votable OP supply*, *50%+ of votes in recent proposals*, and *healthily above the OP vote quorum*!
 
 We sincerely thank you for your service to the OP community! Kindly help spread the word to other delegates, and send us feature requests or feedback at our [alpha group](https://t.me/+GQxcYz_80B40ZGMx).
 `;
