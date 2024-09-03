@@ -148,7 +148,7 @@ export async function POST() {
     for (const topic of recentTopics) {
         const existingTopic = existingTopicsById[topic.id];
         let hasUpdated = false;
-        let communitySummary = topic.community_summary;
+        let communitySummary = existingTopic.community_summary;
         if (existingTopic.like_count != topic.like_count) {
             hasUpdated = true;
         }
