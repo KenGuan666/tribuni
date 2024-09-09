@@ -12,6 +12,10 @@
         {
             "path": "/api/v4/alerts/forum",
             "schedule": "0 10 * * 1"
+        },
+        {
+            "path": "/api/v4/alerts/telegram",
+            "schedule": "* * * * *"
         }
     ]
 }

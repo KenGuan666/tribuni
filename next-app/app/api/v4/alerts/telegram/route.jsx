@@ -108,6 +108,10 @@ export async function POST(req) {
     }
 }
 
+export async function GET() {
+    return POST();
+}
+
 function shouldAlertProposal(proposalData) {
     const timeUntilCompletion = secondsFromNow(proposalData.endtime);
     return (
