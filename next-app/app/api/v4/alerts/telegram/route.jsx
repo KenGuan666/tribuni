@@ -109,7 +109,7 @@ export async function POST(req) {
 }
 
 export async function GET() {
-    return POST();
+    return await POST();
 }
 
 function shouldAlertProposal(proposalData) {
