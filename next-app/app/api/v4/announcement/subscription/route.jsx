@@ -12,7 +12,7 @@ Join our [alpha group](https://t.me/+GQxcYz_80B40ZGMx) for product updates and t
 `;
     const users = await fetchAllUsersData();
     const usersWithoutSubscription = users.filter(
-        (u) => u.subscriptions.length == 0,
+        (u) => u.id == "lg_group",
     );
     for (const user of usersWithoutSubscription) {
         const userId = user.id;
