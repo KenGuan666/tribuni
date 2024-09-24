@@ -7,7 +7,7 @@
     "crons": [
         {
             "path": "/api/v4/data/forum/optimism/upload",
-            "schedule": "0 * * * *"
+            "schedule": "0 */6 * * *"
         },
         {
             "path": "/api/v4/alerts/forum",

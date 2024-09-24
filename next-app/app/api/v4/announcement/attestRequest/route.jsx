@@ -15,7 +15,7 @@ Kindly give Tribuni a 5-star review if Tribuni is helpful in your journey as an 
 
 3. Fill 
 - RECIPIENT: "0xEdD95782d13902Ae535332b5D233041E47aD69E6"
-- APP NAME: "Tribuni". Give us a score between 1-5 under ""
+- APP NAME: "Tribuni"
 - SCORE: Rating between 1-5 with 5 being the highest
 - APP REVIEW: Your review
 
