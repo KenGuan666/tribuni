@@ -751,7 +751,6 @@ function TestimonialCard({
                 .testimonial-card {
                     padding: 24px;
                     border-radius: 12px;
-                    max-width: 350px;
                     margin: 0 auto;
                     text-align: left;
                     background: linear-gradient(
@@ -810,7 +809,7 @@ function TestimonialWall() {
     const settings = {
         dots: false,
         infinite: true,
-        speed: 9000,
+        speed: 6000,
         slidesToShow: 4,
         slidesToScroll: 1,
         autoplay: true,
