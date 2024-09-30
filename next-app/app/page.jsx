@@ -626,7 +626,7 @@ function SplitSection({ idx }) {
                     display: flex;
                     align-items: center;
                     justify-content: center;
-                    width: 97vw; /* Full viewport width */
+                    width: 90vw; /* Full viewport width */
                     height: 75vh; /* Full viewport height */
                 }
 
