@@ -25,8 +25,8 @@ Please also give us a boost on social media!
 [X](https://x.com/0xTribuni/status/1831099688189391141) | [OP Forum](https://gov.optimism.io/t/tribuni-alpha-launch-telegram-mini-app-built-by-delegates-for-delegates/8568/13)
 `;
     const users = await fetchAllUsersData();
-    const subscribers = users.filter(
-        (u) => u.subscriptions.includes("optimism"),
+    const subscribers = users.filter((u) =>
+        u.subscriptions.includes("optimism"),
     );
     for (const user of subscribers) {
         const userId = user.id;
@@ -37,11 +37,7 @@ Please also give us a boost on social media!
         };
 
         try {
-            await bot.sendMessage(
-                chatId,
-                text,
-                telegramMessageOptions,
-            );
+            await bot.sendMessage(chatId, text, telegramMessageOptions);
         } catch (err) {
             console.log(`could not announce to ${userId}`);
             console.log(err);

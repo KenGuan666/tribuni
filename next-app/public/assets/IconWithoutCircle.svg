@@ -1,0 +1,14 @@
+<svg width="31" height="27" viewBox="0 0 31 27" fill="none" xmlns="http://www.w3.org/2000/svg">
+<mask id="mask0_573_328" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="31" height="27">
+<path d="M3.61239 8.62751L2.71289 5.82422H27.4597L26.5685 8.62751H3.61239Z" fill="#040404" stroke="white"/>
+<path d="M1.64781 4.06395L0.657821 0.5H29.515L28.525 4.06395H1.64781Z" fill="#040404" stroke="white"/>
+<path d="M26.5595 17.4877L27.459 20.291L2.7122 20.291L3.60337 17.4877L26.5595 17.4877Z" fill="#040404" stroke="white"/>
+<path d="M28.5241 22.0513L29.5141 25.6152L0.656904 25.6152L1.64689 22.0513L28.5241 22.0513Z" fill="#040404" stroke="white"/>
+<rect x="12.166" y="10.3887" width="5.84593" height="5.33882" fill="#040404" stroke="white"/>
+<rect x="4.30664" y="10.3887" width="5.59237" height="5.33882" fill="#040404" stroke="white"/>
+<rect x="20.2773" y="10.3887" width="5.59237" height="5.33882" fill="#040404" stroke="white"/>
+</mask>
+<g mask="url(#mask0_573_328)">
+<ellipse cx="15.0574" cy="16.2826" rx="16.0691" ry="13.7279" fill="#040404"/>
+</g>
+</svg>

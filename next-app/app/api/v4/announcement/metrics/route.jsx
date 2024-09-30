@@ -11,7 +11,7 @@ Since our launch, 26 active OP delegates, including you, have chosen Tribuni as 
 We sincerely thank you for your service to the OP community! Kindly help spread the word to other delegates, and send us feature requests or feedback at our [alpha group](https://t.me/+GQxcYz_80B40ZGMx).
 `;
     const users = await fetchAllUsersData();
-    const delegates = users.filter(u => u.evm_delegate_addresses)
+    const delegates = users.filter((u) => u.evm_delegate_addresses);
     for (const user of delegates) {
         const userId = user.id;
         const chatId = user.chatid;
