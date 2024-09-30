@@ -751,7 +751,7 @@ function TestimonialCard({
                 .testimonial-card {
                     padding: 24px;
                     border-radius: 12px;
-                    margin: 0 auto;
+                    margin: 12px;
                     text-align: left;
                     background: linear-gradient(
                         45deg,
@@ -790,7 +790,7 @@ function ImageCarousel() {
         slidesToShow: 1,
         slidesToScroll: 1,
         autoplay: true,
-        autoplaySpeed: 6000,
+        autoplaySpeed: 4000,
         pauseOnHover: true,
     };
 
