@@ -239,7 +239,7 @@ export default function Page() {
                         style={{
                             display: "flex",
                             justifyContent: "center",
-                            marginTop: "80px",
+                            marginTop: "40px",
                             marginBottom: "100px",
                         }}
                     >
@@ -881,7 +881,7 @@ function TestimonialWall() {
             avatar: juanbugAvatar,
             name: "juanbug",
             text: "Genuinely really useful and use it daily to track and record all of the protocols that we are delegates for",
-            association: "pgov",
+            association: "PGov",
             delegateURL:
                 "https://vote.optimism.io/delegates/0x3fb19771947072629c8eee7995a2ef23b72d4c8a",
             attestationURL:
