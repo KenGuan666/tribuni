@@ -1,8 +1,11 @@
 # Tribuni
 
-Tribuni simplifies crypto governance participation by aggregating high-signal information into a Telegram bot.
+Tribuni is the easiest way to organize your governance delegate flow. Sign up today to receive vote alerts, proposal insights across 200+ projects.
 
-Try it today: https://t.me/Tribuni_Bot
+Try it today: https://t.me/Tribuni_Bot with code POTATO
+Read more: https://gov.optimism.io/t/tribuni-alpha-launch-telegram-mini-app-built-by-delegates-for-delegates/8568/13
+
+Who is using Tribuni? See https://tribuni.vercel.app/metrics, https://tribuni.vercel.app/metrics/optimism
 
 ### Developer Guide
 
