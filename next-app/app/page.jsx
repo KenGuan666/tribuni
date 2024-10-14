@@ -27,6 +27,7 @@ import batbAvatar from "@/public/assets/batb.png";
 
 import numeral from "numeral";
 
+// This is the landing page at tribuni.vercel.app
 export default function Page() {
     const [users, setUsers] = useState([]);
     const [votePowerByDelegate, setVotePowerByDelegate] = useState(new Map());

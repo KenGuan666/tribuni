@@ -34,8 +34,12 @@ export async function getPostFromDiscourse(postId) {
 export async function getCategory(categoryId) {
     const url = discourseURL(`c/${categoryId}/show.json`, []);
     const res = await fetch(url, getOptions);
-    const resJson = await res.json();
-    return resJson.category;
+    try {
+        const resJson = await res.json();
+        return resJson.category;
+    } catch (error) {
+        console.log(`Cannot parse response from discourse: `)
+    }
 }
 
 function discourseURL(path, params) {
