@@ -39,12 +39,9 @@ export const TopicStats = ({ topic }) => {
         <IconAndCount icon={LikesIcon.src} count={topic.like_count} />
     );
     const sentimentScore = calculateSentimentScore(topic);
-    console.log(sentimentScore)
+    console.log(sentimentScore);
     const sentiments = isNaN(sentimentScore) ? null : (
-        <IconAndCount
-            icon={OptimisticIcon.src}
-            count={`${sentimentScore}%`}
-        />
+        <IconAndCount icon={OptimisticIcon.src} count={`${sentimentScore}%`} />
     );
 
     return (

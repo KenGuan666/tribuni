@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { fetchAllUsersData } from "@/components/db/user";
 import { fetchPostCount } from "@/components/db/op_forum";
 import { fetchProposalCountByProtocols } from "@/components/db/proposal";
@@ -16,6 +16,10 @@ import LandingPoster2 from "@/public/assets/LandingPoster2.png";
 import LandingPoster3 from "@/public/assets/LandingPoster3.png";
 import LogoWithoutCircle from "@/public/assets/IconWithoutCircle.svg";
 import LinkIcon from "@/public/assets/LinkIcon.svg";
+import LeftArrowDark from "@/public/assets/leftArrowDark.png";
+import LeftArrowLight from "@/public/assets/leftArrowLight.png";
+import RightArrowDark from "@/public/assets/rightArrowDark.png";
+import RightArrowLight from "@/public/assets/rightArrowLight.png";
 import launamuAvatar from "@/public/assets/launamu.jpg";
 import chaselbAvatar from "@/public/assets/claselb.jpg";
 import jonwongAvatar from "@/public/assets/jonwong.jpg";
@@ -91,6 +95,8 @@ export default function Page() {
                         style={{
                             marginTop: "8px",
                             marginBottom: "8px",
+                            marginLeft: "12px",
+                            marginRight: "12px",
                             display: "flex",
                             flexDirection: "row",
                             alignItems: "center",
@@ -323,6 +329,7 @@ export default function Page() {
                 </div>
                 <style jsx>{`
                     .background {
+                        overflow: auto;
                         width: 100%;
                         background: linear-gradient(
                             185deg,
@@ -330,24 +337,17 @@ export default function Page() {
                             #000000 40%,
                             #0b4158 100%
                         );
-                    }
-
-                    .content-container {
-                        overflow-y: auto;
                         -ms-overflow-style: none; /* IE and Edge */
                         scrollbar-width: none; /* Firefox */
                     }
 
-                    .content-container::-webkit-scrollbar {
-                        display: none; /* Chrome, Safari, Opera */
+                    .background::-webkit-scrollbar {
+                        display: none; !important /* Chrome, Safari, Opera */
                     }
 
                     .content-container {
-                        padding-left: 12px;
-                        padding-right: 12px;
                         padding-top: 12px;
                         color: white;
-                        overflow-x: hidden;
                     }
 
                     .hero-section {
@@ -400,7 +400,7 @@ export default function Page() {
                         background-color: #f5f7fa; /* Light background */
                         margin-left: 100px;
                         margin-right: 100px;
-                        padding: 20px 40px;
+                        padding: 16px 40px;
                         border-radius: 20px 20px 0 0; /* Rounded top corners */
                         display: flex;
                         justify-content: center;
@@ -614,10 +614,10 @@ function SplitSection({ idx }) {
             </div>
             <div className="image-block">
                 <Image
-                    src={imgs[idx]} // Replace with your image path
+                    src={imgs[idx]}
                     alt="Right side image"
                     layout="fill"
-                    objectFit="cover" // Ensures the image covers the area
+                    objectFit="cover"
                     quality={100}
                 />
             </div>
@@ -625,10 +625,8 @@ function SplitSection({ idx }) {
             <style jsx global>{`
                 .split-section {
                     display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    width: 90vw; /* Full viewport width */
-                    height: 75vh; /* Full viewport height */
+                    height: 75vh;
+                    z-index: 3;
                 }
 
                 .split-section-text {
@@ -783,8 +781,66 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+function CustomArrow({ onClick, source, sourceOnHover }) {
+    const [isHovered, setIsHovered] = useState(false);
+
+    return (
+        <button
+            onClick={onClick}
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+        >
+            {isHovered ? sourceOnHover : source}
+        </button>
+    );
+}
+
+function CustomLeftArrow({ slider }) {
+    return (
+        <CustomArrow
+            onClick={() => slider?.current?.slickPrev()}
+            source={
+                <Image src={LeftArrowDark} width={28} height={58} alt="Arrow" />
+            }
+            sourceOnHover={
+                <Image
+                    src={LeftArrowLight}
+                    width={28}
+                    height={58}
+                    alt="Arrow"
+                />
+            }
+        />
+    );
+}
+
+function CustomRightArrow({ slider }) {
+    return (
+        <CustomArrow
+            onClick={() => slider?.current?.slickNext()}
+            source={
+                <Image
+                    src={RightArrowDark}
+                    width={28}
+                    height={58}
+                    alt="Arrow"
+                />
+            }
+            sourceOnHover={
+                <Image
+                    src={RightArrowLight}
+                    width={28}
+                    height={58}
+                    alt="Arrow"
+                />
+            }
+        />
+    );
+}
+
 function ImageCarousel() {
     const settings = {
+        arrows: false,
         dots: true,
         infinite: true,
         speed: 500,
@@ -795,13 +851,50 @@ function ImageCarousel() {
         pauseOnHover: true,
     };
 
+    const sliderRef = React.useRef(null);
+    let slider = (
+        <Slider ref={sliderRef} {...settings}>
+            <SplitSection idx={0} />
+            <SplitSection idx={1} />
+            <SplitSection idx={2} />
+        </Slider>
+    );
+
     return (
-        <div>
-            <Slider {...settings}>
-                <SplitSection idx={0} />
-                <SplitSection idx={1} />
-                <SplitSection idx={2} />
-            </Slider>
+        <div
+            style={{
+                display: "flex",
+                paddingLeft: "12px",
+                paddingRight: "12px",
+                flexDirection: "row",
+                justifyContent: "space-between",
+            }}
+        >
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <CustomLeftArrow slider={sliderRef} />
+            </div>
+            <div
+                style={{
+                    width: "93%",
+                }}
+            >
+                {slider}
+            </div>
+            <div
+                style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <CustomRightArrow slider={sliderRef} />
+            </div>
         </div>
     );
 }
@@ -911,7 +1004,6 @@ function TestimonialWall() {
             <style jsx>{`
                 .testimonial-wall {
                     width: 100%;
-                    padding: 20px;
                     background-color: transparent;
                 }
             `}</style>

@@ -86,5 +86,7 @@ export function calculateSentimentScore(topic) {
         }
         return s;
     }, 0);
-    return Math.round((positivePostCount * 1.0) / nonAuthorPosts.length * 100);
+    return Math.round(
+        ((positivePostCount * 1.0) / nonAuthorPosts.length) * 100,
+    );
 }

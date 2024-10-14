@@ -38,7 +38,7 @@ export async function getCategory(categoryId) {
         const resJson = await res.json();
         return resJson.category;
     } catch (error) {
-        console.log(`Cannot parse response from discourse: `)
+        console.log(`Cannot parse response from discourse: `);
     }
 }
 
