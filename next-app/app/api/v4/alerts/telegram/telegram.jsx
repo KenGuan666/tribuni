@@ -38,10 +38,10 @@ function generateAlertMarkdownText(protocolInfo, proposalsData, variation) {
 
     let firstLine = `📣 *${protocolInfo.name}* community is voting on *${proposalsData.length} proposals*!\n`;
     if (variation == "new") {
-        firstLine = `📣 *${protocolInfo.name}* posted ${proposalsData.length} new proposals!`;
+        firstLine = `📣 *${protocolInfo.name}* posted ${proposalsData.length} new proposal${proposalsData.length > 1 ? "s" : ""}!`;
     }
     if (variation == "ending") {
-        firstLine = `📣 ${proposalsData.length} *${protocolInfo.name}* proposals close in 48 hours!`;
+        firstLine = `📣 ${proposalsData.length} *${protocolInfo.name}* proposal${proposalsData.length > 1 ? "s" : ""} close in 48 hours!`;
     }
 
     message += firstLine;
