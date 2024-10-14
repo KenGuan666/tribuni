@@ -737,7 +737,7 @@ function TestimonialCard({
                         flexDirection: "row",
                         alignItems: "center",
                         justifyContent: "right",
-                        gap: "12px",
+                        gap: "8px",
                         marginRight: "12px",
                     }}
                 >
@@ -748,6 +748,8 @@ function TestimonialCard({
 
             <style jsx>{`
                 .testimonial-card {
+                    display: flex;
+                    flex-direction: column;
                     padding: 24px;
                     border-radius: 12px;
                     margin: 12px;
@@ -899,18 +901,9 @@ function ImageCarousel() {
     );
 }
 
-function TestimonialWall() {
-    const settings = {
-        dots: false,
-        infinite: true,
-        speed: 6000,
-        slidesToShow: 4,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 0,
-        pauseOnHover: true,
-    };
+import Masonry from "react-masonry-css";
 
+function TestimonialWall() {
     const testimonials = [
         {
             avatar: launamuAvatar,
@@ -994,19 +987,12 @@ function TestimonialWall() {
     ];
 
     return (
-        <div className="testimonial-wall">
-            <Slider {...settings}>
-                {testimonials.map((testimonial, idx) => (
+        <div className="testimonial-wall" class="columns-3 px-12">
+            {testimonials.map((testimonial, idx) => (
+                <div class="break-inside-avoid">
                     <TestimonialCard key={idx} {...testimonial} />
-                ))}
-            </Slider>
-
-            <style jsx>{`
-                .testimonial-wall {
-                    width: 100%;
-                    background-color: transparent;
-                }
-            `}</style>
+                </div>
+            ))}
         </div>
     );
 }
