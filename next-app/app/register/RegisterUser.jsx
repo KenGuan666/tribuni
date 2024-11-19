@@ -5,6 +5,7 @@ import { sql, sanitizeText } from "@/components/db";
 import { getBot } from "@/components/bot";
 
 export const RegisterUser = async ({ inviteCode, username, chatid }) => {
+    console.log(`registering user ${username} with chatid ${chatid}`)
     try {
         const bot = getBot();
 
