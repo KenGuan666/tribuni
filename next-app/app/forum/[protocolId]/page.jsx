@@ -2,7 +2,7 @@
 import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { fetchForumById } from "@/components/db/forum";
+import { fetchForumByProtocol } from "@/components/db/forum";
 import {
     fetchLatestOPTopics,
     fetchOPForumCategories,
@@ -20,8 +20,9 @@ import { Tabs } from "./Tabs";
 
 const forumId = 1;
 
-export default function Page({ searchParams }) {
+export default function Page({ params, searchParams }) {
     const { username, chatid, from } = searchParams;
+    const { protocolId } = params;
 
     let {
         getCachedTopics,
@@ -45,7 +46,7 @@ export default function Page({ searchParams }) {
         const getProtocolInfo = async () => {
             try {
                 if (!forum) {
-                    const forum = await fetchForumById(forumId);
+                    const forum = await fetchForumByProtocol(protocolId);
                     setForum(forum);
                     setOPForum(forum);
                 }

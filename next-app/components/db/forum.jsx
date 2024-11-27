@@ -22,3 +22,17 @@ export async function fetchForumById(forumId) {
     }
     return {};
 }
+
+export async function fetchForumByProtocol(protocolId) {
+    const query = `
+        SELECT *
+        FROM fora
+        WHERE protocol_id = '${protocolId}'
+        LIMIT 1;
+    `;
+    const fora = await sql.unsafe(query);
+    if (fora.length) {
+        return fora[0];
+    }
+    return {};
+}
