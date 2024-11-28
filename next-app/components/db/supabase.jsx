@@ -1,5 +1,16 @@
 import { createClient } from "@supabase/supabase-js";
 
+// supabase provides write access to database
+// There's a duplicate definition of tableByProtocolId in the read database library: @/components/db/forum
+var tableByProtocolId = {
+    optimism: ["op_forum_topics", "op_forum_posts", "op_forum_categories"],
+    compound: [
+        "comp_forum_topics",
+        "comp_forum_posts",
+        "comp_forum_categories",
+    ],
+};
+
 export function getSupabase() {
     return createClient(
         process.env.SUPABASE_URL,
@@ -95,11 +106,12 @@ async function upsertProposalDataBatch(supabase, proposalsData) {
     );
 }
 
-export async function upsertOpForumTopics(supabase, topics) {
+export async function upsertForumTopics(supabase, protocolId, topics) {
     const batchSize = 20;
     for (let i = 0; i < topics.length; i += batchSize) {
-        let { err } = upsertOpForumTopicsBatch(
+        let { err } = await upsertForumTopicsBatch(
             supabase,
+            protocolId,
             topics.slice(i, i + batchSize),
         );
         if (err) {
@@ -108,18 +120,21 @@ export async function upsertOpForumTopics(supabase, topics) {
     }
 }
 
-async function upsertOpForumTopicsBatch(supabase, topics) {
-    return await supabase.from("op_forum_topics").upsert(topics, {
+async function upsertForumTopicsBatch(supabase, protocolId, topics) {
+    let [topicTableName, postTableName, categoryTableName] =
+        tableByProtocolId[protocolId];
+    return await supabase.from(topicTableName).upsert(topics, {
         onConflict: "id",
         ignoreDuplicates: false,
     });
 }
 
-export async function upsertOpForumPosts(supabase, posts) {
+export async function upsertForumPosts(supabase, protocolId, posts) {
     const batchSize = 20;
     for (let i = 0; i < posts.length; i += batchSize) {
-        let { err } = upsertOpForumPostsBatch(
+        let { data, err } = await upsertForumPostsBatch(
             supabase,
+            protocolId,
             posts.slice(i, i + batchSize),
         );
         if (err) {
@@ -128,14 +143,18 @@ export async function upsertOpForumPosts(supabase, posts) {
     }
 }
 
-async function upsertOpForumPostsBatch(supabase, posts) {
-    return await supabase.from("op_forum_posts").upsert(posts, {
+async function upsertForumPostsBatch(supabase, protocolId, posts) {
+    let [topicTableName, postTableName, categoryTableName] =
+        tableByProtocolId[protocolId];
+    return await supabase.from(postTableName).upsert(posts, {
         onConflict: "id",
         ignoreDuplicates: false,
     });
 }
 
-export async function upsertOPForumCategories(supabase, categories) {
+export async function upsertForumCategories(supabase, protocolId, categories) {
+    let [topicTableName, postTableName, categoryTableName] =
+        tableByProtocolId[protocolId];
     categories = categories.map(({ id, name, color, text_color }) => ({
         id,
         name,
@@ -143,18 +162,18 @@ export async function upsertOPForumCategories(supabase, categories) {
         text_color,
         font_size: 11,
     }));
-    return await supabase.from("op_forum_categories").upsert(categories, {
+    return await supabase.from(categoryTableName).upsert(categories, {
         onConflict: "id",
         ignoreDuplicates: false,
     });
 }
 
-export async function updateOpForumWeeklySummary(supabase, summary) {
+export async function updateForumWeeklySummary(supabase, protocolId, summary) {
     return await supabase
         .from("fora")
         .update({
             forum_weekly_summary: summary,
             updated_at: new Date().toISOString(),
         })
-        .eq("id", 1);
+        .eq("protocol_id", protocolId);
 }

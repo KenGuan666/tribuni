@@ -1,22 +1,24 @@
-import { fetchExistingTopics } from "@/components/db/op_forum";
 import {
     getCategory,
     getTopicPostsFromDiscourse,
     getTopicsFromDiscourse,
-} from "./discourse";
+    forumAvatarFromTemplate,
+    postUrl,
+} from "../../discourse";
 import {
     getSupabase,
-    updateOpForumWeeklySummary,
-    upsertOPForumCategories,
-    upsertOpForumPosts,
-    upsertOpForumTopics,
+    updateForumWeeklySummary,
+    upsertForumCategories,
+    upsertForumPosts,
+    upsertForumTopics,
 } from "@/components/db/supabase";
 import { fetchForumById } from "@/components/db/forum";
 import {
-    fetchOPForumCategories,
-    fetchOPPostsByTopicId,
+    fetchExistingTopics,
+    fetchForumCategories,
+    fetchPostsByTopicId,
     fetchWeeklyNewTopics,
-} from "@/components/db/op_forum";
+} from "@/components/db/forum";
 import {
     getPostSummary,
     getPostInsights,
@@ -26,31 +28,39 @@ import {
 } from "@/components/ai/forum";
 import { isLessThanNDaysAgo } from "@/utils/time";
 
-const baseURL = "https://gov.optimism.io";
 export const maxDuration = 300;
+var knownForums = new Set(["optimism", "compound"]);
 
-export async function GET() {
-    return await POST();
+export async function GET(req) {
+    return await POST(req);
 }
 
 /*
-    /api/v4/data/forum/upload responsible for:
+    /api/v4/data/forum/[protocolId]/upload responsible for:
     - Update each existing topic that has had a new post or like in past 14 days
     - Fetch new topics
 */
-export async function POST() {
-    const existingTopics = await fetchExistingTopics();
+export async function POST(req) {
+    const protocolId = req.nextUrl.pathname.split("/")[5];
+    if (!knownForums.has(protocolId)) {
+        return Response.json(
+            { message: `unsupported protocol ${protocolId}` },
+            { status: 400 },
+        );
+    }
+
+    const existingTopics = await fetchExistingTopics(protocolId);
     const existingTopicsById = existingTopics.reduce((m, topic) => {
         m[topic.id] = topic;
         return m;
     }, {});
     const existingIds = new Set(existingTopics.map((t) => t.id));
 
-    const topicsRes = await getTopicsFromDiscourse();
+    const topicsRes = await getTopicsFromDiscourse(protocolId);
     const topics = topicsRes.topic_list.topics;
     const newTopics = topics.filter((topic) => !existingIds.has(topic.id));
 
-    const categories = await fetchOPForumCategories();
+    const categories = await fetchForumCategories(protocolId);
     const categoriesById = categories.reduce((m, c) => {
         m[c.id] = c;
         return m;
@@ -62,7 +72,10 @@ export async function POST() {
     // TODO: refactor and reuse
     for (const topic of newTopics) {
         let newPostDbObjects = [];
-        const topicPostsRes = await getTopicPostsFromDiscourse(topic.id);
+        const topicPostsRes = await getTopicPostsFromDiscourse(
+            protocolId,
+            topic.id,
+        );
         const topicPosts = topicPostsRes.post_stream.posts;
         const firstPost = topicPosts[0];
         const replies = topicPosts.slice(1);
@@ -76,8 +89,11 @@ export async function POST() {
                 firstPost.display_username ||
                 firstPost.name ||
                 firstPost.username,
-            author_avatar: avatarFromTemplate(firstPost.avatar_template),
-            url: url(topic, 1),
+            author_avatar: forumAvatarFromTemplate(
+                protocolId,
+                firstPost.avatar_template,
+            ),
+            url: postUrl(protocolId, topic, 1),
         });
 
         const summary = await getPostSummary(firstPost.cooked);
@@ -99,8 +115,11 @@ export async function POST() {
                 firstPost.username,
             summary,
             insight,
-            author_avatar: avatarFromTemplate(firstPost.avatar_template),
-            first_post_url: `${baseURL}/t/${topic.slug}/${topic.id}/1`,
+            author_avatar: forumAvatarFromTemplate(
+                protocolId,
+                firstPost.avatar_template,
+            ),
+            first_post_url: postUrl(protocolId, topic, 1),
         };
         if (replies.length > 0) {
             await sleep(2.5);
@@ -119,26 +138,33 @@ export async function POST() {
                     post_number: r.post_number,
                     created_at: r.created_at,
                     author_username: r.display_username || r.name || r.username,
-                    author_avatar: avatarFromTemplate(r.avatar_template),
-                    url: url(topic, r.post_number),
+                    author_avatar: forumAvatarFromTemplate(
+                        protocolId,
+                        r.avatar_template,
+                    ),
+                    url: postUrl(protocolId, topic, r.post_number),
                     is_sentiment_positive: sentiment,
                     content: r.cooked,
                 });
             }
         }
-        let err = await upsertOpForumTopics(supabase, [topicDb]);
-        if (err) {
-            console.log(err);
-        }
-        err = await upsertOpForumPosts(supabase, newPostDbObjects);
+        let err = await upsertForumTopics(supabase, protocolId, [topicDb]);
         if (err) {
             console.log(err);
         }
         console.log(`Uploaded new topic ${topic.id}: ${topic.title}`);
+        err = await upsertForumPosts(supabase, protocolId, newPostDbObjects);
+        if (err) {
+            console.log(err);
+        }
+        console.log(
+            `Uploaded ${newPostDbObjects.length} posts of new topic ${topic.id}`,
+        );
+        console.log(newPostDbObjects);
 
         if (!categoriesById[topic.category_id]) {
-            const category = await getCategory(topic.category_id);
-            await upsertOPForumCategories(supabase, [category]);
+            const category = await getCategory(protocolId, topic.category_id);
+            await upsertForumCategories(supabase, protocolId, [category]);
             console.log(`Uploaded new category ${category.name}`);
         }
     }
@@ -154,7 +180,7 @@ export async function POST() {
         }
 
         // There's a small chance that posts db is not sync'ed with post_count
-        const existingPosts = await fetchOPPostsByTopicId(topic.id);
+        const existingPosts = await fetchPostsByTopicId(protocolId, topic.id);
         const existingPostCount = existingPosts.reduce(
             (c, p) => (p.post_number > c ? p.post_number : c),
             0,
@@ -165,7 +191,10 @@ export async function POST() {
         // TODO: handle post deletion better
         if (existingPostCount < topic.posts_count) {
             hasUpdated = true;
-            const topicPostsRes = await getTopicPostsFromDiscourse(topic.id);
+            const topicPostsRes = await getTopicPostsFromDiscourse(
+                protocolId,
+                topic.id,
+            );
             const topicPosts = topicPostsRes.post_stream.posts;
             communitySummary = await getPostCommunityFeedback(
                 existingTopic.summary,
@@ -191,8 +220,11 @@ export async function POST() {
                     post_number: r.post_number,
                     created_at: r.created_at,
                     author_username: r.display_username || r.name || r.username,
-                    author_avatar: avatarFromTemplate(r.avatar_template),
-                    url: url(topic, r.post_number),
+                    author_avatar: forumAvatarFromTemplate(
+                        protocolId,
+                        r.avatar_template,
+                    ),
+                    url: postUrl(protocolId, topic, r.post_number),
                     is_sentiment_positive: sentiment,
                     content: r.cooked,
                 });
@@ -201,7 +233,14 @@ export async function POST() {
                         ? last_posted_at
                         : r.created_at;
             }
-            await upsertOpForumPosts(supabase, newPostDbObjects);
+            let err = await upsertForumPosts(
+                supabase,
+                protocolId,
+                newPostDbObjects,
+            );
+            if (err) {
+                console.log(err);
+            }
         }
         if (hasUpdated) {
             const newTopicDb = {
@@ -220,7 +259,12 @@ export async function POST() {
                 community_summary: communitySummary,
                 first_post_url: existingTopic.first_post_url,
             };
-            await upsertOpForumTopics(supabase, [newTopicDb]);
+            let err = await upsertForumTopics(supabase, protocolId, [
+                newTopicDb,
+            ]);
+            if (err) {
+                console.log(err);
+            }
             console.log(`Updated topic ${topic.id}: 
                 ${existingPostCount} -> ${topic.posts_count} posts, 
                 ${existingTopic.like_count} -> ${topic.like_count} likes`);
@@ -231,12 +275,16 @@ export async function POST() {
     const processedTopicsId = new Set(topics.map((t) => t.id));
     const olderTopicsToUpdate = existingTopics.filter(
         (t) =>
-            !processedTopicsId.has(t) && isLessThanNDaysAgo(t.updated_at, 14),
+            !processedTopicsId.has(t.id) &&
+            isLessThanNDaysAgo(t.updated_at, 14),
     );
     for (const topic of olderTopicsToUpdate) {
-        const topicPostsRes = await getTopicPostsFromDiscourse(topic.id);
+        const topicPostsRes = await getTopicPostsFromDiscourse(
+            protocolId,
+            topic.id,
+        );
         const topicPosts = topicPostsRes.post_stream.posts;
-        const existingPosts = await fetchOPPostsByTopicId(topic.id);
+        const existingPosts = await fetchPostsByTopicId(protocolId, topic.id);
         const existingPostNumbers = new Set(
             existingPosts.map((p) => p.post_number),
         );
@@ -264,16 +312,26 @@ export async function POST() {
                     post_number: r.post_number,
                     created_at: r.created_at,
                     author_username: r.display_username || r.name || r.username,
-                    author_avatar: avatarFromTemplate(r.avatar_template),
-                    url: url(topic, r.post_number),
+                    author_avatar: forumAvatarFromTemplate(
+                        protocolId,
+                        r.avatar_template,
+                    ),
+                    url: postUrl(protocolId, topic, r.post_number),
                     is_sentiment_positive: sentiment,
                     content: r.cooked,
                 });
                 lastPostAt =
                     lastPostAt > r.created_at ? lastPostAt : r.created_at;
             }
-            await upsertOpForumPosts(supabase, newPostDbObjects);
-            await upsertOpForumTopics(supabase, [
+            let err = await upsertForumPosts(
+                supabase,
+                protocolId,
+                newPostDbObjects,
+            );
+            if (err) {
+                console.log(err);
+            }
+            err = await upsertForumTopics(supabase, protocolId, [
                 {
                     id: topic.id,
                     category_id: topicPostsRes.category_id,
@@ -291,6 +349,9 @@ export async function POST() {
                     first_post_url: topic.first_post_url,
                 },
             ]);
+            if (err) {
+                console.log(err);
+            }
             console.log(`Updated old topic ${topic.id}:
                 ${existingPosts.length} -> ${topicPostsRes.posts_count} posts,
                 ${topic.like_count} -> ${topicPostsRes.like_count} likes`);
@@ -300,23 +361,14 @@ export async function POST() {
     // Finally, create a 1-sentence weekly summary
     const forum = await fetchForumById(1);
     if (!isLessThanNDaysAgo(forum.updated_at, 1)) {
-        const weeklyTitles = await fetchWeeklyNewTopics();
+        const weeklyTitles = await fetchWeeklyNewTopics(protocolId);
         const weeklySummary = await getForumWeeklySummary(
             weeklyTitles.map((r) => r.title),
         );
-        await updateOpForumWeeklySummary(supabase, weeklySummary);
+        await updateForumWeeklySummary(supabase, protocolId, weeklySummary);
         console.log(`Updated weekly summary: ${weeklySummary}`);
     }
     return Response.json({ message: "success" }, { status: 201 });
-}
-
-function avatarFromTemplate(template) {
-    const prefix = template[0] === "/" ? baseURL : "";
-    return `${prefix}${template.replace("{size}", 64)}`;
-}
-
-function url(topic, postNumber) {
-    return `${baseURL}/t/${topic.slug}/${topic.id}/${postNumber}`;
 }
 
 function sleep(s) {
