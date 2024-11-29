@@ -6,6 +6,7 @@ import { TopicStats } from "./TopicStats";
 import { LastPostPreview } from "./LastPostPreview";
 
 export const TopicPreview = ({
+    protocolId,
     category,
     topic,
     username,
@@ -13,7 +14,7 @@ export const TopicPreview = ({
     showPost,
 }) => {
     const router = useRouter();
-    const clickUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/optimism/${topic.id}?username=${username}&chatid=${chatid}`;
+    const clickUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${protocolId}/${topic.id}?username=${username}&chatid=${chatid}`;
     return (
         <button
             onClick={() => router.push(clickUrl)}

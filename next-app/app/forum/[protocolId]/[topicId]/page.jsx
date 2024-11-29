@@ -3,11 +3,11 @@ import clsx from "clsx";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
-import { fetchForumById } from "@/components/db/forum";
+import { fetchForumByProtocol } from "@/components/db/forum";
 import {
-    fetchOPTopicById,
-    fetchOPPostsByTopicId,
-} from "@/components/db/op_forum";
+    fetchTopicById,
+    fetchPostsByTopicId,
+} from "@/components/db/forum";
 import { Hr } from "@/components/ui/page";
 import { useStore } from "@/store";
 import { sanitizeAIListOutput } from "@/utils/text";
@@ -18,29 +18,29 @@ import { Sentiment } from "./Sentiment";
 import { Reply } from "./Reply";
 
 export default function Page({ params, searchParams }) {
-    const { topicId } = params;
+    const { protocolId, topicId } = params;
     const { username, chatid } = searchParams;
 
-    let { getCachedTopic, cacheTopic, OPForum, setOPForum } = useStore();
+    let { getCachedTopic, cacheTopic, getCachedForum, cacheForum } = useStore();
 
-    const [topic, setTopic] = useState(getCachedTopic(topicId));
-    const [forum, setForum] = useState(OPForum);
+    const [topic, setTopic] = useState(getCachedTopic(protocolId, topicId));
+    const [forum, setForum] = useState(getCachedForum(protocolId));
     const [activeDisplay, setActiveDisplay] = useState("tldr");
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 if (!forum) {
-                    const forum = await fetchForumById(1);
+                    const forum = await fetchForumByProtocol(protocolId);
                     setForum(forum);
-                    setOPForum(forum);
+                    cacheForum(protocolId, forum);
                 }
                 if (!topic) {
-                    let topicDb = await fetchOPTopicById(topicId);
-                    const postsDb = await fetchOPPostsByTopicId(topicId);
+                    let topicDb = await fetchTopicById(protocolId, topicId);
+                    const postsDb = await fetchPostsByTopicId(protocolId, topicId);
                     topicDb.posts = postsDb;
                     setTopic(topicDb);
-                    cacheTopic(topicDb);
+                    cacheTopic(protocolId, topicDb);
                 }
             } catch (err) {
                 console.log(err);
@@ -58,7 +58,6 @@ export default function Page({ params, searchParams }) {
         .sort((a, b) => b.post_number - a.post_number);
     return (
         <React.Fragment
-            title="Post"
             children={
                 <>
                     <div
@@ -68,7 +67,7 @@ export default function Page({ params, searchParams }) {
                         )}
                     >
                         <ForumNavigator
-                            backUrl={`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/optimism/?username=${username}&chatid=${chatid}`}
+                            backUrl={`${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${protocolId}/?username=${username}&chatid=${chatid}`}
                             forum={forum}
                             url={topic.first_post_url}
                             backText={`${forum.name} Forum`}

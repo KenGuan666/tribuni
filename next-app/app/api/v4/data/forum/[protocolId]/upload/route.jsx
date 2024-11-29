@@ -12,7 +12,7 @@ import {
     upsertForumPosts,
     upsertForumTopics,
 } from "@/components/db/supabase";
-import { fetchForumById } from "@/components/db/forum";
+import { fetchForumByProtocol } from "@/components/db/forum";
 import {
     fetchExistingTopics,
     fetchForumCategories,
@@ -359,7 +359,7 @@ export async function POST(req) {
     }
 
     // Finally, create a 1-sentence weekly summary
-    const forum = await fetchForumById(1);
+    const forum = await fetchForumByProtocol(protocolId);
     if (!isLessThanNDaysAgo(forum.updated_at, 1)) {
         const weeklyTitles = await fetchWeeklyNewTopics(protocolId);
         const weeklySummary = await getForumWeeklySummary(

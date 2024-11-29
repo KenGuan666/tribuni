@@ -73,28 +73,58 @@ export const useStore = create((set, get) => ({
             };
         }),
 
-    cachedOPForumTopics: new Map(),
-    getCachedTopic: (topicId) => get().cachedOPForumTopics.get(topicId),
-    getCachedTopics: () => get().cachedOPForumTopics,
-    cacheTopic: (topic) =>
+    cachedFora: new Map(),
+    getCachedForum: (protocolId) => get().cachedFora.get(protocolId),
+    cacheForum: (protocolId, forum) => {
         set((state) => {
-            const newMap = new Map(state.cachedOPForumTopics);
-            newMap.set(topic.id, topic);
-            return { cachedOPForumTopics: newMap };
-        }),
-    cacheTopics: (topics) =>
+            let newMap = new Map(state.cachedFora);
+            newMap.set(protocolId, forum);
+            return { cachedFora: newMap };
+        })
+    },
+    cachedForumCategories: new Map(),
+    getCachedForumCategories: (protocolId) => get().cachedForumCategories.get(protocolId),
+    cacheForumCategories: (protocolId, categories) => {
         set((state) => {
-            const newMap = new Map(state.cachedOPForumTopics);
-            topics.forEach((topic) => newMap.set(topic.id, topic));
-            return { cachedOPForumTopics: newMap };
-        }),
+            let newMap = new Map(state.cachedForumCategories);
+            newMap.set(protocolId, categories);
+            return { achedForumCategories: newMap };
+        })
+    },
+    forumTab: "latest",
+    setForumTab: (forumTab) => set({ forumTab }),
+    forumScroll: new Map(),
+    getForumScroll: (protocolId) => get().forumScroll.get(protocolId),
+    setForumScroll: (protocolId, forumScroll) => {
+        set((state) => {
+            let newMap = new Map(state.forumScroll);
+            newMap.set(protocolId, forumScroll);
+            return { forumScroll: newMap };
+        })
+    },
 
-    OPForum: null,
-    setOPForum: (OPForum) => set({ OPForum }),
-    OPForumCategories: null,
-    setOPForumCategories: (OPForumCategories) => set({ OPForumCategories }),
-    OPForumTab: "latest",
-    setOPForumTab: (OPForumTab) => set({ OPForumTab }),
-    OPForumScroll: null,
-    setOPForumScroll: (OPForumScroll) => set({ OPForumScroll }),
+    cachedForumTopics: new Map(),
+    getCachedTopic: (protocolId, topicId) => {
+        let protocolTopicMap = get().cachedForumTopics.get(protocolId);
+        return protocolTopicMap ? protocolTopicMap.get(topicId) : null;
+    },
+    getCachedTopics: (protocolId) => get().cachedForumTopics.get(protocolId) || [],
+    cacheTopic: (protocolId, topic) => 
+        set((state) => {
+            let newMap = new Map(state.cachedForumTopics);
+            if (!newMap.has(protocolId)) {
+                newMap.set(protocolId, new Map());
+            }
+            newMap.get(protocolId).set(topic.id, topic);
+            return { cachedForumTopics: newMap };
+        }),
+    cacheTopics: (protocolId, topics) =>
+        set((state) => {
+            let newMap = new Map(state.cachedForumTopics);
+            if (!newMap.has(protocolId)) {
+                newMap.set(protocolId, new Map());
+            }
+            topics.forEach((topic) => newMap.get(protocolId).set(topic.id, topic));
+            return { cachedForumTopics: newMap };
+        }),
 }));

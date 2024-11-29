@@ -19,6 +19,7 @@ export const LastPostPreview = ({ topic, post }) => {
             >
                 <Image
                     src={post.author_avatar}
+                    alt="image not found"
                     height="24"
                     width="24"
                     layout="fixed"

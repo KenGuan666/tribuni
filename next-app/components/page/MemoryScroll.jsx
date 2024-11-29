@@ -2,20 +2,20 @@ import React, { useEffect, useRef } from "react";
 import clsx from "clsx";
 import { useStore } from "@/store";
 
-export const MemoryScroll = ({ children, classes }) => {
+export const MemoryScroll = ({ protocolId, children, classes }) => {
     const containerRef = useRef(null);
-    const { OPForumScroll, setOPForumScroll } = useStore();
+    const { getForumScroll, setForumScroll } = useStore();
 
     // Restore scroll position on mount
     useEffect(() => {
-        const savedScrollPosition = OPForumScroll;
+        const savedScrollPosition = getForumScroll(protocolId);
         if (savedScrollPosition && containerRef.current) {
             containerRef.current.scrollTop = parseInt(savedScrollPosition, 10);
         }
 
         const handleScroll = () => {
             if (containerRef.current) {
-                setOPForumScroll(containerRef.current.scrollTop);
+                setForumScroll(protocolId, containerRef.current.scrollTop);
             }
         };
 

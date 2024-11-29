@@ -4,10 +4,10 @@ import React, { useState, useEffect } from "react";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { fetchForumByProtocol } from "@/components/db/forum";
 import {
-    fetchLatestOPTopics,
-    fetchOPForumCategories,
-    fetchOPPosts,
-} from "@/components/db/op_forum";
+    fetchLatestTopics,
+    fetchForumCategories,
+    fetchPosts,
+} from "@/components/db/forum";
 import { ForumNavigator } from "./ForumNavigator";
 import { Spinner } from "@/components/loaders";
 import { MemoryScroll } from "@/components/page/MemoryScroll";
@@ -18,8 +18,6 @@ import { ForumStatsSummary } from "./ForumStatsSummary";
 import { TopicPreview } from "./TopicPreview";
 import { Tabs } from "./Tabs";
 
-const forumId = 1;
-
 export default function Page({ params, searchParams }) {
     const { username, chatid, from } = searchParams;
     const { protocolId } = params;
@@ -27,16 +25,16 @@ export default function Page({ params, searchParams }) {
     let {
         getCachedTopics,
         cacheTopics,
-        OPForum,
-        setOPForum,
-        OPForumCategories,
-        setOPForumCategories,
-        OPForumTab,
-        setOPForumTab,
+        getCachedForum,
+        cacheForum,
+        getCachedForumCategories,
+        cacheForumCategories,
+        forumTab,
+        setForumTab,
     } = useStore();
 
-    const [forum, setForum] = useState(OPForum);
-    const [categories, setCategories] = useState(OPForumCategories);
+    const [forum, setForum] = useState(getCachedForum(protocolId));
+    const [categories, setCategories] = useState(getCachedForumCategories(protocolId));
     const [trendingTopics, setTrendingTopics] = useState(null);
     const [latestTopics, setLatestTopics] = useState(null);
 
@@ -48,21 +46,21 @@ export default function Page({ params, searchParams }) {
                 if (!forum) {
                     const forum = await fetchForumByProtocol(protocolId);
                     setForum(forum);
-                    setOPForum(forum);
+                    cacheForum(protocolId, forum);
                 }
 
                 if (!categories) {
-                    const categories = await fetchOPForumCategories();
+                    const categories = await fetchForumCategories(protocolId);
                     const categoriesById = categories.reduce((m, c) => {
                         m[c.id] = c;
                         return m;
                     }, {});
                     setCategories(categoriesById);
-                    setOPForumCategories(categoriesById);
+                    cacheForumCategories(protocolId, categoriesById);
                 }
 
                 // TODO: implement as infinite-scroll
-                const cachedTopics = getCachedTopics();
+                const cachedTopics = getCachedTopics(protocolId);
                 if (cachedTopics.size > 5) {
                     let latestTopics = Array.from(cachedTopics.values());
                     setLatestTopics(latestTopics);
@@ -76,8 +74,8 @@ export default function Page({ params, searchParams }) {
                     return;
                 }
 
-                const latestTopicsDb = await fetchLatestOPTopics();
-                const postsDb = await fetchOPPosts();
+                const latestTopicsDb = await fetchLatestTopics(protocolId);
+                const postsDb = await fetchPosts(protocolId);
 
                 // create topic.posts field for each topic
                 const postsByTopicId = postsDb.reduce((map, post) => {
@@ -99,7 +97,7 @@ export default function Page({ params, searchParams }) {
                     })
                     .filter((t) => t.posts);
                 setLatestTopics(latestTopics);
-                cacheTopics(latestTopics);
+                cacheTopics(protocolId, latestTopics);
 
                 let trendingTopics = [...latestTopics];
                 trendingTopics.sort(
@@ -120,12 +118,11 @@ export default function Page({ params, searchParams }) {
 
     // Ignore "from" parameter for now, and always send user back to protocols page
     const backUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/protocols?username=${username}&chatid=${chatid}`;
-    topicsToShow = OPForumTab === "latest" ? latestTopics : trendingTopics;
+    topicsToShow = forumTab === "latest" ? latestTopics : trendingTopics;
 
     return (
         <>
             <React.Fragment
-                title="Protocol"
                 children={
                     <div
                         className={clsx(
@@ -142,6 +139,7 @@ export default function Page({ params, searchParams }) {
                         />
                         <MemoryScroll
                             classes="!space-y-2 text-md mt-4 w-full"
+                            protocolId={protocolId}
                             children={
                                 <div
                                     className={clsx(
@@ -168,8 +166,6 @@ export default function Page({ params, searchParams }) {
                                                 height: "58px",
                                                 borderRadius: "50%",
                                                 objectFit: "cover",
-                                                backgroundColor:
-                                                    forum.background_color,
                                             }}
                                         />
                                         {/* Forum title and weekly summary text */}
@@ -215,8 +211,8 @@ export default function Page({ params, searchParams }) {
                                         style={{ padding: "0px 0px 0px 10px" }}
                                     >
                                         <Tabs
-                                            activeDisplay={OPForumTab}
-                                            setActiveDisplay={setOPForumTab}
+                                            activeDisplay={forumTab}
+                                            setActiveDisplay={setForumTab}
                                             primary_color={forum.primary_color}
                                             options={[
                                                 {
@@ -260,9 +256,10 @@ export default function Page({ params, searchParams }) {
                                                                 }
                                                                 chatid={chatid}
                                                                 showPost={
-                                                                    OPForumTab ==
+                                                                    forumTab ==
                                                                     "latest"
                                                                 }
+                                                                protocolId={protocolId}
                                                             />
                                                         ),
                                                     )}
