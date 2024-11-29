@@ -38,7 +38,7 @@ function generateAlertMarkdownText(protocolInfo, proposalsData, variation) {
 
     let firstLine = "";
     if (variation == "new") {
-        firstLine = `📣 *${protocolInfo.name}* posted ${proposalsData.length} new proposal${proposalsData.length > 1 ? "s" : ""}!`;
+        firstLine = `📣 ${proposalsData.length} new *${protocolInfo.name}* proposal${proposalsData.length > 1 ? "s" : ""}!`;
     }
     if (variation == "ending") {
         firstLine = `📣 ${proposalsData.length} *${protocolInfo.name}* proposal${proposalsData.length > 1 ? "s" : ""} close${proposalsData.length > 1 ? "" : "s"} in 48 hours!`;
@@ -46,15 +46,23 @@ function generateAlertMarkdownText(protocolInfo, proposalsData, variation) {
 
     message += firstLine;
     message += "\n";
-    message += `1. *${firstProposal.title}*\n`;
-    message += `${firstProposal.summary}\n`;
 
-    if (proposalsData.length > 1) {
+    proposalsData.slice(0, 5).forEach((proposalData, index) => {
+        if (proposalsData.length > 1) {
+            message += `*${index + 1}. *`;
+        }
+        message += `*${proposalData.title}*\n`;
+        message += `${proposalData.summary}\n`;
         message += "\n";
-        message += `2. ... View under 📌 _My Bookmarks_.\n`;
+    })
+
+    if (proposalsData.length > 5) {
+        message += `View all under 📌 _My Bookmarks_.\n`;
     }
-    message += "\n";
-    message += `⏰ Vote Ends *${relativeTimeLabel(firstProposal.endtime)}*\n`;
+
+    const date = new Date(firstProposal.endtime * 1000);
+    const formattedDate = date.toLocaleString();
+    message += `⏰ Vote Ends at *${formattedDate}*\n`;
     return message;
 }
 
@@ -72,7 +80,7 @@ function generateAlertButtons(user, proposalsData) {
     };
     // "Vote now" takes user to voting page in browser
     const voteNowButton = {
-        text: "🗳️ Vote now",
+        text: "Go to Proposal",
         url: proposalsData[0].url,
     };
 
@@ -93,16 +101,9 @@ function generateAlertButtons(user, proposalsData) {
     const callback_data =
         `book ${proposalsData.map((p) => p.id.slice(0, 5))}`.slice(0, 64);
 
-    if (proposalsData.length === 1) {
-        votedButton = {
-            text: "I Voted!",
-            callback_data,
-        };
-    } else {
-        votedButton = {
-            text: `I Voted on all ${proposalsData.length}!`,
-            callback_data,
-        };
-    }
+    votedButton = {
+        text: "I Voted!",
+        callback_data,
+    };
     return [[voteNowButton], [votedButton, bookmarkButton]];
 }
