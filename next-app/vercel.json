@@ -10,6 +10,10 @@
             "schedule": "0 */6 * * *"
         },
         {
+            "path": "/api/v4/data/forum/compound/upload",
+            "schedule": "0 */6 * * *"
+        },
+        {
             "path": "/api/v4/alerts/forum",
             "schedule": "0 10 * * 1"
         },
