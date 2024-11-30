@@ -2,8 +2,19 @@ import { isLessThanNDaysAgo } from "@/utils/time";
 import clsx from "clsx";
 import Image from "next/image";
 import OpStar from "@/public/assets/op_star.png";
+import CompStar from "@/public/assets/comp_star.png";
 
-export const ForumStatsSummary = ({ pastNDays, topics, classes }) => {
+var styleByProtocol = {
+    optimism: [["#F9F1E9", "#E9F0F9", "#F2ADB1"], OpStar],
+    compound: [["#F9F1E9", "#E9F0F9", "#B9FFB9"], CompStar],
+};
+
+export const ForumStatsSummary = ({
+    protocolId,
+    pastNDays,
+    topics,
+    classes,
+}) => {
     const newTopics = topics.filter((t) =>
         isLessThanNDaysAgo(t.created_at, pastNDays),
     );
@@ -17,28 +28,30 @@ export const ForumStatsSummary = ({ pastNDays, topics, classes }) => {
         0,
     );
 
+    let [complimentaryColors, decorativeImg] = styleByProtocol[protocolId];
+
     return (
         <div className={clsx(classes, "relative")}>
             <ForumStatsSummaryBlock
                 number={numTopics}
                 text="new topics"
                 width="34%"
-                gradientColor="#F9F1E9"
+                gradientColor={complimentaryColors[0]}
             />
             <ForumStatsSummaryBlock
                 number={numPosts - numTopics}
                 text="new replies"
                 width="32%"
-                gradientColor="#E9F0F9"
+                gradientColor={complimentaryColors[1]}
             />
             <ForumStatsSummaryBlock
                 number={numLikes}
                 text="likes"
                 width="27%"
-                gradientColor="#F2ADB1"
+                gradientColor={complimentaryColors[2]}
             />
             <Image
-                src={OpStar}
+                src={decorativeImg}
                 className="absolute w-[40px] h-[40px] bottom-[-18px] right-[-1px] transform rotate-4 z-20"
             />
         </div>

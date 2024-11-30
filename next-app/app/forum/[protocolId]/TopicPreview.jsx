@@ -80,7 +80,7 @@ export const TopicPreview = ({
                     />
                 </div>
             )}
-            <TopicStats topic={topic} />
+            <TopicStats protocolId={protocolId} topic={topic} />
         </button>
     );
 };

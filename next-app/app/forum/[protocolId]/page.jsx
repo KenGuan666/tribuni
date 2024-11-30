@@ -34,7 +34,9 @@ export default function Page({ params, searchParams }) {
     } = useStore();
 
     const [forum, setForum] = useState(getCachedForum(protocolId));
-    const [categories, setCategories] = useState(getCachedForumCategories(protocolId));
+    const [categories, setCategories] = useState(
+        getCachedForumCategories(protocolId),
+    );
     const [trendingTopics, setTrendingTopics] = useState(null);
     const [latestTopics, setLatestTopics] = useState(null);
 
@@ -202,6 +204,7 @@ export default function Page({ params, searchParams }) {
                                     </div>
 
                                     <ForumStatsSummary
+                                        protocolId={protocolId}
                                         pastNDays={7}
                                         topics={latestTopics}
                                         classes="flex flex-row w-9/10 justify-center items-center pt-[24px]"
@@ -259,7 +262,9 @@ export default function Page({ params, searchParams }) {
                                                                     forumTab ==
                                                                     "latest"
                                                                 }
-                                                                protocolId={protocolId}
+                                                                protocolId={
+                                                                    protocolId
+                                                                }
                                                             />
                                                         ),
                                                     )}

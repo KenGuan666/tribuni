@@ -1,8 +1,14 @@
 import React from "react";
 import Image from "next/image";
 import OpStar from "@/public/assets/op_star_upright.png";
+import CompStar from "@/public/assets/comp_star_upright.png";
 
-export const Sentiment = ({ topic, color }) => {
+export var sentimentIconByProtocol = {
+    optimism: OpStar,
+    compound: CompStar,
+};
+
+export const Sentiment = ({ protocolId, topic, color }) => {
     const sentimentScore = calculateSentimentScore(topic);
     if (isNaN(sentimentScore)) return null;
     return (
@@ -19,7 +25,10 @@ export const Sentiment = ({ topic, color }) => {
                         marginTop: "2px",
                     }}
                 >
-                    <Image src={OpStar} className="w-[20px] h-[20px]" />
+                    <Image
+                        src={sentimentIconByProtocol[protocolId]}
+                        className="w-[20px] h-[20px]"
+                    />
                 </div>
                 <p
                     style={{

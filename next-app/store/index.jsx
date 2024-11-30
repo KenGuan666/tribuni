@@ -80,16 +80,17 @@ export const useStore = create((set, get) => ({
             let newMap = new Map(state.cachedFora);
             newMap.set(protocolId, forum);
             return { cachedFora: newMap };
-        })
+        });
     },
     cachedForumCategories: new Map(),
-    getCachedForumCategories: (protocolId) => get().cachedForumCategories.get(protocolId),
+    getCachedForumCategories: (protocolId) =>
+        get().cachedForumCategories.get(protocolId),
     cacheForumCategories: (protocolId, categories) => {
         set((state) => {
             let newMap = new Map(state.cachedForumCategories);
             newMap.set(protocolId, categories);
             return { achedForumCategories: newMap };
-        })
+        });
     },
     forumTab: "latest",
     setForumTab: (forumTab) => set({ forumTab }),
@@ -100,7 +101,7 @@ export const useStore = create((set, get) => ({
             let newMap = new Map(state.forumScroll);
             newMap.set(protocolId, forumScroll);
             return { forumScroll: newMap };
-        })
+        });
     },
 
     cachedForumTopics: new Map(),
@@ -108,8 +109,9 @@ export const useStore = create((set, get) => ({
         let protocolTopicMap = get().cachedForumTopics.get(protocolId);
         return protocolTopicMap ? protocolTopicMap.get(topicId) : null;
     },
-    getCachedTopics: (protocolId) => get().cachedForumTopics.get(protocolId) || [],
-    cacheTopic: (protocolId, topic) => 
+    getCachedTopics: (protocolId) =>
+        get().cachedForumTopics.get(protocolId) || [],
+    cacheTopic: (protocolId, topic) =>
         set((state) => {
             let newMap = new Map(state.cachedForumTopics);
             if (!newMap.has(protocolId)) {
@@ -124,7 +126,9 @@ export const useStore = create((set, get) => ({
             if (!newMap.has(protocolId)) {
                 newMap.set(protocolId, new Map());
             }
-            topics.forEach((topic) => newMap.get(protocolId).set(topic.id, topic));
+            topics.forEach((topic) =>
+                newMap.get(protocolId).set(topic.id, topic),
+            );
             return { cachedForumTopics: newMap };
         }),
 }));

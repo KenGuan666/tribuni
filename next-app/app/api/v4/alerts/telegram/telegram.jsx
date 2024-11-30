@@ -54,7 +54,7 @@ function generateAlertMarkdownText(protocolInfo, proposalsData, variation) {
         message += `*${proposalData.title}*\n`;
         message += `${proposalData.summary}\n`;
         message += "\n";
-    })
+    });
 
     if (proposalsData.length > 5) {
         message += `View all under 📌 _My Bookmarks_.\n`;

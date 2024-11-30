@@ -1,8 +1,10 @@
 import CommentsIcon from "@/public/assets/comments.png";
 import LikesIcon from "@/public/assets/likes.png";
-import OptimisticIcon from "@/public/assets/op_star_upright.png";
 import Image from "next/image";
-import { calculateSentimentScore } from "./[topicId]/Sentiment";
+import {
+    calculateSentimentScore,
+    sentimentIconByProtocol,
+} from "./[topicId]/Sentiment";
 
 const IconAndCount = ({ icon, count }) => {
     return (
@@ -31,7 +33,7 @@ const IconAndCount = ({ icon, count }) => {
     );
 };
 
-export const TopicStats = ({ topic }) => {
+export const TopicStats = ({ protocolId, topic }) => {
     const comments = (
         <IconAndCount icon={CommentsIcon.src} count={topic.post_count - 1} />
     );
@@ -40,7 +42,10 @@ export const TopicStats = ({ topic }) => {
     );
     const sentimentScore = calculateSentimentScore(topic);
     const sentiments = isNaN(sentimentScore) ? null : (
-        <IconAndCount icon={OptimisticIcon.src} count={`${sentimentScore}%`} />
+        <IconAndCount
+            icon={sentimentIconByProtocol[protocolId].src}
+            count={`${sentimentScore}%`}
+        />
     );
 
     return (

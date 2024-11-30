@@ -4,10 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ANIMATE, MAX_WIDTH } from "@/components/constants";
 import { fetchForumByProtocol } from "@/components/db/forum";
-import {
-    fetchTopicById,
-    fetchPostsByTopicId,
-} from "@/components/db/forum";
+import { fetchTopicById, fetchPostsByTopicId } from "@/components/db/forum";
 import { Hr } from "@/components/ui/page";
 import { useStore } from "@/store";
 import { sanitizeAIListOutput } from "@/utils/text";
@@ -37,7 +34,10 @@ export default function Page({ params, searchParams }) {
                 }
                 if (!topic) {
                     let topicDb = await fetchTopicById(protocolId, topicId);
-                    const postsDb = await fetchPostsByTopicId(protocolId, topicId);
+                    const postsDb = await fetchPostsByTopicId(
+                        protocolId,
+                        topicId,
+                    );
                     topicDb.posts = postsDb;
                     setTopic(topicDb);
                     cacheTopic(protocolId, topicDb);
@@ -203,6 +203,7 @@ export default function Page({ params, searchParams }) {
                                             }}
                                         >
                                             <Sentiment
+                                                protocolId={protocolId}
                                                 topic={topic}
                                                 color={forum.primary_color}
                                             />
