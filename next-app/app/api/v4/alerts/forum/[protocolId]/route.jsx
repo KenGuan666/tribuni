@@ -42,7 +42,7 @@ export async function POST(req) {
             const alertButtons = [
                 [
                     {
-                        text: `Explore AI-organized ${forum.name} on Tribuni`,
+                        text: `Explore AI-organized ${forum.name} forum on Tribuni`,
                         web_app: {
                             url: `${process.env.SERVER_URL}/forum/${protocolId}?username=${user.id}&chatid=${user.chatid}`,
                         },
@@ -108,7 +108,7 @@ async function alertContent(protocolId, forum) {
         message += `${communityFeedback.map((str) => `- ${str}`).join("\n")}\n`;
     });
 
-    message += `\nClick *Explore AI-organized ${forum.name} on Tribuni* below to see more summaried posts and community feedback!`;
+    message += `\nClick *Explore AI-organized ${forum.name} forum on Tribuni* below to see more summaried posts and community feedback!`;
 
     return message;
 }
