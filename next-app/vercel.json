@@ -14,7 +14,11 @@
             "schedule": "0 */6 * * *"
         },
         {
-            "path": "/api/v4/alerts/forum",
+            "path": "/api/v4/alerts/forum/optimism",
+            "schedule": "0 10 * * 1"
+        },
+        {
+            "path": "/api/v4/alerts/forum/compound",
             "schedule": "0 10 * * 1"
         },
         {

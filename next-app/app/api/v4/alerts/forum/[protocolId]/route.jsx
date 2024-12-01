@@ -82,7 +82,7 @@ async function alertContent(protocolId, forum) {
 
     const weeklySummary = forum.forum_weekly_summary;
     message += weeklySummary;
-    message += " Top topics are summarized below.\n\n"
+    message += " Top topics are summarized below.\n\n";
 
     const weeklyTrendingTopicIds = await fetchWeeklyTrendingTopics(protocolId);
     const weeklyTrendingTopics = await Promise.all(
@@ -96,8 +96,8 @@ async function alertContent(protocolId, forum) {
                 topic.posts = await fetchPostsByTopicId(protocolId, topic.id);
                 const sentimentScore = calculateSentimentScore(topic);
                 return [topic.id, sentimentScore];
-            })
-        )
+            }),
+        ),
     );
     weeklyTrendingTopics.forEach((t, index) => {
         message += `*${index + 1}. *[${t.title}](${t.first_post_url}) *by ${t.author_username}*\n`;
