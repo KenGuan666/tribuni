@@ -29,7 +29,7 @@ import {
 import { isLessThanNDaysAgo } from "@/utils/time";
 
 export const maxDuration = 300;
-var knownForums = new Set(["optimism", "compound"]);
+export var knownForums = new Set(["optimism", "compound"]);
 
 export async function GET(req) {
     return await POST(req);
