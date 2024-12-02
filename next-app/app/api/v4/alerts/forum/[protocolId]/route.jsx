@@ -105,7 +105,7 @@ async function alertContent(protocolId, forum) {
 
         const communityFeedback = sanitizeAIListOutput(t.community_summary);
         message += `*${sentimentScoreByTopicId.get(t.id)}%* of the ${t.post_count - 1} replies expressed positive sentiment.\n`;
-        message += `${communityFeedback.map((str) => `- ${str}`).join("\n")}\n`;
+        message += `${communityFeedback.map((str) => `- ${str}`).join("\n")}\n\n`;
     });
 
     message += `\nClick *Explore AI-organized ${forum.name} forum on Tribuni* below to see more summaried posts and community feedback!`;
