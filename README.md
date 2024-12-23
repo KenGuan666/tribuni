@@ -1,11 +1,12 @@
 # Tribuni
 
-Tribuni is the easiest way to organize your governance delegate flow. Sign up today to receive vote alerts, proposal insights across 200+ projects.
+Tribuni helps crypto governance delegates stay on top. Sign up today to receive vote alerts, proposal insights across 200+ projects, for free!
 
-Try it today: https://t.me/Tribuni_Bot with code POTATO
-Read more: https://gov.optimism.io/t/tribuni-alpha-launch-telegram-mini-app-built-by-delegates-for-delegates/8568/13
+Use Tribuni now: https://t.me/Tribuni_Bot
 
-Who is using Tribuni? See https://tribuni.vercel.app/metrics, https://tribuni.vercel.app/metrics/optimism
+Who is using Tribuni? See [Metrics](https://tribuni.vercel.app/metrics), [OP Delegate Metrics](https://tribuni.vercel.app/metrics/optimism), [Customer Testimonials](https://tribuni.vercel.app/)
+
+Read more: [Tribuni OP Forum post](https://gov.optimism.io/t/tribuni-alpha-launch-telegram-mini-app-built-by-delegates-for-delegates/8568/13)
 
 ### Developer Guide
 

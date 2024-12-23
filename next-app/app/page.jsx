@@ -28,6 +28,9 @@ import callenAvatar from "@/public/assets/callen.jpg";
 import liliopAvatar from "@/public/assets/liliop.jpg";
 import juanbugAvatar from "@/public/assets/juanbug.jpg";
 import batbAvatar from "@/public/assets/batb.png";
+import keremAvatar from "@/public/assets/kerem.jpg";
+import donpepeAvatar from "@/public/assets/donpepe.png";
+import brichisAvatar from "@/public/assets/brichis.png";
 
 import numeral from "numeral";
 
@@ -237,7 +240,7 @@ export default function Page() {
                             marginBottom: "40px",
                         }}
                     >
-                        Loved By OP Delegates
+                        Loved By Delegates
                     </div>
                     <TestimonialWall />
 
@@ -916,6 +919,26 @@ function TestimonialWall() {
                 "https://optimism.easscan.org/attestation/view/0xb8b6bf5458a2f89a1b318817fecc5a9ec6696388bd56ef299cc159615f009bea",
         },
         {
+            avatar: donpepeAvatar,
+            name: "0xdonpepe",
+            text: "Great tool to stay informed on current events going on the forums/agora.",
+            association: "",
+            delegateURL:
+                "https://vote.optimism.io/delegates/0x010dc5440ad49f9ec0dd325b622d9fd225944ee4",
+            attestationURL:
+                "https://optimism.easscan.org/attestation/view/0xfe90a19cc3ac92ca32a39ade213d02652a3a3e9783b0c09b99ee7e2d7a0956fd",
+        },
+        {
+            avatar: brichisAvatar,
+            name: "brichis",
+            text: "It sends you reminders and summaries via Telegram, which makes it very user-friendly.",
+            association: "",
+            delegateURL:
+                "https://vote.optimism.io/delegates/0x7fc80fad32ec41fd5cfcc14eee9c31953b6b4a8b",
+            attestationURL:
+                "https://optimism.easscan.org/attestation/view/0x6017165409dcde8e168df00df4fa5b948adbeef5a6c888664ce6859756ce7970",
+        },
+        {
             avatar: chaselbAvatar,
             name: "chaselb",
             text: "There are no other notification systems that I can use as a delegate across protocols. Tribuni then goes the extra mile by providing proposal summaries.",
@@ -983,6 +1006,16 @@ function TestimonialWall() {
                 "https://vote.optimism.io/delegates/0xb933aee47c438f22de0747d57fc239fe37878dd1",
             attestationURL:
                 "https://optimism.easscan.org/offchain/attestation/view/0x63e11ecc91080c6c8bd7f1aa1cf56062ffcd900cb0b76b451b300b218beccf4a",
+        },
+        {
+            avatar: keremAvatar,
+            name: "keremtalhaoral",
+            text: "As ITU Blockchain delegation, we can safely say that Tribuni has made the voting process much more easier than we've imagined.",
+            association: "ITU Blockchain",
+            delegateURL:
+                "https://vote.optimism.io/delegates/0xBEC643BD5b7F5e9190617CA4187ef0455950C51C",
+            attestationURL:
+                "https://optimism.easscan.org/attestation/view/0x14a73682c7f30d8bfe44be463193a5cc2058f63d2d554ea8d30a031cdd18df07",
         },
     ];
 
