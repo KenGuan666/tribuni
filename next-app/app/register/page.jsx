@@ -10,7 +10,7 @@ export default function Page() {
     return (
         <div
             className={clsx(
-                "flex flex-col w-full items-center pt-0 p-2 grow overflow-y-scroll",
+                "flex flex-col w-full items-center pt-0 p-2 grow overflow-y-scroll hide-scrollbar",
                 MAX_WIDTH,
             )}
         >

@@ -2,6 +2,18 @@
 import { sql } from "./sql";
 import { postgresInsertArrayFromJsArray } from "./utilities";
 
+export async function createUser(username, chatid) {
+    let currTime = new Date().getTime();
+    currTime = Math.floor(currTime / 1000);
+
+    const insertQuery = `
+    INSERT INTO telegram_users (id, chatid, premium, email, bookmarks, subscriptions, pause_alerts, telegram_alerts, email_alerts, timestamp)
+    VALUES ('${username}', '${chatid}', ${currTime} + (12 * 31 * 24 * 60 * 60), NULL, ARRAY[]::TEXT[], ARRAY[]::TEXT[], FALSE, TRUE, FALSE, ${currTime})
+    RETURNING id;
+    `;
+    return await sql.unsafe(insertQuery);
+}
+
 export async function fetchUserData(username, chatid) {
     const userQuery = `
         SELECT *
