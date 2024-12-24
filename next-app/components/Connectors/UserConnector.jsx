@@ -6,8 +6,7 @@ import { useRouter } from "next/navigation";
 import { usePathname } from "next/navigation";
 import { useStore } from "@/store";
 import { BASE_USER, MAX_WIDTH } from "../constants";
-import { NavBookmarks, NavHome, NavSettings } from "../ios";
-import { OpIcon } from "./OpIcon";
+import { NavBookmarks, NavHome, NavSettings, NavSocial } from "../ios";
 
 export const UserConnector = () => {
     const router = useRouter();
@@ -39,9 +38,9 @@ export const UserConnector = () => {
                             path: "/bookmarks",
                         },
                         {
-                            key: "OP Forum",
-                            icon: OpIcon,
-                            path: "/forum/optimism",
+                            key: "Forums",
+                            icon: NavSocial,
+                            path: "/forum",
                         },
                         {
                             key: "Settings",

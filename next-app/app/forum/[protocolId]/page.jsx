@@ -61,7 +61,6 @@ export default function Page({ params, searchParams }) {
                     cacheForumCategories(protocolId, categoriesById);
                 }
 
-                // TODO: implement as infinite-scroll
                 const cachedTopics = getCachedTopics(protocolId);
                 if (cachedTopics.size > 5) {
                     let latestTopics = Array.from(cachedTopics.values());
@@ -71,7 +70,6 @@ export default function Page({ params, searchParams }) {
                     trendingTopics.sort(
                         (a, b) => trendingMetric(b) - trendingMetric(a),
                     );
-                    // TODO: implement as infinite-scroll
                     setTrendingTopics(trendingTopics);
                     return;
                 }
@@ -118,8 +116,8 @@ export default function Page({ params, searchParams }) {
         return <Spinner />;
     }
 
-    // Ignore "from" parameter for now, and always send user back to protocols page
-    const backUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/protocols?username=${username}&chatid=${chatid}`;
+    // Ignore "from" parameter for now, and always send user back to forums page
+    const backUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}/forum?username=${username}&chatid=${chatid}`;
     topicsToShow = forumTab === "latest" ? latestTopics : trendingTopics;
 
     return (
@@ -136,7 +134,7 @@ export default function Page({ params, searchParams }) {
                             backUrl={backUrl}
                             forum={forum}
                             url={forum.forum_url}
-                            backText="Protocols"
+                            backText="Back"
                             buttonText="Go to Forum"
                         />
                         <MemoryScroll

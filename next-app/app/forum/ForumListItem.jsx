@@ -6,14 +6,14 @@ import { Hr } from "@/components/ui/page";
 import { PROPOSAL_COLORS } from "@/constants/proposalClasses";
 import { useStore } from "@/store";
 import { relativeTimeLabel } from "@/utils/time";
-import { capitalizeFirstLetter } from "@/utils/text";
+import { trimLength } from "@/utils/text";
 import { ProtocolIcon } from "@/components/page/ProtocolIcon";
 
 export const ForumListItem = ({ protocolForum, from, showIcon }) => {
     const { user, getCachedProtocol } = useStore();
     const router = useRouter();
 
-    const protocolId = protocolForum.protocol;
+    const protocolId = protocolForum.protocol_id;
     const title = protocolForum.name;
 
     const horizontalMargin = showIcon ? 56 : 24;
@@ -23,7 +23,7 @@ export const ForumListItem = ({ protocolForum, from, showIcon }) => {
                 className="hover:bg-isSeparatorLight"
                 onClick={() => {
                     router.push(
-                        `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${protocolForum.id}?username=${user.id}&chatid=${user.chatid}&from=${from}`,
+                        `${process.env.NEXT_PUBLIC_SERVER_URL}/forum/${protocolId}?username=${user.id}&chatid=${user.chatid}&from=${from}`,
                     );
                 }}
                 style={{
@@ -32,7 +32,7 @@ export const ForumListItem = ({ protocolForum, from, showIcon }) => {
                     alignItems: "flex-start",
                     justifyContent: "space-between",
                     width: "100%",
-                    padding: "6px 0",
+                    padding: "4px 20px 4px 2px",
                     textAlign: "left",
                 }}
             >
@@ -64,6 +64,17 @@ export const ForumListItem = ({ protocolForum, from, showIcon }) => {
                 >
                     <div
                         style={{
+                            maxWidth: "250px",
+                            fontSize: "16px",
+                            lineHeight: "1.2",
+                            marginTop: "4px",
+                            marginBottom: "4px",
+                        }}
+                    >
+                        {trimLength(title, 64)}
+                    </div>
+                    <div
+                        style={{
                             display: "flex",
                             flexDirection: "row",
                             alignItems: "center",
@@ -76,42 +87,11 @@ export const ForumListItem = ({ protocolForum, from, showIcon }) => {
                                 color: "darkgray",
                             }}
                         >
-                            {protocolForum.forumNumNewPosts} new posts this week
-                        </div>
-                        <div
-                            className={clsx(
-                                "px-[0.6rem] mr-2 py-[0.125rem] font-400 tabular-nums",
+                            {trimLength(
+                                protocolForum.forum_weekly_summary,
+                                128,
                             )}
-                            style={{
-                                background: `${
-                                    PROPOSAL_COLORS[
-                                        protocolForum.protocolForum_class
-                                    ]
-                                }1A`,
-                                fontSize: "12px",
-                                color: PROPOSAL_COLORS[
-                                    protocolForum.protocolForum_class
-                                ],
-                                textAlign: "center",
-                                borderRadius: "20px",
-                            }}
-                        >
-                            {protocolForum.protocolForum_class}
                         </div>
-                    </div>
-                    <div
-                        style={{
-                            maxWidth: "250px",
-                            fontSize: "16px",
-                            lineHeight: "1.2",
-                            marginTop: "4px",
-                        }}
-                    >
-                        {title.length > 64
-                            ? capitalizeFirstLetter(
-                                  title.substring(0, 64),
-                              ).trim() + "..."
-                            : capitalizeFirstLetter(title).trim()}
                     </div>
                 </div>
             </button>

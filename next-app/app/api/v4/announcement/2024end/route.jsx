@@ -21,7 +21,7 @@ We plan to expand the AI forum to more ecosystems and explore futarchy, among ot
 Happy holidays!
 `;
     // const users = await fetchAllUsersData();
-    const users = ((await fetchAllUsersData()).filter(u => u.id == "ken12358"));
+    const users = (await fetchAllUsersData()).filter((u) => u.id == "ken12358");
     for (const user of users) {
         const userId = user.id;
         const chatId = user.chatid;

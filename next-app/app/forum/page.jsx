@@ -54,15 +54,8 @@ export default function Page({ searchParams }) {
                     )}
                 >
                     <div className="flex flex-col grow overflow-y-scroll hide-scrollbar">
-                        <Title text="Forum" />
+                        <Title text="Forums" />
 
-                        {protocolForums.length > 0 && (
-                            <SearchBar
-                                searchTerm={search}
-                                setSearch={setSearch}
-                                placeholder={"Search for a protocol"}
-                            />
-                        )}
                         <ForumList protocolForums={protocolForums} />
                     </div>
                     <UserConnector />
