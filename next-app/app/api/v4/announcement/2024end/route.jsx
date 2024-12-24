@@ -4,7 +4,7 @@ import { fetchAllUsersData } from "@/components/db/user";
 export async function POST() {
     const bot = getBot();
     const text = `
-End of the Year Report
+*End of the Year Report*
 
 Dear Delegates,
 As 2024 comes to a close, we'd like to share a few updates and reflect on some key milestones.
@@ -20,8 +20,7 @@ We plan to expand the AI forum to more ecosystems and explore futarchy, among ot
 
 Happy holidays!
 `;
-    // const users = await fetchAllUsersData();
-    const users = (await fetchAllUsersData()).filter((u) => u.id == "ken12358");
+    const users = await fetchAllUsersData();
     for (const user of users) {
         const userId = user.id;
         const chatId = user.chatid;
