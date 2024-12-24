@@ -75,29 +75,25 @@ export const DefaultReply = async ({ bot, body }) => {
 
         const userKeyboard = [
             {
-                text: "Browse Protocols",
+                text: "Subscribe to Protocols",
                 path: "protocols",
             },
             {
-                text: "View Bookmarks",
+                text: "See All Live Proposals",
                 path: "bookmarks",
             },
             {
-                text: "Explore OP Forum",
+                text: "AI-Organized OP Forum",
                 path: "forum/optimism",
             },
             {
-                text: "Edit Settings",
+                text: "AI-Organized COMP Forum",
+                path: "forum/compound",
+            },
+            {
+                text: "Alert Settings",
                 path: "settings",
             },
-            // {
-            //   text: "Manage Subscriptions",
-            //   path: "subscriptions",
-            // },
-            // {
-            //   text: "Social Directory",
-            //   path: "directory",
-            // },
         ].map((key) => {
             return [
                 {

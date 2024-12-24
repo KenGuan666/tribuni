@@ -73,7 +73,7 @@ function generateAlertButtons(user, proposalsData) {
 
     // "View my Bookmarks" takes user to bookmarks page in web-app
     const bookmarkButton = {
-        text: "My Bookmarks",
+        text: "See All Live Proposals",
         web_app: {
             url: `${process.env.SERVER_URL}/bookmarks?username=${userId}&chatid=${chatId}`,
         },
