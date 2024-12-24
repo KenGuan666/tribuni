@@ -79,7 +79,7 @@ export const DefaultReply = async ({ bot, body }) => {
                 path: "protocols",
             },
             {
-                text: "See All Live Proposals",
+                text: "See My Live Proposals",
                 path: "bookmarks",
             },
             {
