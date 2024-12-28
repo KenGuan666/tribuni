@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { fetchAllUsersData } from "@/components/db/user";
-import { fetchPostCount } from "@/components/db/op_forum";
+import { fetchPostCount } from "@/components/db/forum";
 import { fetchProposalCountByProtocols } from "@/components/db/proposal";
 import { getOpVotePower } from "@/components/blockchain/optimism/votePower";
 
@@ -63,7 +63,7 @@ export default function Page() {
             ),
         );
         setVotePowerByDelegate(map);
-        const postCount = await fetchPostCount();
+        const postCount = await fetchPostCount("optimism");
         setPostCount(postCount);
         const proposalCount = await fetchProposalCountByProtocols(["optimism"]);
         setProposalCount(proposalCount[0].count);

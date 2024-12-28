@@ -5,7 +5,7 @@ import { fetchAllUsersData } from "@/components/db/user";
 import {
     fetchExistingTopicsCount,
     fetchPostCount,
-} from "@/components/db/op_forum";
+} from "@/components/db/forum";
 import { getOpVotePower } from "@/components/blockchain/optimism/votePower";
 
 export default function Page() {
@@ -37,9 +37,9 @@ export default function Page() {
         );
         setVotePowerByDelegate(map);
 
-        const topicCount = await fetchExistingTopicsCount();
+        const topicCount = await fetchExistingTopicsCount("optimism");
         setTopicCount(topicCount);
-        const postCount = await fetchPostCount();
+        const postCount = await fetchPostCount("optimism");
         setPostCount(postCount);
     };
 

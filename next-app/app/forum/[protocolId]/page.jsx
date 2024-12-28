@@ -75,6 +75,7 @@ export default function Page({ params, searchParams }) {
                 }
 
                 const latestTopicsDb = await fetchLatestTopics(protocolId);
+                // TODO: add pagination and infinite scroll
                 const postsDb = await fetchPosts(protocolId);
 
                 // create topic.posts field for each topic
