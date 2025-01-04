@@ -2,11 +2,7 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { fetchAllUsersData } from "@/components/db/user";
-import {
-    fetchExistingTopicsCount,
-    fetchPostCount,
-} from "@/components/db/forum";
-import { getCompoundVotePower } from "@/components/blockchain/compound/votePower";
+import { getArbVotePower } from "@/components/blockchain/arbitrum/votePower";
 
 export default function Page() {
     const [users, setUsers] = useState([]);
@@ -24,7 +20,7 @@ export default function Page() {
             delegates.map(async (u) =>
                 Promise.all(
                     u.evm_delegate_addresses.map(async (addr) => {
-                        const voteCount = await getCompoundVotePower(addr);
+                        const voteCount = await getArbVotePower(addr);
                         const voteCountNumber = Number(
                             voteCount.toBigInt() / 10n ** 18n,
                         );
@@ -37,10 +33,10 @@ export default function Page() {
         );
         setVotePowerByDelegate(map);
 
-        const topicCount = await fetchExistingTopicsCount("compound");
-        setTopicCount(topicCount);
-        const postCount = await fetchPostCount("compound");
-        setPostCount(postCount);
+        // const topicCount = await fetchExistingTopicsCount("optimism");
+        // setTopicCount(topicCount);
+        // const postCount = await fetchPostCount("optimism");
+        // setPostCount(postCount);
     };
 
     useEffect(() => {
@@ -52,14 +48,14 @@ export default function Page() {
         votePowerByDelegate.values(),
     ).reduce((s, power) => s + power, 0);
 
-    const subscribers = users.filter((u) =>
-        u.subscriptions.includes("compound"),
-    );
+    // const subscribers = users.filter((u) =>
+    //     u.subscriptions.includes("optimism"),
+    // );
 
     return (
         <div>
             <Head>
-                <title>Compound Metrics</title>
+                <title>Optimism Metrics</title>
             </Head>
             <div
                 style={{
@@ -81,25 +77,9 @@ export default function Page() {
                 >
                     {normalText("Tribuni is supporting", true)}
                     {highlightText(`${delegatesCount}`, true)}
-                    {normalText("Compound delegates with", true)}
+                    {normalText("ARB delegates with", true)}
                     {highlightText(`${totalDelegateVotePower}`, true)}
                     {normalText("votes combined!")}
-                </div>
-                <div
-                    style={{
-                        display: "flex",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    }}
-                >
-                    {normalText("Tribuni has helped", true)}
-                    {highlightText(`${subscribers.length}`, true)}
-                    {normalText("subscribers analyze", true)}
-                    {highlightText(`${postCount}`, true)}
-                    {normalText("posts across", true)}
-                    {highlightText(`${topicCount}`, true)}
-                    {normalText("forum topics", true)}
                 </div>
             </div>
         </div>
@@ -110,7 +90,7 @@ const highlightText = (text, spaceAfter) => (
     <div
         style={{
             marginRight: spaceAfter ? "12px" : "0px",
-            color: "#01d396",
+            color: "#1cb0f7",
             fontSize: 32,
             fontWeight: 1200,
         }}
